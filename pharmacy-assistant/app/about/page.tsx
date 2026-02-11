@@ -1,4 +1,5 @@
 import React from 'react';
+import Navbar from '../components/Navbar';
 
 const teamMembers = [
   {
@@ -35,14 +36,20 @@ const teamMembers = [
 
 const AboutPage = () => {
   return (
+    <>
+    <Navbar />
+
+    
     <div className="min-h-screen w-full bg-white relative overflow-auto font-sans text-black py-16">
       
       {/* --- Background Decorative Shapes --- */}
       <div className="absolute top-0 right-0 w-2/3 h-full pointer-events-none z-0 opacity-50">
+        
         <svg viewBox="0 0 500 500" preserveAspectRatio="none" className="w-full h-full">
           <path d="M200,0 C350,200 100,400 500,250 L500,0 Z" fill="#f0fdfa" transform="translate(50, -50) scale(1.2)" />
           <path d="M200,0 C350,200 100,400 500,300 L500,0 Z" fill="#ccfbf1" transform="translate(60, -20)" />
         </svg>
+        
       </div>
 
       <div className="container mx-auto px-6 relative z-10 max-w-6xl">
@@ -91,7 +98,7 @@ const AboutPage = () => {
 
       </div>
     </div>
-  );
+  </>);
 };
 
 export default AboutPage;

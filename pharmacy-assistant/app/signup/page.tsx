@@ -1,8 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
+import Navbar from '../components/Navbar';
+
 
 const SignUpPage = () => {
   return (
+    <>
+    <Navbar />
     <div className="min-h-screen w-full bg-white relative overflow-auto font-sans flex items-center justify-center py-10">
       
       {/* --- Background Decorative Shapes --- */}
@@ -131,7 +135,7 @@ const SignUpPage = () => {
         </div>
       </div>
     </div>
-  );
+  </>);
 };
 
 export default SignUpPage;
