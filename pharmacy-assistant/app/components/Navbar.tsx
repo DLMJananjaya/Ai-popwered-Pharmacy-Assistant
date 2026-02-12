@@ -58,9 +58,11 @@ import Image from 'next/image';
 const Navbar = () => {
   return (
     // This is the style you asked for: Sticky, White, Blur, with a Bottom Border
-    <nav className="w-full bg-white/90 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
-      <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-        
+      // <nav className="w-full bg-white/90 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
+      //   <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+      <nav className="w-full bg-transparent backdrop-blur-md border-b sticky top-0 z-50">
+       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+
         {/* --- LOGO SECTION START --- */}
         <Link href="/" className="flex items-center ml-5 ">
           {/* Replaced the Green Box and Text with just the Image */}
