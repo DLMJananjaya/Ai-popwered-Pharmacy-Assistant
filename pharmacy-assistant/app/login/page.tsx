@@ -42,7 +42,7 @@ const LoginPage = () => {
             <img 
               src="/Gemini_Generated_Image_7hsiwa7hsiwa7hsi.png" 
               alt="Pharmacist illustration" 
-              className="w-full h-auto object-contain rounded-lg shadow-lg"
+              className="w-full h-auto object-contain rounded-lg shadow-lg scale-x-[-1]"
             />
           </div>
         </div>
