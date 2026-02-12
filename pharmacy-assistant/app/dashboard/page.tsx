@@ -1,150 +1,208 @@
 import React from 'react';
-import Navbar from '../components/Navbar';
+import Link from 'next/link';
 
 export default function DashboardPage() {
   return (
-    <div className="flex h-screen bg-gray-50 font-sans text-gray-800">
+    <div className="flex h-screen bg-gray-50 font-sans text-gray-800 overflow-hidden">
       
-      {/* --- SIDEBAR NAVIGATION --- */}
-      <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col">
-        {/* Logo Area */}
-        <div className="h-20 flex items-center px-8 border-b border-gray-100">
-          <div className="w-8 h-8 bg-[#00A99D] rounded-md mr-3"></div>
-          <h1 className="text-xl font-bold tracking-tight">Pharma<span className="text-[#00A99D]">AI</span></h1>
+      {/* --- SIDEBAR --- */}
+      <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col shrink-0 z-20">
+        <div className="h-20 flex items-center px-6">
+           {/* Logo Placeholder */}
+           <div className="w-8 h-8 bg-[#00A99D] rounded-md"></div>
         </div>
-
-        {/* Nav Links */}
+        
         <nav className="flex-1 px-4 py-6 space-y-2">
-          <NavItem icon={<HomeIcon />} label="Dashboard" active />
-          <NavItem icon={<PillIcon />} label="Inventory" />
-          <NavItem icon={<CartIcon />} label="Sales / Billing" />
-          <NavItem icon={<UsersIcon />} label="Customers" />
-          <NavItem icon={<ChartIcon />} label="Reports" />
-          <NavItem icon={<SettingsIcon />} label="Settings" />
+          {/* Active State is now on 'Dashboard' */}
+          <NavItem label="Dashboard" href="/dashboard" active />
+          <NavItem label="Prescription Reader" href="/prescription" />
+          <NavItem label="Inventory" href="/inventory" />
+          <NavItem label="Rack Management" href="/racks" />
+          <NavItem label="Billing" href="/billing" />
         </nav>
-
-        {/* User Profile (Bottom of Sidebar) */}
-        <div className="p-4 border-t border-gray-100">
-          <div className="flex items-center gap-3">
-            <img 
-              src="https://avatar.iran.liara.run/public/boy?username=user" 
-              alt="User" 
-              className="w-10 h-10 rounded-full border-2 border-[#00A99D]"
-            />
-            <div>
-              <p className="text-sm font-bold text-gray-700">Dr. Sahan</p>
-              <p className="text-xs text-gray-500">Admin</p>
-            </div>
-          </div>
-        </div>
       </aside>
 
       {/* --- MAIN CONTENT AREA --- */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col relative overflow-hidden">
         
-        {/* Top Header */}
-        <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8">
-          <h2 className="text-2xl font-bold text-gray-800">Overview</h2>
+        {/* Background Shapes (Matches your theme) */}
+        <div className="absolute top-0 right-0 w-full h-full pointer-events-none z-0">
+           <svg viewBox="0 0 500 500" preserveAspectRatio="none" className="w-full h-full opacity-10">
+            <path d="M400,500 C200,400 300,200 500,100 L500,500 Z" fill="#00A99D" />
+           </svg>
+        </div>
+
+        {/* --- TOP HEADER --- */}
+        <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8 z-10 shrink-0">
+          <div className="flex items-center gap-3">
+             <h1 className="text-xl font-bold text-black">AI-Powered Pharmacy Assistant</h1>
+          </div>
+          
           <div className="flex items-center gap-4">
-            <button className="p-2 text-gray-400 hover:text-[#00A99D] transition-colors">
-              <BellIcon />
-            </button>
-            <button className="bg-[#00A99D] text-white px-5 py-2 rounded-xl font-medium shadow-md hover:bg-[#008f85] transition-colors">
-              + New Sale
-            </button>
+             {/* User Profile */}
+             <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-full border border-gray-100 shadow-sm">
+                <div className="w-8 h-8 rounded-full bg-orange-100 overflow-hidden border border-gray-200">
+                   <img src="https://avatar.iran.liara.run/public/boy?username=admin" alt="User" />
+                </div>
+                <span className="text-sm font-bold text-black">User Profile</span>
+             </div>
+             {/* Logout Icon */}
+             <button className="bg-gray-200 p-2 rounded-md hover:bg-gray-300 transition">
+                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+             </button>
           </div>
         </header>
 
-        {/* Scrollable Content */}
-        <main className="flex-1 overflow-y-auto p-8">
-          
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <StatCard title="Total Sales" value="$12,450" change="+15%" icon={<DollarIcon />} />
-            <StatCard title="Medicines" value="2,345" change="In Stock" icon={<PillIcon />} />
-            <StatCard title="Low Stock" value="12" change="Urgent" isAlert icon={<AlertIcon />} />
-            <StatCard title="Customers" value="1,203" change="+5%" icon={<UsersIcon />} />
-          </div>
+        {/* --- SCROLLABLE DASHBOARD CONTENT --- */}
+        <main className="flex-1 overflow-y-auto p-6 z-10">
+          <div className="max-w-7xl mx-auto space-y-8">
 
-          {/* Recent Orders Section */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h3 className="text-lg font-bold mb-4">Recent Transactions</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="text-gray-400 text-sm border-b border-gray-100">
-                    <th className="pb-3 font-medium">Medicine</th>
-                    <th className="pb-3 font-medium">Date</th>
-                    <th className="pb-3 font-medium">Customer</th>
-                    <th className="pb-3 font-medium">Amount</th>
-                    <th className="pb-3 font-medium">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="text-sm">
-                  <TableRow name="Amoxicillin 500mg" date="Today, 10:42 AM" customer="Jane Doe" amount="$12.50" status="Completed" />
-                  <TableRow name="Paracetamol" date="Today, 09:15 AM" customer="John Smith" amount="$5.00" status="Completed" />
-                  <TableRow name="Vitamin C" date="Yesterday" customer="Mike Ross" amount="$18.20" status="Pending" />
-                  <TableRow name="Insulin Pen" date="Yesterday" customer="Rachel Z." amount="$45.00" status="Completed" />
-                </tbody>
-              </table>
+            {/* 1. Date Filters */}
+            <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2">
+                    <span className="font-bold text-sm text-black">From :</span>
+                    <input type="date" className="border border-black rounded px-2 py-1 text-sm bg-transparent" defaultValue="2025-02-01" />
+                </div>
+                <div className="flex items-center gap-2">
+                    <span className="font-bold text-sm text-black">To :</span>
+                    <input type="date" className="border border-black rounded px-2 py-1 text-sm bg-transparent" defaultValue="2025-02-01" />
+                </div>
             </div>
-          </div>
 
+            {/* 2. Stat Cards Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <StatCard title="No Of Sales" value="126" />
+                <StatCard title="Prescription Reads" value="64" />
+                <StatCard title="Total Sales" value="Rs. 12576.00" subValue={true} />
+                <StatCard title="Revenue" value="Rs. 3450.00" subValue={true} />
+            </div>
+
+            {/* 3. Sales Analytics Chart (Custom CSS Bar Chart) */}
+            <div className="bg-gray-100/50 p-6 rounded-2xl border border-gray-200 shadow-sm">
+                <div className="mb-6">
+                    <h2 className="text-xl font-bold text-center text-black mb-2">Sales Analytics</h2>
+                    <div className="flex items-center gap-2 text-sm">
+                        <span className="font-bold">Sales Count :</span>
+                        <select className="border border-black rounded px-2 py-0.5 bg-transparent">
+                            <option>Daily</option>
+                            <option>Weekly</option>
+                        </select>
+                    </div>
+                </div>
+
+                {/* Chart Container */}
+                <div className="h-64 flex items-end justify-between gap-4 px-4 md:px-12 border-l border-b border-black">
+                    {/* Bars */}
+                    <ChartBar day="21" value={16} height="30%" />
+                    <ChartBar day="22" value={25} height="50%" />
+                    <ChartBar day="23" value={21} height="40%" />
+                    <ChartBar day="24" value={10} height="20%" />
+                    <ChartBar day="25" value={23} height="45%" />
+                    <ChartBar day="26" value={36} height="70%" />
+                    <ChartBar day="27" value={14} height="25%" />
+                    <span className="absolute bottom-0 right-0 translate-y-full pt-2 text-xs font-bold">Day</span>
+                </div>
+            </div>
+
+            {/* 4. Sales Details Table */}
+            <div className="bg-gray-100/50 p-6 rounded-2xl border border-gray-200 shadow-sm">
+                <h2 className="text-xl font-bold text-center text-black mb-6">Sales Details</h2>
+                
+                <div className="bg-white border border-black overflow-hidden">
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="border-b border-black text-sm">
+                                <th className="p-3 border-r border-black font-bold text-center w-24">Date</th>
+                                <th className="p-3 border-r border-black font-bold text-center w-24">ID</th>
+                                <th className="p-3 border-r border-black font-bold text-center">Items</th>
+                                <th className="p-3 border-r border-black font-bold text-center w-32">Price</th>
+                                <th className="p-3 font-bold text-center w-40">Assistant</th>
+                            </tr>
+                        </thead>
+                        <tbody className="text-sm">
+                            <tr className="border-b border-gray-300 h-32 align-top">
+                                <td className="p-3 border-r border-black text-center">2026/02/25</td>
+                                <td className="p-3 border-r border-black text-center">PID00001A</td>
+                                <td className="p-3 border-r border-black">
+                                    <div className="flex flex-col gap-1">
+                                        <span>Paracetamol 500mg *10</span>
+                                        <span>Asprine 10mg *5</span>
+                                        <span>Face mask *10</span>
+                                    </div>
+                                </td>
+                                <td className="p-3 border-r border-black">Rs. 475.00</td>
+                                <td className="p-3">Ajith Fernando</td>
+                            </tr>
+                            {/* Empty rows to match height if needed */}
+                            <tr className="h-32"><td colSpan={5}></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* Pagination */}
+                <div className="flex justify-end mt-4 gap-2 text-gray-500 font-bold">
+                    <button className="hover:text-black">&lt;</button>
+                    <button className="text-black">1</button>
+                    <button className="hover:text-black">2</button>
+                    <button className="hover:text-black">3</button>
+                    <button className="text-black">...</button>
+                    <button className="hover:text-black">&gt;</button>
+                </div>
+            </div>
+
+          </div>
         </main>
       </div>
     </div>
   );
 }
 
-/* --- HELPER COMPONENTS (Internal) --- */
+/* --- Helper Components --- */
 
-function NavItem({ icon, label, active = false }: { icon: any, label: string, active?: boolean }) {
+// 1. Sidebar Item
+function NavItem({ label, href, active = false }: { label: string, href: string, active?: boolean }) {
   return (
-    <a href="#" className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${active ? 'bg-[#E6F7F6] text-[#00A99D] font-semibold' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}`}>
-      <span className={active ? "text-[#00A99D]" : "text-gray-400"}>{icon}</span>
-      {label}
-    </a>
+    <Link href={href}>
+        <div className={`cursor-pointer px-4 py-3 font-bold text-sm mb-1 transition-colors ${
+        active 
+            ? 'bg-[#00A99D] text-white rounded-lg shadow-sm' 
+            : 'text-black hover:bg-gray-100 hover:text-[#00A99D] rounded-lg'
+        }`}>
+        {label}
+        </div>
+    </Link>
   );
 }
 
-function StatCard({ title, value, change, icon, isAlert = false }: any) {
-  return (
-    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-start justify-between">
-      <div>
-        <p className="text-gray-500 text-sm mb-1">{title}</p>
-        <h3 className="text-2xl font-bold text-gray-800 mb-1">{value}</h3>
-        <p className={`text-xs font-medium ${isAlert ? 'text-red-500' : 'text-emerald-500'}`}>{change}</p>
-      </div>
-      <div className={`p-3 rounded-xl ${isAlert ? 'bg-red-50 text-red-500' : 'bg-[#E6F7F6] text-[#00A99D]'}`}>
-        {icon}
-      </div>
-    </div>
-  );
+// 2. Stat Card
+function StatCard({ title, value, subValue = false }: { title: string, value: string, subValue?: boolean }) {
+    return (
+        <div className="bg-gray-100/80 rounded-xl p-6 shadow-sm border border-gray-200 flex flex-col items-center justify-center text-center h-32">
+            <h3 className="text-sm font-bold text-black mb-2">{title}</h3>
+            <p className={`font-bold text-black ${subValue ? 'text-xl' : 'text-3xl'}`}>
+                {value}
+            </p>
+        </div>
+    );
 }
 
-function TableRow({ name, date, customer, amount, status }: any) {
-  return (
-    <tr className="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
-      <td className="py-4 font-medium text-gray-800">{name}</td>
-      <td className="py-4 text-gray-500">{date}</td>
-      <td className="py-4 text-gray-500">{customer}</td>
-      <td className="py-4 font-medium text-gray-800">{amount}</td>
-      <td className="py-4">
-        <span className={`px-3 py-1 rounded-full text-xs font-medium ${status === 'Completed' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'}`}>
-          {status}
-        </span>
-      </td>
-    </tr>
-  );
+// 3. Simple CSS Chart Bar
+function ChartBar({ day, value, height }: { day: string, value: number, height: string }) {
+    return (
+        <div className="flex flex-col items-center justify-end h-full w-full group">
+            <span className="mb-2 text-xs font-bold text-black opacity-0 group-hover:opacity-100 transition-opacity">{value}</span>
+            {/* The Bar */}
+            <div 
+                className="w-8 md:w-12 bg-[#00A99D] rounded-t-sm hover:opacity-80 transition-all relative"
+                style={{ height: height }}
+            >
+                {/* Number always visible on top */}
+                <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-black">
+                    {value}
+                </span>
+            </div>
+            {/* The Day Label */}
+            <span className="mt-2 text-xs font-bold text-black">{day}</span>
+        </div>
+    );
 }
-
-/* --- ICONS (SVGs) --- */
-const HomeIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>;
-const PillIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.5 20.5l10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"></path><path d="m8.5 8.5 7 7"></path></svg>;
-const CartIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>;
-const UsersIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>;
-const ChartIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>;
-const SettingsIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>;
-const BellIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>;
-const DollarIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>;
-const AlertIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>;
