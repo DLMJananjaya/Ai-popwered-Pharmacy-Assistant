@@ -10,7 +10,7 @@ const Navbar = () => {
         <Link href="/" className="flex items-center gap-2">
           <div className="w-8 h-8 bg-[#00A99D] rounded-md"></div>
           <span className="text-xl font-bold tracking-tight text-gray-900">
-            V<span className="text-[#00A99D]">AI</span>DYA 
+            V<span className="text-[#00A99D]">AI</span>DIA 
           </span>
         </Link>
 
