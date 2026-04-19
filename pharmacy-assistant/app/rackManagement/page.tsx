@@ -1,361 +1,324 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
-  LayoutDashboard, PlusCircle, Search, Grid, Package, 
-  AlertTriangle, Clock, Loader2, CheckCircle2, PackageOpen, LayoutGrid
+  LayoutDashboard, FileText, Package, Grid, Receipt, 
+  LogOut, DoorOpen, User, RotateCw, Trash2
 } from 'lucide-react';
 
-// --- SHARED COMPONENTS ---
-
-const Loader = () => (
-  <div className="flex justify-center items-center h-full p-10">
-    <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
-  </div>
-);
-
-const EmptyState = ({ message, icon: Icon }) => (
-  <div className="flex flex-col items-center justify-center p-12 bg-white rounded-xl shadow-sm border border-gray-100 border-dashed">
-    <Icon className="w-12 h-12 text-gray-300 mb-3" />
-    <p className="text-gray-500 font-medium">{message}</p>
-  </div>
-);
-
-// --- PAGES ---
-
-const Dashboard = ({ medicines }) => {
-  const lowStockThreshold = 10;
-  const lowStockAlerts = medicines.filter(m => m.quantity <= lowStockThreshold);
-  
-  // Simple expiry check (within 30 days)
-  const today = new Date();
-  const expiringSoon = medicines.filter(m => {
-    const expDate = new Date(m.expiryDate);
-    const diffTime = Math.abs(expDate - today);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays <= 30;
-  });
-
-  return (
-    <>
-        <Navbar />
-        <div className="space-y-6">
-        
-      <h2 className="text-2xl font-bold text-gray-800">Dashboard Overview</h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Total Medicines Card */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
-          <div className="p-3 bg-teal-100 text-teal-600 rounded-lg">
-            <Package size={28} />
-          </div>
-          <div>
-            <p className="text-sm text-gray-500 font-medium">Total Medicines</p>
-            <p className="text-2xl font-bold text-gray-800">{medicines.length}</p>
-          </div>
-        </div>
-
-        {/* Low Stock Alerts Card */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
-          <div className="p-3 bg-red-100 text-red-600 rounded-lg">
-            <AlertTriangle size={28} />
-          </div>
-          <div>
-            <p className="text-sm text-gray-500 font-medium">Low Stock Alerts</p>
-            <p className="text-2xl font-bold text-gray-800">{lowStockAlerts.length}</p>
-          </div>
-        </div>
-
-        {/* Expiring Soon Card */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
-          <div className="p-3 bg-orange-100 text-orange-600 rounded-lg">
-            <Clock size={28} />
-          </div>
-          <div>
-            <p className="text-sm text-gray-500 font-medium">Expiring Soon</p>
-            <p className="text-2xl font-bold text-gray-800">{expiringSoon.length}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    </>
-    
-  );
-};
-
-const AddMedicine = ({ onAdd }) => {
-  const [formData, setFormData] = useState({
-    name: '', category: '', expiryDate: '', price: '', quantity: '', rack: 'A', shelf: ''
-  });
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      onAdd({ ...formData, id: Date.now() });
-      setLoading(false);
-      setSuccess(true);
-      setFormData({ name: '', category: '', expiryDate: '', price: '', quantity: '', rack: 'A', shelf: '' });
-      setTimeout(() => setSuccess(false), 3000);
-    }, 800);
-  };
-
-  return (
-    <div className="max-w-2xl bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Add New Medicine</h2>
-      
-      {success && (
-        <div className="mb-6 p-4 bg-green-50 text-green-700 rounded-lg flex items-center">
-          <CheckCircle2 className="mr-2" size={20} />
-          Medicine added successfully!
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Medicine Name</label>
-            <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none" placeholder="e.g. Paracetamol" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-            <input required type="text" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none" placeholder="e.g. Painkiller" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
-            <input required type="date" value={formData.expiryDate} onChange={e => setFormData({...formData, expiryDate: e.target.value})} className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
-            <input required type="number" step="0.01" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
-            <input required type="number" value={formData.quantity} onChange={e => setFormData({...formData, quantity: e.target.value})} className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none" />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Rack</label>
-              <select value={formData.rack} onChange={e => setFormData({...formData, rack: e.target.value})} className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none">
-                <option value="A">Rack A</option>
-                <option value="B">Rack B</option>
-                <option value="C">Rack C</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Shelf No.</label>
-              <input required type="number" min="1" max="5" value={formData.shelf} onChange={e => setFormData({...formData, shelf: e.target.value})} className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none" />
-            </div>
-          </div>
-        </div>
-        
-        <button type="submit" disabled={loading} className="w-full bg-teal-600 text-white font-medium py-2.5 rounded-lg hover:bg-teal-700 transition flex justify-center items-center">
-          {loading ? <Loader2 className="animate-spin mr-2" size={20} /> : 'Save Medicine'}
-        </button>
-      </form>
-    </div>
-  );
-};
-
-const SearchMedicine = ({ medicines }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  
-  const filtered = medicines.filter(m => 
-    m.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    m.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-      <div className="p-6 border-b border-gray-100">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Search Inventory</h2>
-        <div className="relative">
-          <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-          <input 
-            type="text" 
-            placeholder="Search by medicine name or category..." 
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-      </div>
-
-      {filtered.length === 0 ? (
-        <EmptyState message="No medicines found." icon={PackageOpen} />
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-50 text-gray-600 text-sm">
-                <th className="p-4 font-medium border-b border-gray-200">Medicine Name</th>
-                <th className="p-4 font-medium border-b border-gray-200">Rack</th>
-                <th className="p-4 font-medium border-b border-gray-200">Shelf</th>
-                <th className="p-4 font-medium border-b border-gray-200">Quantity</th>
-                <th className="p-4 font-medium border-b border-gray-200">Expiry Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map(med => (
-                <tr key={med.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                  <td className="p-4 font-medium text-gray-800">{med.name}</td>
-                  <td className="p-4"><span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-bold">{med.rack}</span></td>
-                  <td className="p-4 text-gray-600">{med.shelf}</td>
-                  <td className="p-4">
-                    <span className={`font-bold ${med.quantity <= 10 ? 'text-red-600' : 'text-green-600'}`}>
-                      {med.quantity}
-                    </span>
-                  </td>
-                  <td className="p-4 text-gray-500">{med.expiryDate}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
-};
-
-const RackView = ({ medicines }) => {
-  const racks = ['A', 'B', 'C'];
-  const shelves = ['1', '2', '3', '4', '5'];
-
-  return (
-    <div className="space-y-8">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Visual Rack Layout</h2>
-      
-      {racks.map(rackId => (
-        <div key={rackId} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <div className="flex items-center mb-4">
-            <LayoutGrid className="text-teal-600 mr-2" />
-            <h3 className="text-xl font-bold text-gray-800">Rack {rackId}</h3>
-          </div>
-          
-          <div className="space-y-3">
-            {shelves.map(shelfId => {
-              const medsOnShelf = medicines.filter(m => m.rack === rackId && m.shelf === shelfId);
-              
-              return (
-                <div key={shelfId} className="flex border border-gray-300 rounded-lg overflow-hidden h-24">
-                  <div className="bg-gray-100 border-r border-gray-300 w-16 flex items-center justify-center font-bold text-gray-600">
-                    S-{shelfId}
-                  </div>
-                  <div className="flex-1 p-2 flex gap-2 overflow-x-auto bg-[#f8fafc]">
-                    {medsOnShelf.length === 0 ? (
-                      <div className="text-gray-400 text-sm flex items-center w-full justify-center italic">Empty Shelf</div>
-                    ) : (
-                      medsOnShelf.map(med => (
-                        <div key={med.id} className="min-w-[120px] bg-white border border-teal-200 p-2 rounded shadow-sm flex flex-col justify-between">
-                          <span className="font-bold text-sm text-teal-800 truncate">{med.name}</span>
-                          <span className={`text-xs font-semibold ${med.quantity <= 10 ? 'text-red-500' : 'text-gray-500'}`}>
-                            Qty: {med.quantity}
-                          </span>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-// --- MAIN LAYOUT & APP ---
-
-export default function App() {
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [isLoading, setIsLoading] = useState(true);
-  
-  // Initial Mock Data
-  const [medicines, setMedicines] = useState([
-    { id: 1, name: 'Amoxicillin', category: 'Antibiotic', expiryDate: '2026-12-01', price: '12.50', quantity: 45, rack: 'A', shelf: '1' },
-    { id: 2, name: 'Ibuprofen', category: 'Painkiller', expiryDate: '2026-05-15', price: '8.00', quantity: 8, rack: 'B', shelf: '2' },
-    { id: 3, name: 'Cetirizine', category: 'Antihistamine', expiryDate: '2025-10-20', price: '5.50', quantity: 120, rack: 'C', shelf: '3' },
+export default function RackManagement() {
+  // --- STATE ---
+  // Initial layout mimicking the screenshot
+  const [elements, setElements] = useState([
+    { id: 'r3', type: 'rack', name: 'Rack 3', rows: 1, cols: 8, x: 50, y: 30, rotation: 0 },
+    { id: 'r4', type: 'rack', name: 'Rack 4', rows: 1, cols: 7, x: 600, y: 50, rotation: 90 },
+    { id: 'r1', type: 'rack', name: 'Rack 1', rows: 4, cols: 10, x: 50, y: 220, rotation: 0 },
+    { id: 'r2', type: 'rack', name: 'Rack 2', rows: 1, cols: 8, x: 50, y: 360, rotation: 0 },
+    { id: 'd1', type: 'door', x: 20, y: 130, rotation: 0 },
+    { id: 'u1', type: 'user', x: 120, y: 290, rotation: 0 },
   ]);
 
-  // Simulate initial load
-  useEffect(() => {
-    setTimeout(() => setIsLoading(false), 800);
-  }, []);
+  const [selectedId, setSelectedId] = useState('r1');
+  const [draggingId, setDraggingId] = useState(null);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const canvasRef = useRef(null);
 
-  const handleAddMedicine = (newMed) => {
-    setMedicines([...medicines, newMed]);
+  // Form states
+  const [rackForm, setRackForm] = useState({ name: '', rows: '3', cols: '5' });
+
+  // --- DRAG AND DROP LOGIC ---
+  const handleMouseDown = (e, id) => {
+    e.stopPropagation();
+    const rect = canvasRef.current.getBoundingClientRect();
+    const el = elements.find(el => el.id === id);
+    setSelectedId(id);
+    setDraggingId(id);
+    setDragOffset({
+      x: (e.clientX - rect.left) - el.x,
+      y: (e.clientY - rect.top) - el.y
+    });
   };
 
-  const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'add', label: 'Add Medicine', icon: PlusCircle },
-    { id: 'search', label: 'Search & Inventory', icon: Search },
-    { id: 'rack', label: 'Rack Management', icon: Grid },
-  ];
+  const handleMouseMove = (e) => {
+    if (!draggingId) return;
+    const rect = canvasRef.current.getBoundingClientRect();
+    let newX = (e.clientX - rect.left) - dragOffset.x;
+    let newY = (e.clientY - rect.top) - dragOffset.y;
+    
+    // Fixed: Using previous state to ensure smooth dragging without stuttering
+    setElements(prev => prev.map(el => 
+      el.id === draggingId ? { ...el, x: newX, y: newY } : el
+    ));
+  };
+
+  const handleMouseUp = () => {
+    setDraggingId(null);
+  };
+
+  // Attach global mouse listeners for smooth dragging outside element bounds
+  useEffect(() => {
+    if (draggingId) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    } else {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [draggingId, dragOffset]); 
+
+  // --- ACTIONS ---
+  const addRack = () => {
+    if (!rackForm.name) return alert("Please enter a rack name");
+    setElements([...elements, {
+      id: Date.now().toString(),
+      type: 'rack',
+      name: rackForm.name,
+      rows: parseInt(rackForm.rows),
+      cols: parseInt(rackForm.cols),
+      x: 100, y: 100, rotation: 0
+    }]);
+    setRackForm({ name: '', rows: '3', cols: '5' });
+  };
+
+  const addDoor = () => {
+    setElements([...elements, { id: Date.now().toString(), type: 'door', x: 100, y: 100, rotation: 0 }]);
+  };
+
+  const addUser = () => {
+    setElements([...elements, { id: Date.now().toString(), type: 'user', x: 100, y: 100, rotation: 0 }]);
+  };
+
+  const rotateSelected = () => {
+    if (!selectedId) return;
+    setElements(elements.map(el => 
+      el.id === selectedId ? { ...el, rotation: (el.rotation + 90) % 360 } : el
+    ));
+  };
+
+  const deleteSelected = () => {
+    if (!selectedId) return;
+    setElements(elements.filter(el => el.id !== selectedId));
+    setSelectedId(null);
+  };
+
+  const selectedElement = elements.find(el => el.id === selectedId);
+
+  // --- RENDERING HELPERS ---
+  const renderCanvasElement = (el) => {
+    const isSelected = selectedId === el.id;
+    const baseStyle = {
+      position: 'absolute',
+      left: el.x,
+      top: el.y,
+      transform: `rotate(${el.rotation}deg)`,
+      cursor: draggingId === el.id ? 'grabbing' : 'grab',
+    };
+
+    if (el.type === 'rack') {
+      const cellWidth = 35;
+      const cellHeight = 35;
+      return (
+        <div 
+          key={el.id} 
+          style={baseStyle}
+          onMouseDown={(e) => handleMouseDown(e, el.id)}
+          className={`flex flex-col bg-white ${isSelected ? 'ring-2 ring-blue-600 ring-offset-2 ring-offset-gray-300 z-10' : 'border border-gray-500 z-0'}`}
+        >
+          <div className="absolute -top-6 left-0 text-sm font-bold text-gray-800 pointer-events-none whitespace-nowrap">
+            {el.name}
+          </div>
+          <div className="flex border border-gray-600">
+            {Array.from({ length: el.cols }).map((_, i) => (
+              <div key={i} style={{ width: cellWidth, height: cellHeight }} className="border-r border-gray-400 last:border-r-0 bg-white" />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (el.type === 'door') {
+      return (
+        <div key={el.id} style={baseStyle} onMouseDown={(e) => handleMouseDown(e, el.id)}
+             className={`p-1 bg-gray-200 rounded-sm ${isSelected ? 'ring-2 ring-blue-600 z-10' : 'border border-gray-600 z-0'}`}>
+          <DoorOpen size={40} className="text-black" />
+        </div>
+      );
+    }
+
+    if (el.type === 'user') {
+      return (
+        <div key={el.id} style={baseStyle} onMouseDown={(e) => handleMouseDown(e, el.id)}
+             className={`p-1 bg-transparent ${isSelected ? 'ring-2 ring-blue-600 rounded-full z-10' : 'z-0'}`}>
+          <User size={48} className="text-black fill-black" />
+        </div>
+      );
+    }
+  };
 
   return (
     <div className="flex h-screen bg-gray-50 font-sans text-gray-900">
       
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col">
-        <div className="p-6 border-b border-gray-100">
-          {/* <h1 className="text-2xl font-extrabold text-teal-600 tracking-tight">Vaidya</h1>
-          <p className="text-xs text-gray-500 font-medium mt-1">Pharmacy Assistant</p> */}
+      {/* SIDEBAR */}
+      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm z-20">
+        <div className="p-6 border-b border-gray-100 flex items-center space-x-3">
+          <div className="w-8 h-8 bg-teal-50 flex items-center justify-center rounded border border-teal-200 text-teal-600 font-bold">
+            V
+          </div>
+          <h1 className="text-xl font-bold text-gray-800 leading-tight">AI-Powered Pharmacy Assistant</h1>
         </div>
-        <nav className="flex-1 p-4 space-y-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeTab === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors text-sm font-medium ${
-                  isActive 
-                    ? 'bg-teal-50 text-teal-700' 
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                }`}
-              >
-                <Icon size={20} className={isActive ? 'text-teal-600' : 'text-gray-400'} />
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
+        <nav className="flex-1 py-4 space-y-1">
+          {[
+            { label: 'Dashboard', icon: LayoutDashboard },
+            { label: 'Prescription Reader', icon: FileText },
+            { label: 'Inventory', icon: Package },
+            { label: 'Rack Management', icon: Grid, active: true },
+            { label: 'Billing', icon: Receipt },
+          ].map((item, idx) => (
+            <button key={idx} className={`w-full flex items-center space-x-3 px-6 py-3 text-sm font-bold transition-colors ${item.active ? 'bg-teal-500 text-white shadow-md' : 'text-gray-700 hover:bg-gray-100'}`}>
+              <item.icon size={20} />
+              <span>{item.label}</span>
+            </button>
+          ))}
         </nav>
       </aside>
 
-      {/* Main Content Area */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      {/* MAIN CONTENT */}
+      <main className="flex-1 flex flex-col overflow-hidden bg-gray-100">
         
-        {/* Top Navbar */}
-        <header className="bg-white border-b border-gray-200 h-16 flex items-center px-6 justify-between md:justify-end shadow-sm z-10">
-          <div className="md:hidden">
-            {/* <h1 className="text-xl font-bold text-teal-600">Vaidya</h1> */}
-          </div>
+        {/* TOP NAVBAR */}
+        <header className="bg-white border-b border-gray-200 h-16 flex items-center px-6 justify-between shadow-sm z-10 shrink-0">
+          <div className="flex-1" />
           <div className="flex items-center space-x-4">
-            <div className="w-8 h-8 bg-teal-600 text-white rounded-full flex items-center justify-center font-bold">
-              PA
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-orange-200 rounded-full flex items-center justify-center overflow-hidden">
+                <User size={20} className="text-orange-600 mt-2" />
+              </div>
+              <span className="text-sm font-bold text-gray-700">User Profile</span>
             </div>
+            <button className="p-2 bg-gray-200 rounded hover:bg-gray-300 transition">
+              <LogOut size={20} className="text-gray-700" />
+            </button>
           </div>
         </header>
 
-        {/* Content Body */}
-        <div className="flex-1 overflow-auto p-6 md:p-8">
-          {isLoading ? (
-            <Loader />
-          ) : (
-            <div className="max-w-6xl mx-auto animation-fade-in">
-              {activeTab === 'dashboard' && <Dashboard medicines={medicines} />}
-              {activeTab === 'add' && <AddMedicine onAdd={handleAddMedicine} />}
-              {activeTab === 'search' && <SearchMedicine medicines={medicines} />}
-              {activeTab === 'rack' && <RackView medicines={medicines} />}
+        {/* WORKSPACE */}
+        <div className="flex-1 overflow-auto p-6 flex flex-col space-y-6">
+          
+          <div className="flex gap-6">
+            {/* CANVAS AREA */}
+            <div 
+              ref={canvasRef}
+              className="flex-1 bg-[#d4d4d4] border-2 border-gray-400 rounded-sm relative h-[450px] overflow-hidden shadow-inner cursor-crosshair"
+              // Fixed: Using onMouseDown so it doesn't interrupt element clicks
+              onMouseDown={() => setSelectedId(null)} 
+            >
+              {elements.map(renderCanvasElement)}
             </div>
-          )}
+
+            {/* CONTROLS PANEL */}
+            <div className="w-64 flex flex-col space-y-4 shrink-0">
+              
+              {/* Add Rack Form */}
+              <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-bold text-gray-800">Name</label>
+                  <input type="text" value={rackForm.name} onChange={e => setRackForm({...rackForm, name: e.target.value})} className="w-32 border border-gray-300 p-1 text-sm rounded" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-bold text-gray-800">Rows</label>
+                  <select value={rackForm.rows} onChange={e => setRackForm({...rackForm, rows: e.target.value})} className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50">
+                    {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
+                  </select>
+                </div>
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-bold text-gray-800">Columns</label>
+                  <select value={rackForm.cols} onChange={e => setRackForm({...rackForm, cols: e.target.value})} className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50">
+                    {[1,3,5,7,8,10].map(n => <option key={n} value={n}>{n}</option>)}
+                  </select>
+                </div>
+                <button onClick={addRack} className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 rounded shadow-md mt-2">
+                  ADD
+                </button>
+              </div>
+
+              {/* Add Users Form */}
+              <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 space-y-3 flex flex-col items-center">
+                <div className="flex w-full justify-between items-center px-2">
+                  <label className="text-sm font-bold text-gray-800">Users</label>
+                  <select className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50">
+                    <option>1</option><option>2</option>
+                  </select>
+                </div>
+                <button onClick={addUser} className="w-24 bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 rounded shadow-md">
+                  ADD
+                </button>
+              </div>
+
+              {/* Add Doors Form */}
+              <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 space-y-3 flex flex-col items-center">
+                <div className="flex w-full justify-between items-center px-2">
+                  <label className="text-sm font-bold text-gray-800">Doors</label>
+                  <select className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50">
+                    <option>1</option><option>2</option>
+                  </select>
+                </div>
+                <button onClick={addDoor} className="w-24 bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 rounded shadow-md">
+                  ADD
+                </button>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-2 pt-2">
+                <button onClick={rotateSelected} disabled={!selectedId} className="flex-1 bg-[#0056b3] disabled:opacity-50 hover:bg-blue-800 text-white font-bold py-2 rounded shadow-md flex items-center justify-center gap-1">
+                  Rotate
+                </button>
+                <button onClick={deleteSelected} disabled={!selectedId} className="flex-1 bg-[#b33a00] disabled:opacity-50 hover:bg-red-800 text-white font-bold py-2 rounded shadow-md flex items-center justify-center gap-1">
+                  Delete
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          {/* DETAILED RACK VIEW */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            {selectedElement && selectedElement.type === 'rack' ? (
+              <div className="space-y-4">
+                <h2 className="text-xl font-extrabold text-gray-900">{selectedElement.name}</h2>
+                <div className="bg-[#f0f0f0] p-4 rounded-lg inline-block border border-gray-300 w-full overflow-x-auto">
+                  <div className="flex flex-col">
+                    {Array.from({ length: selectedElement.rows }).map((_, rIdx) => (
+                      <div key={rIdx} className="flex border-t border-l border-gray-500 first:border-t-0">
+                        {Array.from({ length: selectedElement.cols }).map((_, cIdx) => (
+                          <div 
+                            key={cIdx} 
+                            className="w-16 h-12 bg-white border-r border-b border-gray-500 shrink-0" 
+                          />
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex justify-end gap-4 mt-6">
+                  <button className="bg-[#0056b3] hover:bg-blue-800 text-white font-bold py-2 px-8 rounded shadow-md">
+                    Save
+                  </button>
+                  <button className="bg-[#b33a00] hover:bg-red-800 text-white font-bold py-2 px-8 rounded shadow-md">
+                    Reset
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="h-48 flex items-center justify-center text-gray-400 font-medium">
+                Select a rack on the canvas to view details
+              </div>
+            )}
+          </div>
+
         </div>
       </main>
     </div>
