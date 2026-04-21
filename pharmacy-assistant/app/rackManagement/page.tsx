@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
+import Navbar from '../components/Navbar';
+import AppSidebar from '../components/AppSidebar';
 import { 
-  LayoutDashboard, FileText, Package, Grid, Receipt, 
-  LogOut, DoorOpen, User, RotateCw, Trash2
+  LogOut, DoorOpen, User
 } from 'lucide-react';
 
 export default function RackManagement() {
@@ -160,31 +161,10 @@ export default function RackManagement() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50 font-sans text-gray-900">
-      
-      {/* SIDEBAR */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm z-20">
-        <div className="p-6 border-b border-gray-100 flex items-center space-x-3">
-          <div className="w-8 h-8 bg-teal-50 flex items-center justify-center rounded border border-teal-200 text-teal-600 font-bold">
-            V
-          </div>
-          <h1 className="text-xl font-bold text-gray-800 leading-tight">AI-Powered Pharmacy Assistant</h1>
-        </div>
-        <nav className="flex-1 py-4 space-y-1">
-          {[
-            { label: 'Dashboard', icon: LayoutDashboard },
-            { label: 'Prescription Reader', icon: FileText },
-            { label: 'Inventory', icon: Package },
-            { label: 'Rack Management', icon: Grid, active: true },
-            { label: 'Billing', icon: Receipt },
-          ].map((item, idx) => (
-            <button key={idx} className={`w-full flex items-center space-x-3 px-6 py-3 text-sm font-bold transition-colors ${item.active ? 'bg-teal-500 text-white shadow-md' : 'text-gray-700 hover:bg-gray-100'}`}>
-              <item.icon size={20} />
-              <span>{item.label}</span>
-            </button>
-          ))}
-        </nav>
-      </aside>
+    <>
+    <Navbar />
+    <div className="flex h-[calc(100vh-4rem)] bg-gray-50 font-sans text-gray-900">
+      <AppSidebar active="rackManagement" />
 
       {/* MAIN CONTENT */}
       <main className="flex-1 flex flex-col overflow-hidden bg-gray-100">
@@ -322,5 +302,6 @@ export default function RackManagement() {
         </div>
       </main>
     </div>
+    </>
   );
 }

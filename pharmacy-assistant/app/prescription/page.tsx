@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useMemo, useRef, useState } from 'react';
-import Link from 'next/link';
 import Navbar from '../components/Navbar';
+import AppSidebar from '../components/AppSidebar';
 import { createWorker } from 'tesseract.js';
 
 type Med = {
@@ -216,21 +216,8 @@ export default function PrescriptionPage() {
     <>
       <Navbar />
 
-      <div className="flex h-screen bg-gray-50 font-sans text-gray-800 overflow-hidden">
-        {/* --- SIDEBAR --- */}
-        <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col shrink-0 z-20">
-          <div className="h-20 flex items-center px-6">
-            <div className="w-8 h-8 bg-[#00A99D] rounded-md"></div>
-          </div>
-
-          <nav className="flex-1 px-4 py-6 space-y-2">
-            <NavItem label="Dashboard" href="/dashboard" />
-            <NavItem label="Prescription Reader" href="/prescription" active />
-            <NavItem label="Inventory" href="/inventory" />
-            <NavItem label="Rack Management" href="/racks" />
-            <NavItem label="Billing" href="/billing" />
-          </nav>
-        </aside>
+      <div className="flex h-[calc(100vh-4rem)] bg-gray-50 font-sans text-gray-800 overflow-hidden">
+        <AppSidebar active="prescription" />
 
         {/* --- MAIN CONTENT --- */}
         <div className="flex-1 flex flex-col relative overflow-hidden">
@@ -408,19 +395,6 @@ export default function PrescriptionPage() {
 }
 
 /* --- Helper Components --- */
-function NavItem({ label, href, active = false }: { label: string; href: string; active?: boolean }) {
-  return (
-    <Link href={href}>
-      <div
-        className={`cursor-pointer px-4 py-3 font-bold text-sm mb-1 transition-colors ${
-          active ? 'bg-[#00A99D] text-white rounded-lg shadow-sm' : 'text-black hover:bg-gray-100 hover:text-[#00A99D] rounded-lg'
-        }`}
-      >
-        {label}
-      </div>
-    </Link>
-  );
-}
 
 function MedicineItem({ text }: { text: string }) {
   return (
