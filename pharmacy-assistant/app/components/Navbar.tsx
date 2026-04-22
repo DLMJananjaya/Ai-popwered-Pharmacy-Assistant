@@ -88,6 +88,9 @@ const Navbar = () => {
           <Link href="/prescription" className="text-gray-600 hover:text-[#00A99D] font-medium transition-colors">
             Scan
           </Link>
+          <Link href="/rackManagement" className="text-gray-600 hover:text-[#00A99D] font-medium transition-colors">
+            Rack Management
+          </Link>
         </div>
 
         {/* Action Buttons */}
