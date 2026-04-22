@@ -1,64 +1,164 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  LayoutDashboard, FileText, Package, Grid, Receipt, 
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  LayoutDashboard, FileText, Package, Grid, Receipt,
   LogOut, DoorOpen, User, X, Settings2
 } from 'lucide-react';
+import Navbar from '../components/Navbar';
+
+// ─── TYPES ───────────────────────────────────────────────────────────────────
+
+interface CellData {
+  name: string;
+  qty: string | number;
+}
+
+interface GridData {
+  [key: string]: CellData;
+}
+
+interface RackElement {
+  id: string;
+  type: 'rack';
+  name: string;
+  rows: number;
+  cols: number;
+  x: number;
+  y: number;
+  rotation: number;
+  gridData: GridData;
+}
+
+interface DoorElement {
+  id: string;
+  type: 'door';
+  name: string;
+  x: number;
+  y: number;
+  rotation: number;
+}
+
+interface UserElement {
+  id: string;
+  type: 'user';
+  name: string;
+  x: number;
+  y: number;
+  rotation: number;
+}
+
+type CanvasElement = RackElement | DoorElement | UserElement;
+
+// ─── NAV CONFIG ──────────────────────────────────────────────────────────────
+// Make sure these hrefs match your actual Next.js route file paths exactly.
+
+const navItems = [
+  { label: 'Dashboard',           icon: LayoutDashboard, href: '/dashboard' },
+  { label: 'Prescription Reader', icon: FileText,        href: '/prescriptionReader' },
+  { label: 'Inventory',           icon: Package,         href: '/inventory' },
+  { label: 'Rack Management',     icon: Grid,            href: '/rackManagement' },
+  { label: 'Billing',             icon: Receipt,         href: '/billing' },
+];
+
+// ─── SIDEBAR ─────────────────────────────────────────────────────────────────
+// Extracts the sidebar so it uses Next.js <Link> for real URL navigation.
+// usePathname() highlights whichever route is currently active.
+
+function Sidebar() {
+  const pathname = usePathname();
+
+  return (
+    <aside className="w-64 bg-white border-r border-gray-200 flex-col shadow-sm z-20 shrink-0 hidden md:flex">
+      <div className="p-6 border-b border-gray-100 flex items-center space-x-3">
+        <div className="w-8 h-8 bg-teal-50 flex items-center justify-center rounded border border-teal-200 text-teal-600 font-bold">
+          V
+        </div>
+        <h1 className="text-xl font-bold text-gray-800 leading-tight">
+          AI-Powered Pharmacy Assistant
+        </h1>
+      </div>
+      <nav className="flex-1 py-4 space-y-1">
+        {navItems.map((item) => {
+          const isActive = pathname === item.href;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`w-full flex items-center space-x-3 px-6 py-3 text-sm font-bold transition-colors ${
+                isActive
+                  ? 'bg-teal-500 text-white shadow-md'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <item.icon size={20} />
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
+      </nav>
+    </aside>
+  );
+}
+
+// ─── MAIN PAGE COMPONENT ─────────────────────────────────────────────────────
 
 export default function RackManagement() {
-  // --- STATE ---
-  const [elements, setElements] = useState([
+
+  const [elements, setElements] = useState<CanvasElement[]>([
     { id: 'r3', type: 'rack', name: 'Rack 3', rows: 1, cols: 8, x: 50, y: 30, rotation: 0, gridData: {} },
     { id: 'r4', type: 'rack', name: 'Rack 4', rows: 1, cols: 7, x: 600, y: 50, rotation: 90, gridData: {} },
-    { 
-      id: 'r1', type: 'rack', name: 'Rack 1', rows: 4, cols: 10, x: 50, y: 220, rotation: 0, 
+    {
+      id: 'r1', type: 'rack', name: 'Rack 1', rows: 4, cols: 10, x: 50, y: 220, rotation: 0,
       gridData: {
         "0-0": { name: "Paracetamol", qty: 50 },
         "0-1": { name: "Ibuprofen", qty: 30 },
         "1-4": { name: "Amoxicillin", qty: 15 },
-        "3-9": { name: "Vitamin C", qty: 100 }
-      } 
+        "3-9": { name: "Vitamin C", qty: 100 },
+      }
     },
     { id: 'r2', type: 'rack', name: 'Rack 2', rows: 1, cols: 8, x: 50, y: 360, rotation: 0, gridData: {} },
     { id: 'd1', type: 'door', name: 'Main Door', x: 20, y: 130, rotation: 0 },
     { id: 'u1', type: 'user', name: 'Pharmacist', x: 120, y: 290, rotation: 0 },
   ]);
 
-  const [selectedId, setSelectedId] = useState('r1');
-  const [draggingId, setDraggingId] = useState(null);
+  const [selectedId, setSelectedId] = useState<string | null>('r1');
+  const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const canvasRef = useRef(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
 
-  // Form states
   const [rackForm, setRackForm] = useState({ name: '', rows: '3', cols: '5' });
   const [doorForm, setDoorForm] = useState({ name: 'Door', count: '1' });
   const [userForm, setUserForm] = useState({ name: 'Staff', count: '1' });
-  
-  const [editingCell, setEditingCell] = useState(null); 
-  const [cellForm, setCellForm] = useState({ name: '', qty: '' });
 
-  // --- DRAG AND DROP LOGIC ---
-  const handleMouseDown = (e, id) => {
+  const [editingCell, setEditingCell] = useState<{ row: number; col: number } | null>(null);
+  const [cellForm, setCellForm] = useState<CellData>({ name: '', qty: '' });
+
+  // ─── DRAG AND DROP ─────────────────────────────────────────────────────────
+
+  const handleMouseDown = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
+    if (!canvasRef.current) return;
     const rect = canvasRef.current.getBoundingClientRect();
     const el = elements.find(el => el.id === id);
+    if (!el) return;
     setSelectedId(id);
     setDraggingId(id);
     setDragOffset({
       x: (e.clientX - rect.left) - el.x,
-      y: (e.clientY - rect.top) - el.y
+      y: (e.clientY - rect.top) - el.y,
     });
   };
 
-  const handleMouseMove = (e) => {
-    if (!draggingId) return;
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!draggingId || !canvasRef.current) return;
     const rect = canvasRef.current.getBoundingClientRect();
-    let newX = (e.clientX - rect.left) - dragOffset.x;
-    let newY = (e.clientY - rect.top) - dragOffset.y;
-    
-    setElements(prev => prev.map(el => 
-      el.id === draggingId ? { ...el, x: newX, y: newY } : el
+    setElements(prev => prev.map(el =>
+      el.id === draggingId
+        ? { ...el, x: (e.clientX - rect.left) - dragOffset.x, y: (e.clientY - rect.top) - dragOffset.y }
+        : el
     ));
   };
 
@@ -76,12 +176,13 @@ export default function RackManagement() {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [draggingId, dragOffset]); 
+  }, [draggingId, dragOffset]);
 
-  // --- ACTIONS ---
+  // ─── ACTIONS ───────────────────────────────────────────────────────────────
+
   const addRack = () => {
     if (!rackForm.name) return alert("Please enter a rack name");
-    setElements([...elements, {
+    setElements(prev => [...prev, {
       id: Date.now().toString(), type: 'rack', name: rackForm.name,
       rows: parseInt(rackForm.rows), cols: parseInt(rackForm.cols),
       x: 100, y: 100, rotation: 0, gridData: {}
@@ -92,110 +193,105 @@ export default function RackManagement() {
   const addDoor = () => {
     if (!doorForm.name) return alert("Please enter a name for the door");
     const count = parseInt(doorForm.count);
-    const newDoors = Array.from({ length: count }).map((_, i) => ({
-      id: Date.now().toString() + i,
-      type: 'door',
+    setElements(prev => [...prev, ...Array.from({ length: count }).map((_, i): DoorElement => ({
+      id: Date.now().toString() + i, type: 'door',
       name: count > 1 ? `${doorForm.name} ${i + 1}` : doorForm.name,
-      x: 100 + (i * 40), y: 100 + (i * 40), rotation: 0
-    }));
-    setElements([...elements, ...newDoors]);
+      x: 100 + (i * 40), y: 100 + (i * 40), rotation: 0,
+    }))]);
   };
 
   const addUser = () => {
     if (!userForm.name) return alert("Please enter a name for the person");
     const count = parseInt(userForm.count);
-    const newUsers = Array.from({ length: count }).map((_, i) => ({
-      id: Date.now().toString() + i,
-      type: 'user',
+    setElements(prev => [...prev, ...Array.from({ length: count }).map((_, i): UserElement => ({
+      id: Date.now().toString() + i, type: 'user',
       name: count > 1 ? `${userForm.name} ${i + 1}` : userForm.name,
-      x: 150 + (i * 40), y: 150 + (i * 40), rotation: 0
-    }));
-    setElements([...elements, ...newUsers]);
+      x: 150 + (i * 40), y: 150 + (i * 40), rotation: 0,
+    }))]);
   };
 
   const rotateSelected = () => {
     if (!selectedId) return;
-    setElements(elements.map(el => el.id === selectedId ? { ...el, rotation: (el.rotation + 90) % 360 } : el));
+    setElements(prev => prev.map(el =>
+      el.id === selectedId ? { ...el, rotation: (el.rotation + 90) % 360 } : el
+    ));
   };
 
   const deleteSelected = () => {
     if (!selectedId) return;
-    setElements(elements.filter(el => el.id !== selectedId));
+    setElements(prev => prev.filter(el => el.id !== selectedId));
     setSelectedId(null);
   };
 
-  const updateRackDimensions = (id, newRows, newCols) => {
-    setElements(prev => prev.map(el => 
-      el.id === id ? { ...el, rows: Math.max(1, newRows), cols: Math.max(1, newCols) } : el
+  const updateRackDimensions = (id: string, newRows: number, newCols: number) => {
+    setElements(prev => prev.map(el =>
+      el.id === id && el.type === 'rack'
+        ? { ...el, rows: Math.max(1, newRows), cols: Math.max(1, newCols) }
+        : el
     ));
   };
 
-  const updateElementName = (id, newName) => {
-    setElements(prev => prev.map(el => 
-      el.id === id ? { ...el, name: newName } : el
-    ));
+  const updateElementName = (id: string, newName: string) => {
+    setElements(prev => prev.map(el => el.id === id ? { ...el, name: newName } : el));
   };
 
-  // --- CELL EDITING LOGIC ---
-  const openCellEditor = (row, col) => {
+  // ─── CELL EDITING ──────────────────────────────────────────────────────────
+
+  const openCellEditor = (row: number, col: number) => {
     const el = elements.find(e => e.id === selectedId);
-    const existingData = el?.gridData?.[`${row}-${col}`];
-    setCellForm(existingData ? { ...existingData } : { name: '', qty: '' });
+    if (!el || el.type !== 'rack') return;
+    const existing = el.gridData[`${row}-${col}`];
+    setCellForm(existing ? { ...existing } : { name: '', qty: '' });
     setEditingCell({ row, col });
   };
 
   const saveCellData = () => {
+    if (!editingCell) return;
     setElements(prev => prev.map(el => {
-      if (el.id === selectedId) {
-        const newGrid = { ...el.gridData };
-        if (cellForm.name.trim() !== '') newGrid[`${editingCell.row}-${editingCell.col}`] = cellForm;
-        else delete newGrid[`${editingCell.row}-${editingCell.col}`];
-        return { ...el, gridData: newGrid };
+      if (el.id !== selectedId || el.type !== 'rack') return el;
+      const newGrid = { ...el.gridData };
+      if (String(cellForm.name).trim() !== '') {
+        newGrid[`${editingCell.row}-${editingCell.col}`] = cellForm;
+      } else {
+        delete newGrid[`${editingCell.row}-${editingCell.col}`];
       }
-      return el;
+      return { ...el, gridData: newGrid };
     }));
     setEditingCell(null);
   };
 
   const clearCellData = () => {
+    if (!editingCell) return;
     setElements(prev => prev.map(el => {
-      if (el.id === selectedId) {
-        const newGrid = { ...el.gridData };
-        delete newGrid[`${editingCell.row}-${editingCell.col}`];
-        return { ...el, gridData: newGrid };
-      }
-      return el;
+      if (el.id !== selectedId || el.type !== 'rack') return el;
+      const newGrid = { ...el.gridData };
+      delete newGrid[`${editingCell.row}-${editingCell.col}`];
+      return { ...el, gridData: newGrid };
     }));
     setEditingCell(null);
   };
 
-  const selectedElement = elements.find(el => el.id === selectedId);
+  const selectedElement = elements.find(el => el.id === selectedId) ?? null;
 
-  // --- RENDERING HELPERS ---
-  const renderCanvasElement = (el) => {
+  // ─── CANVAS RENDERING ──────────────────────────────────────────────────────
+
+  const renderCanvasElement = (el: CanvasElement) => {
     const isSelected = selectedId === el.id;
-    const baseStyle = {
-      position: 'absolute', left: el.x, top: el.y, transform: `rotate(${el.rotation}deg)`,
+    const baseStyle: React.CSSProperties = {
+      position: 'absolute', left: el.x, top: el.y,
+      transform: `rotate(${el.rotation}deg)`,
       cursor: draggingId === el.id ? 'grabbing' : 'grab',
     };
 
     if (el.type === 'rack') {
-      const cellWidth = 35;
-      const cellHeight = 35;
       return (
-        <div 
-          key={el.id} style={baseStyle} onMouseDown={(e) => handleMouseDown(e, el.id)}
-          className={`flex flex-col bg-white ${isSelected ? 'ring-2 ring-blue-600 ring-offset-2 ring-offset-gray-300 z-10' : 'border border-gray-500 z-0'}`}
-        >
-          <div className="absolute -top-6 left-0 text-sm font-bold text-gray-800 pointer-events-none whitespace-nowrap">
-            {el.name}
-          </div>
+        <div key={el.id} style={baseStyle} onMouseDown={(e) => handleMouseDown(e, el.id)}
+          className={`flex flex-col bg-white ${isSelected ? 'ring-2 ring-blue-600 ring-offset-2 ring-offset-gray-300 z-10' : 'border border-gray-500 z-0'}`}>
+          <div className="absolute -top-6 left-0 text-sm font-bold text-gray-800 pointer-events-none whitespace-nowrap">{el.name}</div>
           <div className="flex border border-gray-600">
             {Array.from({ length: el.cols }).map((_, i) => (
-              <div 
-                key={i} style={{ width: cellWidth, height: cellHeight }} 
-                className="border-r border-gray-400 last:border-r-0 bg-white flex items-center justify-center pointer-events-none"
-              >
+              <div key={i} style={{ width: 35, height: 35 }}
+                className="border-r border-gray-400 last:border-r-0 bg-white flex items-center justify-center pointer-events-none">
                 <span className="text-[10px] font-bold text-gray-400 select-none">{i + 1}</span>
               </div>
             ))}
@@ -207,7 +303,7 @@ export default function RackManagement() {
     if (el.type === 'door') {
       return (
         <div key={el.id} style={baseStyle} onMouseDown={(e) => handleMouseDown(e, el.id)}
-             className={`flex flex-col items-center p-1 bg-gray-200 rounded-sm ${isSelected ? 'ring-2 ring-blue-600 z-10' : 'border border-gray-600 z-0'}`}>
+          className={`flex flex-col items-center p-1 bg-gray-200 rounded-sm ${isSelected ? 'ring-2 ring-blue-600 z-10' : 'border border-gray-600 z-0'}`}>
           <span className="absolute -top-5 text-xs font-bold text-gray-800 pointer-events-none whitespace-nowrap">{el.name}</span>
           <DoorOpen size={40} className="text-black" />
         </div>
@@ -217,7 +313,7 @@ export default function RackManagement() {
     if (el.type === 'user') {
       return (
         <div key={el.id} style={baseStyle} onMouseDown={(e) => handleMouseDown(e, el.id)}
-             className={`flex flex-col items-center p-1 bg-transparent ${isSelected ? 'ring-2 ring-blue-600 rounded-full z-10' : 'z-0'}`}>
+          className={`flex flex-col items-center p-1 bg-transparent ${isSelected ? 'ring-2 ring-blue-600 rounded-full z-10' : 'z-0'}`}>
           <span className="absolute -top-5 text-xs font-bold text-gray-800 pointer-events-none whitespace-nowrap">{el.name}</span>
           <User size={48} className="text-black fill-black" />
         </div>
@@ -225,122 +321,126 @@ export default function RackManagement() {
     }
   };
 
+  // ─── JSX ───────────────────────────────────────────────────────────────────
+
   return (
     <div className="flex h-screen bg-gray-50 font-sans text-gray-900 relative">
-      
-      {/* SIDEBAR */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm z-20 shrink-0 hidden md:flex">
-        <div className="p-6 border-b border-gray-100 flex items-center space-x-3">
-          <div className="w-8 h-8 bg-teal-50 flex items-center justify-center rounded border border-teal-200 text-teal-600 font-bold">V</div>
-          <h1 className="text-xl font-bold text-gray-800 leading-tight">AI-Powered Pharmacy Assistant</h1>
-        </div>
-        <nav className="flex-1 py-4 space-y-1">
-          {[
-            { label: 'Dashboard', icon: LayoutDashboard }, { label: 'Prescription Reader', icon: FileText },
-            { label: 'Inventory', icon: Package }, { label: 'Rack Management', icon: Grid, active: true },
-            { label: 'Billing', icon: Receipt },
-          ].map((item, idx) => (
-            <button key={idx} className={`w-full flex items-center space-x-3 px-6 py-3 text-sm font-bold transition-colors ${item.active ? 'bg-teal-500 text-white shadow-md' : 'text-gray-700 hover:bg-gray-100'}`}>
-              <item.icon size={20} /><span>{item.label}</span>
-            </button>
-          ))}
-        </nav>
-      </aside>
+
+      {/* ✅ SIDEBAR now uses Next.js <Link> — clicking any nav item navigates to its route */}
+      <Sidebar />
 
       {/* MAIN CONTENT */}
       <main className="flex-1 flex flex-col overflow-hidden bg-gray-100">
-        
-        {/* TOP NAVBAR */}
+          <Navbar />
+
         <header className="bg-white border-b border-gray-200 h-16 flex items-center px-6 justify-between shadow-sm z-10 shrink-0">
           <div className="flex-1" />
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-orange-200 rounded-full flex items-center justify-center overflow-hidden"><User size={20} className="text-orange-600 mt-2" /></div>
+              <div className="w-8 h-8 bg-orange-200 rounded-full flex items-center justify-center overflow-hidden">
+                <User size={20} className="text-orange-600 mt-2" />
+              </div>
               <span className="text-sm font-bold text-gray-700">User Profile</span>
             </div>
-            <button className="p-2 bg-gray-200 rounded hover:bg-gray-300 transition"><LogOut size={20} className="text-gray-700" /></button>
+            <button className="p-2 bg-gray-200 rounded hover:bg-gray-300 transition">
+              <LogOut size={20} className="text-gray-700" />
+            </button>
           </div>
         </header>
 
-        {/* WORKSPACE */}
         <div className="flex-1 overflow-auto p-6 flex flex-col space-y-6">
           <div className="flex flex-col xl:flex-row gap-6">
-            
-            {/* CANVAS AREA */}
-            <div 
-              ref={canvasRef}
+
+            {/* CANVAS */}
+            <div ref={canvasRef}
               className="flex-1 bg-[#d4d4d4] border-2 border-gray-400 rounded-sm relative h-[450px] overflow-hidden shadow-inner cursor-crosshair"
-              onMouseDown={() => setSelectedId(null)} 
-            >
+              onMouseDown={() => setSelectedId(null)}>
               {elements.map(renderCanvasElement)}
             </div>
 
-            {/* CONTROLS PANEL */}
+            {/* CONTROLS */}
             <div className="w-full xl:w-64 flex flex-col space-y-4 shrink-0">
-              
-              {/* Add Rack Form */}
+
               <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 space-y-3">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-bold text-gray-800">Rack Name</label>
-                  <input type="text" value={rackForm.name} onChange={e => setRackForm({...rackForm, name: e.target.value})} className="w-32 border border-gray-300 p-1 text-sm rounded" />
+                  <input type="text" value={rackForm.name}
+                    onChange={e => setRackForm({ ...rackForm, name: e.target.value })}
+                    className="w-32 border border-gray-300 p-1 text-sm rounded" />
                 </div>
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-bold text-gray-800">Rows</label>
-                  <select value={rackForm.rows} onChange={e => setRackForm({...rackForm, rows: e.target.value})} className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50">
-                    {[1,2,3,4,5,6].map(n => <option key={n} value={n}>{n}</option>)}
+                  <select value={rackForm.rows} onChange={e => setRackForm({ ...rackForm, rows: e.target.value })}
+                    className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50">
+                    {[1, 2, 3, 4, 5, 6].map(n => <option key={n} value={n}>{n}</option>)}
                   </select>
                 </div>
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-bold text-gray-800">Columns</label>
-                  <select value={rackForm.cols} onChange={e => setRackForm({...rackForm, cols: e.target.value})} className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50">
-                    {[1,3,5,7,8,10,12].map(n => <option key={n} value={n}>{n}</option>)}
+                  <select value={rackForm.cols} onChange={e => setRackForm({ ...rackForm, cols: e.target.value })}
+                    className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50">
+                    {[1, 3, 5, 7, 8, 10, 12].map(n => <option key={n} value={n}>{n}</option>)}
                   </select>
                 </div>
-                <button onClick={addRack} className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 rounded shadow-md mt-2">ADD RACK</button>
+                <button onClick={addRack} className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 rounded shadow-md mt-2">
+                  ADD RACK
+                </button>
               </div>
 
-              {/* Add People Form */}
               <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 space-y-3">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-bold text-gray-800">Person Name</label>
-                  <input type="text" value={userForm.name} onChange={e => setUserForm({...userForm, name: e.target.value})} className="w-28 border border-gray-300 p-1 text-sm rounded" />
+                  <input type="text" value={userForm.name}
+                    onChange={e => setUserForm({ ...userForm, name: e.target.value })}
+                    className="w-28 border border-gray-300 p-1 text-sm rounded" />
                 </div>
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-bold text-gray-800">Count</label>
-                  <select value={userForm.count} onChange={e => setUserForm({...userForm, count: e.target.value})} className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50">
-                    {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
+                  <select value={userForm.count} onChange={e => setUserForm({ ...userForm, count: e.target.value })}
+                    className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50">
+                    {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n}</option>)}
                   </select>
                 </div>
-                <button onClick={addUser} className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 rounded shadow-md mt-2">ADD PERSON</button>
+                <button onClick={addUser} className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 rounded shadow-md mt-2">
+                  ADD PERSON
+                </button>
               </div>
 
-              {/* Add Door Form */}
               <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 space-y-3">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-bold text-gray-800">Door Name</label>
-                  <input type="text" value={doorForm.name} onChange={e => setDoorForm({...doorForm, name: e.target.value})} className="w-28 border border-gray-300 p-1 text-sm rounded" />
+                  <input type="text" value={doorForm.name}
+                    onChange={e => setDoorForm({ ...doorForm, name: e.target.value })}
+                    className="w-28 border border-gray-300 p-1 text-sm rounded" />
                 </div>
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-bold text-gray-800">Count</label>
-                  <select value={doorForm.count} onChange={e => setDoorForm({...doorForm, count: e.target.value})} className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50">
-                    {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
+                  <select value={doorForm.count} onChange={e => setDoorForm({ ...doorForm, count: e.target.value })}
+                    className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50">
+                    {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n}</option>)}
                   </select>
                 </div>
-                <button onClick={addDoor} className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 rounded shadow-md mt-2">ADD DOOR</button>
+                <button onClick={addDoor} className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 rounded shadow-md mt-2">
+                  ADD DOOR
+                </button>
               </div>
 
               <div className="flex gap-2 pt-2">
-                <button onClick={rotateSelected} disabled={!selectedId} className="flex-1 bg-[#0056b3] disabled:opacity-50 hover:bg-blue-800 text-white font-bold py-2 rounded shadow-md flex items-center justify-center gap-1">Rotate</button>
-                <button onClick={deleteSelected} disabled={!selectedId} className="flex-1 bg-[#b33a00] disabled:opacity-50 hover:bg-red-800 text-white font-bold py-2 rounded shadow-md flex items-center justify-center gap-1">Delete</button>
+                <button onClick={rotateSelected} disabled={!selectedId}
+                  className="flex-1 bg-[#0056b3] disabled:opacity-50 hover:bg-blue-800 text-white font-bold py-2 rounded shadow-md">
+                  Rotate
+                </button>
+                <button onClick={deleteSelected} disabled={!selectedId}
+                  className="flex-1 bg-[#b33a00] disabled:opacity-50 hover:bg-red-800 text-white font-bold py-2 rounded shadow-md">
+                  Delete
+                </button>
               </div>
             </div>
           </div>
 
-          {/* DETAILED VIEW (BOTTOM PANEL) */}
+          {/* DETAIL PANEL */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 relative min-h-[250px]">
             {selectedElement ? (
-              
-              // If a RACK is selected
               selectedElement.type === 'rack' ? (
                 <div className="space-y-4">
                   <div className="flex flex-col md:flex-row md:justify-between md:items-center bg-gray-50 p-4 rounded-lg border border-gray-200 gap-4">
@@ -348,70 +448,47 @@ export default function RackManagement() {
                       <h2 className="text-xl font-extrabold text-gray-900">{selectedElement.name} - Front View</h2>
                       <span className="text-sm text-gray-500">Click any cell to add/edit medicines</span>
                     </div>
-                    
-                    <div className="flex items-center space-x-6 bg-white px-4 py-2 rounded shadow-sm border border-gray-200">
+                    <div className="flex items-center space-x-4 bg-white px-4 py-2 rounded shadow-sm border border-gray-200 flex-wrap gap-y-2">
                       <div className="flex items-center space-x-2">
                         <label className="text-sm font-bold text-gray-700">Name:</label>
-                        <input 
-                          type="text" 
-                          value={selectedElement.name} 
+                        <input type="text" value={selectedElement.name}
                           onChange={(e) => updateElementName(selectedElement.id, e.target.value)}
-                          className="w-24 border border-gray-300 rounded p-1 font-semibold text-teal-700 focus:ring-2 focus:ring-teal-500"
-                        />
+                          className="w-24 border border-gray-300 rounded p-1 font-semibold text-teal-700 focus:ring-2 focus:ring-teal-500" />
                       </div>
                       <div className="flex items-center space-x-2">
                         <Settings2 size={16} className="text-gray-400" />
                         <label className="text-sm font-bold text-gray-700">Rows:</label>
-                        <input 
-                          type="number" min="1" max="10" 
-                          value={selectedElement.rows} 
+                        <input type="number" min="1" max="10" value={selectedElement.rows}
                           onChange={(e) => updateRackDimensions(selectedElement.id, parseInt(e.target.value) || 1, selectedElement.cols)}
-                          className="w-16 border border-gray-300 rounded p-1 text-center font-semibold text-teal-700 focus:ring-2 focus:ring-teal-500"
-                        />
+                          className="w-16 border border-gray-300 rounded p-1 text-center font-semibold text-teal-700 focus:ring-2 focus:ring-teal-500" />
                       </div>
                       <div className="flex items-center space-x-2">
                         <label className="text-sm font-bold text-gray-700">Partitions:</label>
-                        <input 
-                          type="number" min="1" max="20" 
-                          value={selectedElement.cols} 
+                        <input type="number" min="1" max="20" value={selectedElement.cols}
                           onChange={(e) => updateRackDimensions(selectedElement.id, selectedElement.rows, parseInt(e.target.value) || 1)}
-                          className="w-16 border border-gray-300 rounded p-1 text-center font-semibold text-teal-700 focus:ring-2 focus:ring-teal-500"
-                        />
+                          className="w-16 border border-gray-300 rounded p-1 text-center font-semibold text-teal-700 focus:ring-2 focus:ring-teal-500" />
                       </div>
                     </div>
                   </div>
-                  
-                  {/* GRID VIEW */}
-                  <div className="bg-[#f0f0f0] p-4 rounded-lg inline-block border border-gray-300 w-full overflow-x-auto shadow-inner">
+
+                  <div className="bg-[#f0f0f0] p-4 rounded-lg border border-gray-300 w-full overflow-x-auto shadow-inner">
                     <div className="flex flex-col">
                       {Array.from({ length: selectedElement.rows }).map((_, rIdx) => (
                         <div key={rIdx} className="flex border-t border-l border-gray-500 first:border-t-0">
                           {Array.from({ length: selectedElement.cols }).map((_, cIdx) => {
-                            const cellData = selectedElement.gridData?.[`${rIdx}-${cIdx}`];
+                            const cellData = selectedElement.gridData[`${rIdx}-${cIdx}`];
                             return (
-                              <div 
-                                key={cIdx} 
-                                onClick={() => openCellEditor(rIdx, cIdx)}
-                                className={`w-28 h-20 border-r border-b border-gray-500 shrink-0 p-1.5 flex flex-col cursor-pointer transition-colors hover:ring-2 hover:ring-inset hover:ring-blue-400 ${cellData ? 'bg-teal-50' : 'bg-white hover:bg-gray-50'}`}
-                              >
-                                <div className="flex justify-between items-start mb-1">
-                                  <span className="text-[10px] text-gray-500 font-bold tracking-wider">
-                                    R{rIdx + 1} - P{cIdx + 1}
-                                  </span>
-                                </div>
-                                
+                              <div key={cIdx} onClick={() => openCellEditor(rIdx, cIdx)}
+                                className={`w-28 h-20 border-r border-b border-gray-500 shrink-0 p-1.5 flex flex-col cursor-pointer transition-colors hover:ring-2 hover:ring-inset hover:ring-blue-400 ${cellData ? 'bg-teal-50' : 'bg-white hover:bg-gray-50'}`}>
+                                <span className="text-[10px] text-gray-500 font-bold tracking-wider mb-1">R{rIdx + 1} - P{cIdx + 1}</span>
                                 {cellData ? (
                                   <div className="flex flex-col flex-1 overflow-hidden">
-                                    <span className="text-xs font-bold text-teal-800 truncate" title={cellData.name}>
-                                      {cellData.name}
-                                    </span>
-                                    <span className="text-[11px] text-teal-600 font-medium mt-auto">
-                                      Qty: {cellData.qty}
-                                    </span>
+                                    <span className="text-xs font-bold text-teal-800 truncate" title={cellData.name}>{cellData.name}</span>
+                                    <span className="text-[11px] text-teal-600 font-medium mt-auto">Qty: {cellData.qty}</span>
                                   </div>
                                 ) : (
                                   <div className="flex-1 flex items-center justify-center">
-                                    <span className="text-xs text-gray-300 italic opacity-0 hover:opacity-100 transition-opacity">+ Add</span>
+                                    <span className="text-xs text-gray-300 italic">+ Add</span>
                                   </div>
                                 )}
                               </div>
@@ -422,85 +499,73 @@ export default function RackManagement() {
                     </div>
                   </div>
 
-                  <div className="flex justify-end gap-4 mt-6">
-                    <button className="bg-[#0056b3] hover:bg-blue-800 text-white font-bold py-2 px-8 rounded shadow-md">Save Layout</button>
+                  <div className="flex justify-end mt-4">
+                    <button className="bg-[#0056b3] hover:bg-blue-800 text-white font-bold py-2 px-8 rounded shadow-md">
+                      Save Layout
+                    </button>
                   </div>
                 </div>
-              ) : 
-              
-              // If a DOOR or USER is selected
-              (
+              ) : (
                 <div className="space-y-6 max-w-md">
                   <h2 className="text-xl font-extrabold text-gray-900">
                     {selectedElement.type === 'door' ? 'Door Details' : 'Person Details'}
                   </h2>
                   <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
                     <label className="block text-sm font-bold text-gray-700 mb-2">Display Name</label>
-                    <input 
-                      type="text" 
-                      value={selectedElement.name || ''} 
+                    <input type="text" value={selectedElement.name || ''}
                       onChange={(e) => updateElementName(selectedElement.id, e.target.value)}
                       className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-teal-500 font-medium text-gray-800 shadow-sm"
-                      placeholder="Enter name..."
-                    />
+                      placeholder="Enter name..." />
                     <p className="text-xs text-gray-500 mt-2 italic">This name is displayed on the canvas map.</p>
                   </div>
-                  <div className="flex gap-4">
-                    <button onClick={deleteSelected} className="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-2 px-6 rounded shadow-sm">Delete from Map</button>
-                  </div>
+                  <button onClick={deleteSelected}
+                    className="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-2 px-6 rounded shadow-sm">
+                    Delete from Map
+                  </button>
                 </div>
               )
-              
             ) : (
               <div className="h-48 flex items-center justify-center text-gray-400 font-medium">
                 Select an element on the canvas above to view and edit its contents
               </div>
             )}
           </div>
-
         </div>
       </main>
 
       {/* CELL EDITING MODAL */}
       {editingCell && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-80 animate-in fade-in zoom-in duration-200">
+          <div className="bg-white rounded-xl shadow-xl p-6 w-80">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="font-bold text-lg text-gray-800">
-                Edit R{editingCell.row + 1} - P{editingCell.col + 1}
-              </h3>
+              <h3 className="font-bold text-lg text-gray-800">Edit R{editingCell.row + 1} - P{editingCell.col + 1}</h3>
               <button onClick={() => setEditingCell(null)} className="text-gray-400 hover:text-gray-700"><X size={20} /></button>
             </div>
-            
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1">Medicine Name</label>
-                <input 
-                  type="text" value={cellForm.name} 
-                  onChange={e => setCellForm({...cellForm, name: e.target.value})} 
-                  placeholder="e.g. Paracetamol"
-                  className="w-full border border-gray-300 rounded p-2 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none" autoFocus
-                />
+                <input type="text" value={cellForm.name}
+                  onChange={e => setCellForm({ ...cellForm, name: e.target.value })}
+                  placeholder="e.g. Paracetamol" autoFocus
+                  className="w-full border border-gray-300 rounded p-2 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none" />
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1">Quantity</label>
-                <input 
-                  type="number" value={cellForm.qty} 
-                  onChange={e => setCellForm({...cellForm, qty: e.target.value})} 
+                <input type="number" value={cellForm.qty}
+                  onChange={e => setCellForm({ ...cellForm, qty: e.target.value })}
                   placeholder="0"
-                  className="w-full border border-gray-300 rounded p-2 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none" 
-                />
+                  className="w-full border border-gray-300 rounded p-2 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none" />
               </div>
-              
               <div className="flex gap-2 pt-2">
-                <button onClick={saveCellData} className="flex-1 bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 rounded shadow-sm">Save</button>
-                <button onClick={clearCellData} className="flex-1 bg-red-100 hover:bg-red-200 text-red-700 font-bold py-2 rounded shadow-sm">Clear Cell</button>
+                <button onClick={saveCellData}
+                  className="flex-1 bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 rounded shadow-sm">Save</button>
+                <button onClick={clearCellData}
+                  className="flex-1 bg-red-100 hover:bg-red-200 text-red-700 font-bold py-2 rounded shadow-sm">Clear Cell</button>
               </div>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 }

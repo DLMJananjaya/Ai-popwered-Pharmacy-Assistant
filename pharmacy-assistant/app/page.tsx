@@ -1,46 +1,34 @@
 import React from 'react';
-import Link from 'next/link';
 import Navbar from './components/Navbar';
 
 export default function Home() {
   return (
     <>
     <Navbar />
-    <main className="min-h-screen bg-white relative overflow-hidden font-sans text-gray-900">
+   <main className="relative min-h-screen overflow-hidden font-sans text-gray-900">
       
-
       {/* --- BACKGROUND SHAPES (Google-style Circles) --- */}
-      {/* 1. Large Teal Circle (Top Left) */}
-      <div className="absolute top-[-100px] left-[-100px] w-96 h-96 bg-[#00A99D]/10 rounded-full blur-3xl -z-10"></div>
-      
-      {/* 2. Soft Yellow Circle (Middle Right) */}
-      <div className="absolute top-1/3 right-[-50px] w-72 h-72 bg-yellow-100/60 rounded-full blur-3xl -z-10"></div>
-      
-      {/* 3. Small Blue Circle (Bottom Left) */}
-      <div className="absolute bottom-10 left-10 w-48 h-48 bg-blue-100/60 rounded-full blur-2xl -z-10"></div>
+      <div className="absolute left-[-140px] top-[-120px] -z-10 h-96 w-96 rounded-full bg-[#00A99D]/15 blur-3xl"></div>
+      <div className="absolute right-[-90px] top-1/4 -z-10 h-80 w-80 rounded-full bg-blue-100/70 blur-3xl"></div>
+      <div className="absolute bottom-0 left-8 -z-10 h-56 w-56 rounded-full bg-yellow-100/70 blur-3xl"></div>
 
-
-      <div className="container mx-auto px-30 h-screen flex items-center">
+      <div className="container mx-auto flex min-h-[calc(100vh-4rem)] items-center px-6 py-10 md:px-10 lg:px-16">
         
-        {/* --- MAIN LAYOUT: SIDE BY SIDE --- */}
-        <div className="flex flex-col md:flex-row items-center justify-between w-full gap-12">
+        <div className="flex w-full flex-col items-center justify-between gap-12 lg:flex-row lg:gap-16">
           
-          {/* LEFT SIDE: TEXT & FEATURES */}
-          <div className="flex-1 space-y-8">
+          {/* LEFT SIDE */}
+          <div className="flex-1 space-y-8 text-center lg:text-left">
             
-            {/* App Name */}
-            <h1 className="text-60xl md:text-8xl font-bold tracking-tighter text-black">
+            <h1 className="text-5xl font-extrabold tracking-tight text-black sm:text-6xl lg:text-7xl">
               VAIDIA
             </h1>
             
-            {/* Description */}
-            <p className="text-xl text-gray-600 leading-relaxed max-w-lg">
+            <p className="mx-auto max-w-xl text-base leading-relaxed text-gray-700 sm:text-lg lg:mx-0">
               Your intelligent pharmacy assistant. We use advanced AI to make managing your pharmacy simple, fast, and error-free.
             </p>
 
-            {/* "What we are able to do" - Feature List */}
-            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 inline-block w-full max-w-md">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">
+            <div className="inline-block w-full max-w-xl rounded-2xl border border-gray-200 bg-white/85 p-6 shadow-lg shadow-slate-200/50 backdrop-blur">
+              <h3 className="mb-4 text-sm font-bold uppercase tracking-widest text-gray-500">
                 What we can do
               </h3>
               <ul className="space-y-3">
@@ -51,29 +39,17 @@ export default function Home() {
               </ul>
             </div>
 
-            {/* CTA Button */}
-            <div className="pt-4">
-              <Link href="/dashboard">
-                <button className="bg-[#00A99D] hover:bg-[#008f85] text-white text-lg font-medium px-10 py-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
-                  Get Started
-                </button>
-              </Link>
-            </div>
           </div>
 
-          {/* RIGHT SIDE: IMAGE */}
-          <div className="flex-1 relative flex justify-center">
-            {/* Decorative Circle behind image */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#00A99D]/5 rounded-full -z-10"></div>
+          {/* RIGHT SIDE */}
+          <div className="relative flex flex-1 justify-center">
+            <div className="absolute left-1/2 top-1/2 -z-10 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#00A99D]/10 blur-2xl sm:h-[430px] sm:w-[430px]"></div>
             
-            {/* Image Placeholder - Replace 'src' with your actual app screenshot if you have one */}
-            <div className="relative w-full max-w-lg aspect-square bg-white rounded-[3rem] shadow-2xl border-4 border-white overflow-hidden">
+            <div className="relative aspect-square w-full max-w-sm overflow-hidden rounded-[2.5rem] border-4 border-white bg-white shadow-2xl shadow-slate-300/60 sm:max-w-md lg:max-w-lg">
                <img 
                  src="/mohamed_hassan-doctor-9051173_1280.png" 
-                //  src="/mohamed_hassan-pharmacist-9051167_1280.jpg" 
-                  src="/mohamed_hassan-doctor-9374797_1280.png" 
                  alt="VAIDIA App Illustration"
-                 className="w-full h-full object-cover scale-x-[-1]"
+                 className="h-full w-full object-cover scale-x-[-1]"
                />
             </div>
           </div>
@@ -84,13 +60,14 @@ export default function Home() {
   </>);
 }
 
-// Simple Helper for the Checkmark List
+// Helper Component
 function FeatureItem({ text }: { text: string }) {
   return (
-    <li className="flex items-center gap-3 text-lg font-medium text-gray-700">
-      {/* Green Check Circle */}
-      <div className="w-6 h-6 rounded-full bg-[#00A99D] flex items-center justify-center shrink-0">
-        <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+    <li className="flex items-center gap-3 text-base font-medium text-gray-700 sm:text-lg">
+      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#00A99D]">
+        <svg className="h-3.5 w-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+        </svg>
       </div>
       {text}
     </li>
