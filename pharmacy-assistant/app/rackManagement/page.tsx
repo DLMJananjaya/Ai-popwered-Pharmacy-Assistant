@@ -8,6 +8,7 @@ import {
   LogOut, DoorOpen, User, X, Settings2
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
+import AppSidebar from '../components/AppSidebar';
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
 
@@ -67,41 +68,7 @@ const navItems = [
 // Extracts the sidebar so it uses Next.js <Link> for real URL navigation.
 // usePathname() highlights whichever route is currently active.
 
-function Sidebar() {
-  const pathname = usePathname();
 
-  return (
-    <aside className="w-64 bg-white border-r border-gray-200 flex-col shadow-sm z-20 shrink-0 hidden md:flex">
-      <div className="p-6 border-b border-gray-100 flex items-center space-x-3">
-        <div className="w-8 h-8 bg-teal-50 flex items-center justify-center rounded border border-teal-200 text-teal-600 font-bold">
-          V
-        </div>
-        <h1 className="text-xl font-bold text-gray-800 leading-tight">
-          AI-Powered Pharmacy Assistant
-        </h1>
-      </div>
-      <nav className="flex-1 py-4 space-y-1">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`w-full flex items-center space-x-3 px-6 py-3 text-sm font-bold transition-colors ${
-                isActive
-                  ? 'bg-teal-500 text-white shadow-md'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }`}
-            >
-              <item.icon size={20} />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
-    </aside>
-  );
-}
 
 // ─── MAIN PAGE COMPONENT ─────────────────────────────────────────────────────
 
@@ -327,13 +294,15 @@ export default function RackManagement() {
     <div className="flex h-screen bg-gray-50 font-sans text-gray-900 relative">
 
       {/* ✅ SIDEBAR now uses Next.js <Link> — clicking any nav item navigates to its route */}
-      <Sidebar />
+      
 
       {/* MAIN CONTENT */}
       <main className="flex-1 flex flex-col overflow-hidden bg-gray-100">
           <Navbar />
+        <div className="flex h-[calc(100vh-4rem)] bg-gray-50 font-sans text-gray-800 overflow-hidden">
+              <AppSidebar active="rackManagement" />  
 
-        <header className="bg-white border-b border-gray-200 h-16 flex items-center px-6 justify-between shadow-sm z-10 shrink-0">
+        {/* <header className="bg-white border-b border-gray-200 h-16 flex items-center px-6 justify-between shadow-sm z-10 shrink-0">
           <div className="flex-1" />
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
@@ -346,7 +315,7 @@ export default function RackManagement() {
               <LogOut size={20} className="text-gray-700" />
             </button>
           </div>
-        </header>
+        </header> */}
 
         <div className="flex-1 overflow-auto p-6 flex flex-col space-y-6">
           <div className="flex flex-col xl:flex-row gap-6">
@@ -530,6 +499,7 @@ export default function RackManagement() {
               </div>
             )}
           </div>
+        </div>
         </div>
       </main>
 
