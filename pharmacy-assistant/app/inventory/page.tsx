@@ -141,7 +141,7 @@ export default function InventoryPage() {
 
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
       <div className="flex h-[calc(100vh-4rem)] bg-gray-100">
         <AppSidebar active="inventory" />
 

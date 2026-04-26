@@ -214,7 +214,7 @@ export default function PrescriptionPage() {
 
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
 
       <div className="flex h-[calc(100vh-4rem)] bg-gray-50 font-sans text-gray-800 overflow-hidden">
         <AppSidebar active="prescription" />
@@ -249,9 +249,8 @@ export default function PrescriptionPage() {
               <div className={`grid grid-cols-1 ${showTwoCols ? 'lg:grid-cols-2' : ''} gap-6 transition-all duration-500`}>
                 {/* --- LEFT CARD: SCANNER --- */}
                 <div
-                  className={`bg-white p-6 rounded-2xl shadow-sm border border-gray-200 flex flex-col items-center transition-all duration-500 ${
-                    !showTwoCols ? 'max-w-2xl mx-auto w-full' : 'h-full'
-                  }`}
+                  className={`bg-white p-6 rounded-2xl shadow-sm border border-gray-200 flex flex-col items-center transition-all duration-500 ${!showTwoCols ? 'max-w-2xl mx-auto w-full' : 'h-full'
+                    }`}
                 >
                   <h2 className="text-xl font-bold mb-4 text-black">Scan here!</h2>
 
