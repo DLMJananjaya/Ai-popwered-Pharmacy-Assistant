@@ -4,6 +4,7 @@ import React, { useMemo, useState } from "react";
 import AppSidebar from "../components/AppSidebar";
 import Navbar from "../components/Navbar";
 import { MinusCircle, PlusCircle } from "lucide-react";
+import TopHeader from "../components/TopHeader";
 
 type BillItem = {
   id: string;
@@ -75,12 +76,14 @@ export default function BillingPage() {
 
   return (
     <>
-      <Navbar />
-      <div className="flex h-[calc(100vh-4rem)] bg-gray-100 text-gray-900">
+      {/* <Navbar /> */}
+      <div className="flex h-[calc(100vh-4rem)] bg-gray-100 text-gray-900 overflow-hidden">
         <AppSidebar active="billing" />
 
-        <main className="flex-1 overflow-auto p-4 md:p-6">
-          <div className="rounded-2xl border border-gray-300 bg-white p-4 shadow-sm md:p-6">
+        <div className="flex-1 flex flex-col relative overflow-hidden">
+          <TopHeader />
+          <main className="flex-1 overflow-auto p-4 md:p-6 z-10">
+            <div className="rounded-2xl border border-gray-300 bg-white p-4 shadow-sm md:p-6">
             <h1 className="mb-4 text-center text-3xl font-bold">Payment</h1>
 
             <div className="mb-4 rounded-xl border border-gray-200 bg-gray-50 p-4">
@@ -205,7 +208,8 @@ export default function BillingPage() {
               </aside>
             </div>
           </div>
-        </main>
+          </main>
+        </div>
       </div>
     </>
   );
