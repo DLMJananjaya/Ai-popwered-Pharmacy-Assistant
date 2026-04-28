@@ -4,6 +4,7 @@ import React, { useMemo, useState } from "react";
 import Navbar from "../components/Navbar";
 import AppSidebar from "../components/AppSidebar";
 import { AlertTriangle } from "lucide-react";
+import TopHeader from "../components/TopHeader";
 
 // ✅ TYPE
 type InventoryItem = {
@@ -142,11 +143,13 @@ export default function InventoryPage() {
   return (
     <>
       {/* <Navbar /> */}
-      <div className="flex h-[calc(100vh-4rem)] bg-gray-100">
+      <div className="flex h-[calc(100vh-4rem)] bg-gray-100 overflow-hidden">
         <AppSidebar active="inventory" />
 
-        <main className="flex-1 p-6 overflow-auto">
-          <div className="grid xl:grid-cols-[1fr_260px] gap-4">
+        <div className="flex-1 flex flex-col relative overflow-hidden">
+          <TopHeader />
+          <main className="flex-1 p-6 overflow-auto z-10">
+            <div className="grid xl:grid-cols-[1fr_260px] gap-4">
 
             {/* LEFT */}
             <section className="space-y-4">
@@ -286,7 +289,8 @@ export default function InventoryPage() {
             </aside>
 
           </div>
-        </main>
+          </main>
+        </div>
       </div>
     </>
   );

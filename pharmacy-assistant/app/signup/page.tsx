@@ -14,6 +14,8 @@ const SignUpPage = () => {
     confirmPassword: "",
   });
   const [error, setError] = useState("");
+  const [step, setStep] = useState(1);
+  const [otp, setOtp] = useState("");
   const router = useRouter();
 
   const handleChange = (e) => {
@@ -41,10 +43,31 @@ const SignUpPage = () => {
       });
 
       if (res.ok) {
-        router.push("/login");
+        setStep(2);
       } else {
         const data = await res.json();
         setError(data.message || "Signup failed");
+      }
+    } catch (err) {
+      setError("Server connection failed.");
+    }
+  };
+
+  const handleVerify = async (e) => {
+    e.preventDefault();
+    setError("");
+    try {
+      const res = await fetch("/api/auth/verify-signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email, otp }),
+      });
+
+      if (res.ok) {
+        router.push("/login");
+      } else {
+        const data = await res.json();
+        setError(data.message || "Verification failed");
       }
     } catch (err) {
       setError("Server connection failed.");
@@ -94,56 +117,80 @@ const SignUpPage = () => {
               {/* Error Alert */}
               {error && <p className="text-red-500 mb-4 text-sm font-bold bg-red-50 p-2 rounded">{error}</p>}
 
-              <form className="space-y-4" onSubmit={handleSubmit}>
-                <input
-                  name="name" // Matches handleChange
-                  type="text"
-                  placeholder="Full Name"
-                  className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
-                  onChange={handleChange}
-                  required
-                />
-                <input
-                  name="email"
-                  type="email"
-                  placeholder="Email Address"
-                  className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
-                  onChange={handleChange}
-                  required
-                />
-                <input
-                  name="password"
-                  type="password"
-                  placeholder="Password"
-                  className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
-                  onChange={handleChange}
-                  required
-                />
-                <input
-                  name="confirmPassword"
-                  type="password"
-                  placeholder="Confirm Password"
-                  className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
-                  onChange={handleChange}
-                  required
-                />
+              {step === 1 ? (
+                <form className="space-y-4" onSubmit={handleSubmit}>
+                  <input
+                    name="name" // Matches handleChange
+                    type="text"
+                    placeholder="Full Name"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
+                    onChange={handleChange}
+                    required
+                  />
+                  <input
+                    name="email"
+                    type="email"
+                    placeholder="Email Address"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
+                    onChange={handleChange}
+                    required
+                  />
+                  <input
+                    name="password"
+                    type="password"
+                    placeholder="Password"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
+                    onChange={handleChange}
+                    required
+                  />
+                  <input
+                    name="confirmPassword"
+                    type="password"
+                    placeholder="Confirm Password"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
+                    onChange={handleChange}
+                    required
+                  />
 
-                <button
-                  type="submit" // Changed to trigger the form
-                  className="w-full bg-[#00A99D] hover:bg-[#008f85] text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-md mt-2"
-                >
-                  Sign Up
-                </button>
+                  <button
+                    type="submit" // Changed to trigger the form
+                    className="w-full bg-[#00A99D] hover:bg-[#008f85] text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-md mt-2"
+                  >
+                    Sign Up
+                  </button>
 
-                <div className="text-center mt-4">
-                  <p className="text-gray-600">
-                    Already have an account?{' '}
-                    <Link href="/login" className="text-[#00A99D] font-semibold hover:underline">
-                      Sign In
-                    </Link>
-                  </p>
-                </div>
-              </form>
+                  <div className="text-center mt-4">
+                    <p className="text-gray-600">
+                      Already have an account?{' '}
+                      <Link href="/login" className="text-[#00A99D] font-semibold hover:underline">
+                        Sign In
+                      </Link>
+                    </p>
+                  </div>
+                </form>
+              ) : (
+                <form className="space-y-4" onSubmit={handleVerify}>
+                  <p className="text-gray-600 text-sm">We've sent an OTP to <strong>{formData.email}</strong>. Please enter it below.</p>
+                  <input
+                    type="text"
+                    placeholder="Enter 6-digit OTP"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
+                    onChange={(e) => setOtp(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="submit"
+                    className="w-full bg-[#00A99D] hover:bg-[#008f85] text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-md mt-2"
+                  >
+                    Verify & Create Account
+                  </button>
+                  <div className="text-center mt-4">
+                    <button type="button" onClick={() => setStep(1)} className="text-gray-500 hover:underline text-sm">
+                      Back to Sign Up
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
           </div>
         </div>

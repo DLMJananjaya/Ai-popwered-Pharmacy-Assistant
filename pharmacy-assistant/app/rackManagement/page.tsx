@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import AppSidebar from '../components/AppSidebar';
+import TopHeader from '../components/TopHeader';
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
 
@@ -302,23 +303,10 @@ export default function RackManagement() {
         <div className="flex h-[calc(100vh-4rem)] bg-gray-50 font-sans text-gray-800 overflow-hidden">
           <AppSidebar active="rackManagement" />
 
-          {/* <header className="bg-white border-b border-gray-200 h-16 flex items-center px-6 justify-between shadow-sm z-10 shrink-0">
-          <div className="flex-1" />
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-orange-200 rounded-full flex items-center justify-center overflow-hidden">
-                <User size={20} className="text-orange-600 mt-2" />
-              </div>
-              <span className="text-sm font-bold text-gray-700">User Profile</span>
-            </div>
-            <button className="p-2 bg-gray-200 rounded hover:bg-gray-300 transition">
-              <LogOut size={20} className="text-gray-700" />
-            </button>
-          </div>
-        </header> */}
-
-          <div className="flex-1 overflow-auto p-6 flex flex-col space-y-6">
-            <div className="flex flex-col xl:flex-row gap-6">
+          <div className="flex-1 flex flex-col relative overflow-hidden">
+            <TopHeader />
+            <div className="flex-1 overflow-auto p-6 flex flex-col space-y-6 z-10">
+              <div className="flex flex-col xl:flex-row gap-6">
 
               {/* CANVAS */}
               <div ref={canvasRef}
@@ -500,6 +488,7 @@ export default function RackManagement() {
               )}
             </div>
           </div>
+        </div>
         </div>
       </main>
 

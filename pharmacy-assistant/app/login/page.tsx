@@ -10,6 +10,8 @@ const LoginPage = () => {
   // 2. State for inputs
   const [email, setEmail] = useState(""); // Use email as username
   const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
+  const [step, setStep] = useState(1);
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -21,14 +23,41 @@ const LoginPage = () => {
     const res = await signIn("credentials", {
       email,
       password,
+      otp: step === 2 ? otp : undefined,
       redirect: false,
     });
 
-    if (res.ok) {
+    if (res?.ok && !res?.error) {
       router.push("/dashboard"); // Where they go after login
       router.refresh();
     } else {
-      setError("Invalid email or password. Please try again.");
+      if (res?.error === "OTP_REQUIRED") {
+        // Send OTP via API
+        try {
+          const otpRes = await fetch("/api/auth/send-otp", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
+          if (otpRes.ok) {
+            setStep(2);
+          } else {
+            const data = await otpRes.json();
+            setError(data.message || "Failed to send OTP.");
+          }
+        } catch (err) {
+          setError("Server error sending OTP.");
+        }
+      } else if (res?.error === "UNVERIFIED") {
+        setError("Your account is not verified. Please complete signup.");
+      } else if (res?.error === "INVALID_OTP") {
+        setError("Invalid OTP. Please try again.");
+      } else if (res?.error === "EXPIRED_OTP") {
+        setError("OTP has expired. Please log in again to request a new one.");
+        setStep(1);
+      } else {
+        setError("Invalid email or password. Please try again.");
+      }
     }
   };
 
@@ -82,33 +111,62 @@ const LoginPage = () => {
               {/* ERROR MESSAGE DISPLAY */}
               {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
-              <form className="space-y-6" onSubmit={handleSubmit}>
-                <div className="flex flex-col">
-                  <input
-                    type="email" // Changed to email for NextAuth compatibility
-                    placeholder="Email Address"
-                    className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
+              {step === 1 ? (
+                <form className="space-y-6" onSubmit={handleSubmit}>
+                  <div className="flex flex-col">
+                    <input
+                      type="email" // Changed to email for NextAuth compatibility
+                      placeholder="Email Address"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
 
-                <div className="flex flex-col">
-                  <input
-                    type="password"
-                    placeholder="Password"
-                    className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
+                  <div className="flex flex-col">
+                    <input
+                      type="password"
+                      placeholder="Password"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                  </div>
 
-                <button
-                  type="submit" // Changed from type="button" to "submit"
-                  className="w-full bg-[#00A99D] hover:bg-[#008f85] text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-md mt-4"
-                >
-                  Sign In
-                </button>
+                  <button
+                    type="submit" // Changed from type="button" to "submit"
+                    className="w-full bg-[#00A99D] hover:bg-[#008f85] text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-md mt-4"
+                  >
+                    Sign In
+                  </button>
+                </form>
+              ) : (
+                <form className="space-y-6" onSubmit={handleSubmit}>
+                  <p className="text-gray-600 text-sm">
+                    For your security, please enter the OTP sent to <strong>{email}</strong>.
+                  </p>
+                  <div className="flex flex-col">
+                    <input
+                      type="text"
+                      placeholder="Enter 6-digit OTP"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
+                      onChange={(e) => setOtp(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full bg-[#00A99D] hover:bg-[#008f85] text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-md mt-4"
+                  >
+                    Verify & Sign In
+                  </button>
+                  <div className="text-center mt-4">
+                    <button type="button" onClick={() => setStep(1)} className="text-gray-500 hover:underline text-sm">
+                      Back to Login
+                    </button>
+                  </div>
+                </form>
+              )}
 
                 <div className="text-center mt-4">
                   <p className="text-gray-600">
@@ -118,8 +176,6 @@ const LoginPage = () => {
                     </Link>
                   </p>
                 </div>
-              </form>
-
             </div>
           </div>
 
