@@ -137,7 +137,7 @@ const LoginPage = () => {
                     <div className="flex flex-col">
                       <input
                         type="password"
-                        placeholder="Password"
+                        value={password}
                         className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
                         onChange={(e) => setPassword(e.target.value)}
                         required
@@ -159,6 +159,7 @@ const LoginPage = () => {
                     <div className="relative">
                       <input
                         type="text"
+                        value={otp} // Add this to make it a controlled component
                         maxLength={6}
                         className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 focus:outline-none focus:border-emerald-600 transition-colors bg-white text-center text-xl tracking-widest"
                         onFocus={() => setOtpFocused(true)}
@@ -166,7 +167,8 @@ const LoginPage = () => {
                         onChange={(e) => setOtp(e.target.value)}
                         required
                       />
-                      {!otpFocused && otp === '' && (
+                      {/* Only show this if the OTP state is actually empty */}
+                      {otp.length === 0 && (
                         <span className="absolute inset-0 flex items-center justify-center text-gray-400 pointer-events-none text-sm">
                           Enter 6-digit OTP
                         </span>
