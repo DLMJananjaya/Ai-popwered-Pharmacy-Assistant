@@ -1,38 +1,37 @@
-"use client"; // CRITICAL: This must be at the very top
+"use client";
 
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Navbar from '../components/Navbar';
-import { signIn } from "next-auth/react"; // 1. Import signIn
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
-  // 2. State for inputs
-  const [email, setEmail] = useState(""); // Use email as username
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(1); // 1 = credentials, 2 = OTP
+  const [otpFocused, setOtpFocused] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
 
-  // 3. Login Logic
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    const res = await signIn("credentials", {
-      email,
-      password,
-      otp: step === 2 ? otp : undefined,
-      redirect: false,
-    });
+    if (step === 1) {
+      // Step 1: Try signing in with email + password only
+      const res = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
 
-    if (res?.ok && !res?.error) {
-      router.push("/dashboard"); // Where they go after login
-      router.refresh();
-    } else {
-      if (res?.error === "OTP_REQUIRED") {
-        // Send OTP via API
+      if (res?.ok && !res?.error) {
+        router.push("/dashboard");
+        router.refresh();
+      } else if (res?.error === "OTP_REQUIRED") {
+        // Backend confirmed credentials are correct, send OTP
         try {
           const otpRes = await fetch("/api/auth/send-otp", {
             method: "POST",
@@ -45,18 +44,30 @@ const LoginPage = () => {
             const data = await otpRes.json();
             setError(data.message || "Failed to send OTP.");
           }
-        } catch (err) {
+        } catch {
           setError("Server error sending OTP.");
         }
       } else if (res?.error === "UNVERIFIED") {
         setError("Your account is not verified. Please complete signup.");
-      } else if (res?.error === "INVALID_OTP") {
-        setError("Invalid OTP. Please try again.");
-      } else if (res?.error === "EXPIRED_OTP") {
-        setError("OTP has expired. Please log in again to request a new one.");
-        setStep(1);
       } else {
         setError("Invalid email or password. Please try again.");
+      }
+    } else {
+      // Step 2: Submit email + password + OTP for final verification
+      const res = await signIn("credentials", {
+        email,
+        password,
+        otp,
+        redirect: false,
+      });
+
+      if (res?.ok && !res?.error) {
+        router.push("/dashboard");
+        router.refresh();
+      } else if (res?.error === "Invalid or expired OTP. Please try again.") {
+        setError("Invalid or expired OTP. Please try again.");
+      } else {
+        setError("Something went wrong. Please try again.");
       }
     }
   };
@@ -66,7 +77,6 @@ const LoginPage = () => {
       <Navbar />
       <div className="min-h-screen w-full bg-white relative overflow-hidden font-sans flex items-center justify-center py-10 md:py-0">
 
-        {/* Background shapes remain exactly as you had them... */}
         <div className="absolute top-0 right-0 w-2/3 h-full pointer-events-none z-0">
           <svg viewBox="0 0 500 500" preserveAspectRatio="none" className="w-full h-full">
             <path d="M200,0 C350,200 100,400 500,250 L500,0 Z" fill="black" transform="translate(50, -50) scale(1.2)" />
@@ -105,83 +115,99 @@ const LoginPage = () => {
             <div className="bg-white/90 backdrop-blur-sm p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
 
               <h2 className="text-2xl font-medium text-black mb-8">
-                Sign in to your account
+                {step === 1 ? 'Sign in to your account' : 'Enter your OTP'}
               </h2>
 
               {/* ERROR MESSAGE DISPLAY */}
               {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
-              {step === 1 ? (
-                <form className="space-y-6" onSubmit={handleSubmit}>
-                  <div className="flex flex-col">
-                    <input
-                      type="email" // Changed to email for NextAuth compatibility
-                      placeholder="Email Address"
-                      className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
+              <form className="space-y-6" onSubmit={handleSubmit}>
+                {step === 1 ? (
+                  <>
+                    <div className="flex flex-col">
+                      <input
+                        type="email"
+                        placeholder="Email Address"
+                        className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
+                    </div>
 
-                  <div className="flex flex-col">
-                    <input
-                      type="password"
-                      placeholder="Password"
-                      className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                  </div>
+                    <div className="flex flex-col">
+                      <input
+                        type="password"
+                        placeholder="Password"
+                        className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                    </div>
 
-                  <button
-                    type="submit" // Changed from type="button" to "submit"
-                    className="w-full bg-[#00A99D] hover:bg-[#008f85] text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-md mt-4"
-                  >
-                    Sign In
-                  </button>
-                </form>
-              ) : (
-                <form className="space-y-6" onSubmit={handleSubmit}>
-                  <p className="text-gray-600 text-sm">
-                    For your security, please enter the OTP sent to <strong>{email}</strong>.
-                  </p>
-                  <div className="flex flex-col">
-                    <input
-                      type="text"
-                      placeholder="Enter 6-digit OTP"
-                      className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
-                      onChange={(e) => setOtp(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full bg-[#00A99D] hover:bg-[#008f85] text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-md mt-4"
-                  >
-                    Verify & Sign In
-                  </button>
-                  <div className="text-center mt-4">
-                    <button type="button" onClick={() => setStep(1)} className="text-gray-500 hover:underline text-sm">
-                      Back to Login
+                    <button
+                      type="submit"
+                      className="w-full bg-[#00A99D] hover:bg-[#008f85] text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-md mt-4"
+                    >
+                      Sign In
                     </button>
-                  </div>
-                </form>
-              )}
+                  </>
+                ) : (
+                  <>
+                    <p className="text-gray-600 text-sm">
+                      For your security, an OTP has been sent to <strong>{email}</strong>. Please enter it below.
+                    </p>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        maxLength={6}
+                        className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 focus:outline-none focus:border-emerald-600 transition-colors bg-white text-center text-xl tracking-widest"
+                        onFocus={() => setOtpFocused(true)}
+                        onBlur={() => setOtpFocused(false)}
+                        onChange={(e) => setOtp(e.target.value)}
+                        required
+                      />
+                      {!otpFocused && otp === '' && (
+                        <span className="absolute inset-0 flex items-center justify-center text-gray-400 pointer-events-none text-sm">
+                          Enter 6-digit OTP
+                        </span>
+                      )}
+                    </div>
 
-                <div className="text-center mt-4">
-                  <p className="text-gray-600">
-                    Don't have an account?{' '}
-                    <Link href="/signup" className="text-[#00A99D] font-semibold hover:underline">
-                      Sign Up
-                    </Link>
-                  </p>
-                </div>
+                    <button
+                      type="submit"
+                      className="w-full bg-[#00A99D] hover:bg-[#008f85] text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-md mt-4"
+                    >
+                      Verify &amp; Sign In
+                    </button>
+
+                    <div className="text-center">
+                      <button
+                        type="button"
+                        onClick={() => { setStep(1); setError(""); }}
+                        className="text-gray-500 hover:underline text-sm"
+                      >
+                        Back to Login
+                      </button>
+                    </div>
+                  </>
+                )}
+              </form>
+
+              <div className="text-center mt-6">
+                <p className="text-gray-600">
+                  Don&apos;t have an account?{' '}
+                  <Link href="/signup" className="text-[#00A99D] font-semibold hover:underline">
+                    Sign Up
+                  </Link>
+                </p>
+              </div>
             </div>
           </div>
 
         </div>
       </div>
-    </>);
+    </>
+  );
 };
 
 export default LoginPage;

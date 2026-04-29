@@ -5,8 +5,24 @@ import Link from 'next/link';
 import Navbar from '../components/Navbar';
 import { useRouter } from 'next/navigation';
 
+// Password strength checker
+const getPasswordStrength = (password: string) => {
+  let score = 0;
+  const checks = {
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    lowercase: /[a-z]/.test(password),
+    number: /[0-9]/.test(password),
+    special: /[^A-Za-z0-9]/.test(password),
+  };
+  score = Object.values(checks).filter(Boolean).length;
+  return { score, checks };
+};
+
+const strengthLabels = ['', 'Very Weak', 'Weak', 'Fair', 'Strong', 'Very Strong'];
+const strengthColors = ['', '#ef4444', '#f97316', '#eab308', '#22c55e', '#00A99D'];
+
 const SignUpPage = () => {
-  // --- LOGIC: State and Submission ---
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -16,7 +32,10 @@ const SignUpPage = () => {
   const [error, setError] = useState("");
   const [step, setStep] = useState(1);
   const [otp, setOtp] = useState("");
+  const [otpFocused, setOtpFocused] = useState(false);
   const router = useRouter();
+
+  const { score: pwdScore, checks: pwdChecks } = getPasswordStrength(formData.password);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -28,6 +47,11 @@ const SignUpPage = () => {
 
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match!");
+      return;
+    }
+
+    if (pwdScore < 4) {
+      setError("Please choose a stronger password.");
       return;
     }
 
@@ -79,7 +103,7 @@ const SignUpPage = () => {
       <Navbar />
       <div className="min-h-screen w-full bg-white relative overflow-auto font-sans flex items-center justify-center py-10">
 
-        {/* --- EXACT Background Decorative Shapes --- */}
+        {/* Background Decorative Shapes */}
         <div className="absolute top-0 right-0 w-2/3 h-full pointer-events-none z-0">
           <svg viewBox="0 0 500 500" preserveAspectRatio="none" className="w-full h-full">
             <path d="M200,0 C350,200 100,400 500,250 L500,0 Z" fill="black" transform="translate(50, -50) scale(1.2)" />
@@ -112,7 +136,9 @@ const SignUpPage = () => {
 
           <div className="w-full md:w-5/12 mt-8 md:mt-0 md:pl-12">
             <div className="bg-white/90 backdrop-blur-sm p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
-              <h2 className="text-2xl font-medium text-black mb-6">Create a new account</h2>
+              <h2 className="text-2xl font-medium text-black mb-6">
+                {step === 1 ? 'Create a new account' : 'Verify your email'}
+              </h2>
 
               {/* Error Alert */}
               {error && <p className="text-red-500 mb-4 text-sm font-bold bg-red-50 p-2 rounded">{error}</p>}
@@ -120,7 +146,7 @@ const SignUpPage = () => {
               {step === 1 ? (
                 <form className="space-y-4" onSubmit={handleSubmit}>
                   <input
-                    name="name" // Matches handleChange
+                    name="name"
                     type="text"
                     placeholder="Full Name"
                     className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
@@ -135,14 +161,53 @@ const SignUpPage = () => {
                     onChange={handleChange}
                     required
                   />
-                  <input
-                    name="password"
-                    type="password"
-                    placeholder="Password"
-                    className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
-                    onChange={handleChange}
-                    required
-                  />
+
+                  {/* Password with strength meter */}
+                  <div>
+                    <input
+                      name="password"
+                      type="password"
+                      placeholder="Password"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
+                      onChange={handleChange}
+                      required
+                    />
+                    {formData.password.length > 0 && (
+                      <div className="mt-2 space-y-1">
+                        {/* Strength bar */}
+                        <div className="flex gap-1">
+                          {[1, 2, 3, 4, 5].map((i) => (
+                            <div
+                              key={i}
+                              className="h-1.5 flex-1 rounded-full transition-all duration-300"
+                              style={{ backgroundColor: i <= pwdScore ? strengthColors[pwdScore] : '#e5e7eb' }}
+                            />
+                          ))}
+                        </div>
+                        <p className="text-xs font-medium" style={{ color: strengthColors[pwdScore] }}>
+                          {strengthLabels[pwdScore]}
+                        </p>
+                        <ul className="text-xs text-gray-500 space-y-0.5 mt-1">
+                          <li className={pwdChecks.length ? 'text-green-600' : ''}>
+                            {pwdChecks.length ? '✓' : '○'} At least 8 characters
+                          </li>
+                          <li className={pwdChecks.uppercase ? 'text-green-600' : ''}>
+                            {pwdChecks.uppercase ? '✓' : '○'} Uppercase letter (A–Z)
+                          </li>
+                          <li className={pwdChecks.lowercase ? 'text-green-600' : ''}>
+                            {pwdChecks.lowercase ? '✓' : '○'} Lowercase letter (a–z)
+                          </li>
+                          <li className={pwdChecks.number ? 'text-green-600' : ''}>
+                            {pwdChecks.number ? '✓' : '○'} Number (0–9)
+                          </li>
+                          <li className={pwdChecks.special ? 'text-green-600' : ''}>
+                            {pwdChecks.special ? '✓' : '○'} Special character (!@#$...)
+                          </li>
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+
                   <input
                     name="confirmPassword"
                     type="password"
@@ -153,8 +218,9 @@ const SignUpPage = () => {
                   />
 
                   <button
-                    type="submit" // Changed to trigger the form
-                    className="w-full bg-[#00A99D] hover:bg-[#008f85] text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-md mt-2"
+                    type="submit"
+                    disabled={pwdScore < 4}
+                    className="w-full bg-[#00A99D] hover:bg-[#008f85] text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-md mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Sign Up
                   </button>
@@ -170,19 +236,30 @@ const SignUpPage = () => {
                 </form>
               ) : (
                 <form className="space-y-4" onSubmit={handleVerify}>
-                  <p className="text-gray-600 text-sm">We've sent an OTP to <strong>{formData.email}</strong>. Please enter it below.</p>
-                  <input
-                    type="text"
-                    placeholder="Enter 6-digit OTP"
-                    className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
-                    onChange={(e) => setOtp(e.target.value)}
-                    required
-                  />
+                  <p className="text-gray-600 text-sm">
+                    We&apos;ve sent a 6-digit OTP to <strong>{formData.email}</strong>. Please check your inbox and enter it below.
+                  </p>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      maxLength={6}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 focus:outline-none focus:border-emerald-600 transition-colors bg-white text-center text-xl tracking-widest"
+                      onFocus={() => setOtpFocused(true)}
+                      onBlur={() => setOtpFocused(false)}
+                      onChange={(e) => setOtp(e.target.value)}
+                      required
+                    />
+                    {!otpFocused && otp === '' && (
+                      <span className="absolute inset-0 flex items-center justify-center text-gray-400 pointer-events-none text-sm">
+                        Enter 6-digit OTP
+                      </span>
+                    )}
+                  </div>
                   <button
                     type="submit"
                     className="w-full bg-[#00A99D] hover:bg-[#008f85] text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-md mt-2"
                   >
-                    Verify & Create Account
+                    Verify &amp; Create Account
                   </button>
                   <div className="text-center mt-4">
                     <button type="button" onClick={() => setStep(1)} className="text-gray-500 hover:underline text-sm">

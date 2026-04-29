@@ -31,9 +31,9 @@ export async function POST(req) {
       await user.save();
     } else {
       // Create new user
-      user = await User.create({ 
-        name, 
-        email, 
+      user = await User.create({
+        name,
+        email,
         password: hashedPassword,
         otp,
         otpExpiry,
