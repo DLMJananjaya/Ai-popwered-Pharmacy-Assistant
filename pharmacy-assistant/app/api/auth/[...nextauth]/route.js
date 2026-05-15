@@ -23,7 +23,12 @@ export const authOptions = {
         const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password);
         if (!isPasswordCorrect) throw new Error("Invalid password");
 
-        // 2. Handle OTP Verification Attempt
+        // 2. Check if admin has approved this account
+        if (!user.isAdminVerified) {
+          throw new Error("PENDING_ADMIN_APPROVAL");
+        }
+
+        // 3. Handle OTP Verification Attempt
         if (credentials.otp) {
           const verifiedUser = await User.findOne({
             email: credentials.email,

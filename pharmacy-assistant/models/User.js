@@ -40,6 +40,16 @@ const UserSchema = new mongoose.Schema({
   isVerified: {
     type: Boolean,
     default: false
+  },
+
+  // --- Admin Verification Fields ---
+  documentUrl: {
+    type: String,   // Path/URL to the uploaded verification document
+    default: null
+  },
+  isAdminVerified: {
+    type: Boolean,
+    default: false  // Admin must approve before the user can log in
   }
 }, {
   timestamps: true // Automatically creates 'createdAt' and 'updatedAt'

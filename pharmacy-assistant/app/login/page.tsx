@@ -49,6 +49,8 @@ const LoginPage = () => {
         }
       } else if (res?.error === "UNVERIFIED") {
         setError("Your account is not verified. Please complete signup.");
+      } else if (res?.error === "PENDING_ADMIN_APPROVAL") {
+        setError("⏳ Your account is pending admin verification. You will be notified once approved.");
       } else {
         setError("Invalid email or password. Please try again.");
       }
