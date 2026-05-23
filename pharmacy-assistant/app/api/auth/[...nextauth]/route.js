@@ -69,6 +69,8 @@ export const authOptions = {
       if (user) {
         token.id = user._id;
         token.image = user.image;
+        token.role = user.role;   // 🔒 Required for admin guards
+        token.email = user.email; // 🔒 Required for ownership checks
       }
       return token;
     },
@@ -76,6 +78,8 @@ export const authOptions = {
       if (session.user) {
         session.user.id = token.id;
         session.user.image = token.image;
+        session.user.role = token.role;   // 🔒 Expose role on session
+        session.user.email = token.email; // 🔒 Expose email on session
       }
       return session;
     },
@@ -85,4 +89,4 @@ export const authOptions = {
 };
 
 const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
+export { handler as GET, handler as POST };

@@ -117,8 +117,8 @@ const SignUpPage = () => {
       setError("Invalid file type. Please upload a PDF, JPG, or PNG.");
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      setError("File is too large. Maximum size is 5MB.");
+    if (file.size > 100 * 1024 * 1024) {
+      setError("File is too large. Maximum size is 100MB.");
       return;
     }
 
@@ -147,11 +147,13 @@ const SignUpPage = () => {
 
     setUploading(true);
     try {
-      // 1. Upload the document file
+      // Single call: upload + link document to user record in one step.
+      // This endpoint validates the email is OTP-verified before accepting the file.
       const uploadForm = new FormData();
       uploadForm.append("document", docFile);
+      uploadForm.append("email", formData.email);
 
-      const uploadRes = await fetch("/api/upload-document", {
+      const uploadRes = await fetch("/api/auth/upload-signup-doc", {
         method: "POST",
         body: uploadForm,
       });
@@ -161,35 +163,6 @@ const SignUpPage = () => {
         setError(data.message || "Document upload failed.");
         setUploading(false);
         return;
-      }
-
-      const { url: documentUrl } = await uploadRes.json();
-
-      // 2. Update the user record with the document URL via signup API
-      const updateRes = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          documentUrl,
-        }),
-      });
-
-      // We don't strictly care if this returns a 400 (user already exists),
-      // because we'll use a dedicated update endpoint instead.
-      // Let's use a proper update route:
-      const patchRes = await fetch("/api/user/update-document", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: formData.email, documentUrl }),
-      });
-
-      if (!patchRes.ok) {
-        const data = await patchRes.json();
-        // Non-fatal: document was uploaded, account will still await admin approval
-        console.warn("Could not link document to user:", data.message);
       }
 
       setStep(4); // Show the "pending approval" confirmation screen
@@ -424,7 +397,7 @@ const SignUpPage = () => {
                       <div className="flex flex-col items-center space-y-2 text-gray-400">
                         <div className="text-4xl">☁️</div>
                         <p className="text-sm font-medium">Click to browse or drag & drop</p>
-                        <p className="text-xs">PDF, JPG, PNG — max 5MB</p>
+                        <p className="text-xs">PDF, JPG, PNG — max 100MB</p>
                       </div>
                     )}
                     <input
@@ -478,7 +451,7 @@ const SignUpPage = () => {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-800 mb-2">Pending Admin Approval</h3>
                     <p className="text-gray-600 text-sm leading-relaxed">
-                      Your account has been created and your verification document has been submitted. 
+                      Your account has been created and your verification document has been submitted.
                       An administrator will review your document and activate your account shortly.
                     </p>
                   </div>
