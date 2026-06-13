@@ -21,6 +21,7 @@ type IdentifiedMed = {
   found: boolean;
   loading: boolean;
   method: string;
+  manufacturers: string | null;
   alternatives: Array<{ canonical: string; score: number }>;
 };
 
@@ -70,6 +71,7 @@ export default function PrescriptionPage() {
                 found: result.found,
                 loading: false,
                 method: result.method || 'unknown',
+                manufacturers: result.manufacturers || null,
                 alternatives: result.alternatives || [],
               }
             : m
@@ -97,6 +99,7 @@ export default function PrescriptionPage() {
         found: false,
         loading: true,
         method: '',
+        manufacturers: null,
         alternatives: [],
       };
 
@@ -563,6 +566,7 @@ export default function PrescriptionPage() {
                           <th className="px-4 py-3 font-semibold text-gray-600 text-center">Confidence</th>
                           <th className="px-4 py-3 font-semibold text-gray-600 text-center">Method</th>
                           <th className="px-4 py-3 font-semibold text-gray-600">Status</th>
+                          <th className="px-4 py-3 font-semibold text-gray-600">Manufacturers</th>
                           <th className="px-4 py-3 font-semibold text-gray-600">Alternatives</th>
                         </tr>
                       </thead>
@@ -632,6 +636,17 @@ export default function PrescriptionPage() {
                                     )}
                                     {med.found ? 'Found' : 'Not Found'}
                                   </span>
+                                )}
+                              </td>
+                              <td className="px-4 py-3">
+                                {med.loading ? (
+                                  <span className="text-gray-300 text-xs">—</span>
+                                ) : med.manufacturers ? (
+                                  <span className="text-xs font-medium text-gray-700 bg-gray-100 px-2 py-1 rounded-md">
+                                    {med.manufacturers}
+                                  </span>
+                                ) : (
+                                  <span className="text-gray-300 text-xs">—</span>
                                 )}
                               </td>
                               <td className="px-4 py-3">
