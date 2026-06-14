@@ -136,9 +136,8 @@ export default function TopHeader() {
                                         <div
                                             key={idx}
                                             onClick={() => handleAvatarSelect(url)}
-                                            className={`w-16 h-16 rounded-full overflow-hidden border-4 cursor-pointer transition-all hover:scale-110 shadow-sm ${
-                                                avatar === url ? 'border-emerald-500 scale-105' : 'border-gray-100 hover:border-emerald-200'
-                                            }`}
+                                            className={`w-16 h-16 rounded-full overflow-hidden border-4 cursor-pointer transition-all hover:scale-110 shadow-sm ${avatar === url ? 'border-emerald-500 scale-105' : 'border-gray-100 hover:border-emerald-200'
+                                                }`}
                                         >
                                             <img src={url} alt={`Avatar option ${idx}`} className="w-full h-full object-cover" />
                                         </div>
@@ -151,7 +150,7 @@ export default function TopHeader() {
 
                 {/* Logout Button */}
                 <button
-                    onClick={() => signOut({ callbackUrl: '/login' })}
+                    onClick={() => signOut({ callbackUrl: `${window.location.origin}/login` })}
                     className="p-3 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all group shadow-sm border border-red-100"
                     title="Sign Out"
                 >

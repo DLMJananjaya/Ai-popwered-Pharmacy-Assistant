@@ -1,14 +1,14 @@
-import React from 'react'
+import React, { use } from 'react'
 
 // 1. Define the expected shape of your props
 interface PageProps {
-  params: {
-    alwaysShow: string[]; 
-  }
+  params: Promise<{ alwaysShow: string[] }>;
 }
 
 // 2. Apply the interface to the component
 function page({ params }: PageProps) {
+  const unwrappedParams = use(params);
+
   return (
     <>
     <div className="text-black">
@@ -17,7 +17,7 @@ function page({ params }: PageProps) {
       
       <ul>
         {/* 3. Added optional chaining (?.) and the map index */}
-        {params?.alwaysShow?.map((item, index) => {
+        {unwrappedParams?.alwaysShow?.map((item, index) => {
           return ( 
             // 4. Added the required unique key prop
             <li key={`${item}-${index}`}>

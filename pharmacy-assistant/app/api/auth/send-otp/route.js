@@ -34,12 +34,12 @@ export async function POST(req) {
 
     // 4. Send the Email
     await transporter.sendMail({
-      from: '"Vaidya Assistant" <no-reply@vaidya.com>',
+      from: '"vaidia Assistant" <no-reply@vaidia.com>',
       to: email,
       subject: "Your Login Security Code",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-          <h2 style="color: #00A99D; text-align: center;">Vaidya Login OTP</h2>
+          <h2 style="color: #00A99D; text-align: center;">vaidia Login OTP</h2>
           <p>Hello <strong>${user.name}</strong>,</p>
           <p>You are attempting to log in. Please use the following code to verify your identity:</p>
           <div style="background: #f4f4f4; padding: 15px; text-align: center; font-size: 30px; font-weight: bold; letter-spacing: 10px; border-radius: 5px; color: #333;">

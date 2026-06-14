@@ -49,6 +49,8 @@ const LoginPage = () => {
         }
       } else if (res?.error === "UNVERIFIED") {
         setError("Your account is not verified. Please complete signup.");
+      } else if (res?.error === "PENDING_ADMIN_APPROVAL") {
+        setError("⏳ Your account is pending admin verification. You will be notified once approved.");
       } else {
         setError("Invalid email or password. Please try again.");
       }
@@ -127,6 +129,7 @@ const LoginPage = () => {
                     <div className="flex flex-col">
                       <input
                         type="email"
+                        value={email}
                         placeholder="Email Address"
                         className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
                         onChange={(e) => setEmail(e.target.value)}
@@ -138,6 +141,7 @@ const LoginPage = () => {
                       <input
                         type="password"
                         value={password}
+                        placeholder="Password"
                         className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
                         onChange={(e) => setPassword(e.target.value)}
                         required
