@@ -80,19 +80,19 @@ const Navbar = () => {
           <Link href="/about" className="text-gray-600 hover:text-[#00A99D] font-medium transition-colors">
             About Us
           </Link>
-          <Link href="/prescription" className="text-gray-600 hover:text-[#00A99D] font-medium transition-colors">
+          {/* <Link href="/prescription" className="text-gray-600 hover:text-[#00A99D] font-medium transition-colors">
             Scan
           </Link>
           <Link href="/rackManagement" className="text-gray-600 hover:text-[#00A99D] font-medium transition-colors">
             Rack Management
-          </Link>
+          </Link> */}
         </div>
 
         {/* Action Buttons */}
         <div className="flex items-center space-x-4">
           <Link href="/login">
             <button className="text-gray-900 font-medium hover:text-[#00A99D] transition-colors">
-              Log In
+              Sign In
             </button>
           </Link>
           <Link href="/signup">
