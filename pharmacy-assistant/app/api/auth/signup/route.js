@@ -7,7 +7,7 @@ import { sendOTP } from "@/lib/mailer";
 export async function POST(req) {
   try {
     await dbConnect();
-    const { name, email, password } = await req.json();
+    const { name, email, password, documentUrl } = await req.json();
 
     // Check if user exists
     let user = await User.findOne({ email });
@@ -28,6 +28,7 @@ export async function POST(req) {
       user.password = hashedPassword;
       user.otp = otp;
       user.otpExpiry = otpExpiry;
+      if (documentUrl) user.documentUrl = documentUrl;
       await user.save();
     } else {
       // Create new user
@@ -37,7 +38,9 @@ export async function POST(req) {
         password: hashedPassword,
         otp,
         otpExpiry,
-        isVerified: false
+        isVerified: false,
+        isAdminVerified: false,
+        documentUrl: documentUrl || null,
       });
     }
 

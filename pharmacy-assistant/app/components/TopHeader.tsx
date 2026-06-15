@@ -15,34 +15,74 @@ const AVATAR_OPTIONS = [
     "https://cdn.pixabay.com/photo/2023/02/28/19/22/drawing-7821641_1280.jpg"
 ];
 
+const DEFAULT_AVATAR = AVATAR_OPTIONS[0];
+
 export default function TopHeader() {
     const { data: session } = useSession();
 
-    // Get the first name or default to 'Pharmacist'
+    // Derive a user-scoped localStorage key so avatars never bleed between accounts
+    const userId = session?.user?.id as string | undefined;
+    const localStorageKey = userId ? `user_avatar_${userId}` : null;
+
     const firstName = session?.user?.name?.split(' ')[0] || 'Pharmacist';
 
-    // State for Avatar and Menu
-    const [avatar, setAvatar] = useState(AVATAR_OPTIONS[0]);
+    const [avatar, setAvatar] = useState<string>(DEFAULT_AVATAR);
     const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
-    // Load saved avatar from LocalStorage on mount
+    // ── Load avatar: prefer localStorage cache, then fetch from DB ────────────
     useEffect(() => {
-        const savedAvatar = localStorage.getItem('user_avatar');
-        if (savedAvatar) {
-            setAvatar(savedAvatar);
-        }
-    }, []);
+        if (!userId) return;
 
-    const handleAvatarSelect = (url) => {
+        // 1. Immediately show cached value (instant, no flicker)
+        const cached = localStorage.getItem(localStorageKey!);
+        if (cached) {
+            setAvatar(cached);
+        }
+
+        // 2. Fetch the authoritative value from the DB (handles cross-device / first load)
+        fetch('/api/user/avatar')
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+                if (data?.image) {
+                    setAvatar(data.image);
+                    localStorage.setItem(localStorageKey!, data.image);
+                }
+            })
+            .catch(() => { /* silently ignore network errors */ });
+
+    }, [userId, localStorageKey]);
+
+    // ── Handle avatar selection ───────────────────────────────────────────────
+    const handleAvatarSelect = async (url: string) => {
+        // Optimistically update UI
         setAvatar(url);
-        localStorage.setItem('user_avatar', url);
         setIsAvatarMenuOpen(false);
+
+        // Update localStorage cache immediately (user-scoped key)
+        if (localStorageKey) {
+            localStorage.setItem(localStorageKey, url);
+        }
+
+        // Persist to DB
+        setIsSaving(true);
+        try {
+            await fetch('/api/user/avatar', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: url }),
+            });
+        } catch {
+            // Silently fail — the cached value is still correct
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
         <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8 z-[100] shrink-0 relative shadow-sm">
 
-            {/* Background Decorative Shape - Subtle opacity for professional look */}
+            {/* Background Decorative Shape */}
             <div className="absolute top-0 right-0 w-64 h-full pointer-events-none z-0 overflow-hidden">
                 <svg viewBox="0 0 500 500" preserveAspectRatio="none" className="w-full h-full opacity-5">
                     <path d="M400,500 C200,400 300,200 500,100 L500,500 Z" fill="#00A99D" />
@@ -66,12 +106,16 @@ export default function TopHeader() {
                         onClick={() => setIsAvatarMenuOpen(!isAvatarMenuOpen)}
                         className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-full border border-gray-200 hover:border-emerald-300 hover:bg-white transition-all shadow-sm active:scale-95"
                     >
-                        <div className="w-10 h-10 rounded-full bg-emerald-100 overflow-hidden border-2 border-white shadow-inner shrink-0">
+                        <div className="w-10 h-10 rounded-full bg-emerald-100 overflow-hidden border-2 border-white shadow-inner shrink-0 relative">
                             <img
                                 src={avatar}
                                 alt="User Avatar"
                                 className="w-full h-full object-cover object-center"
                             />
+                            {/* Saving indicator ring */}
+                            {isSaving && (
+                                <div className="absolute inset-0 rounded-full border-2 border-emerald-400 border-t-transparent animate-spin" />
+                            )}
                         </div>
                         <span className="text-sm font-semibold text-gray-700 hidden md:block">Profile</span>
                         <svg className={`w-4 h-4 text-gray-400 transition-transform ${isAvatarMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,7 +150,7 @@ export default function TopHeader() {
 
                 {/* Logout Button */}
                 <button
-                    onClick={() => signOut({ callbackUrl: '/login' })}
+                    onClick={() => signOut({ callbackUrl: `${window.location.origin}/login` })}
                     className="p-3 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all group shadow-sm border border-red-100"
                     title="Sign Out"
                 >

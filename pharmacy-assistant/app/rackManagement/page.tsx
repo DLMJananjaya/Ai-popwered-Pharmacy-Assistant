@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -75,22 +75,48 @@ const navItems = [
 
 export default function RackManagement() {
 
-  const [elements, setElements] = useState<CanvasElement[]>([
-    { id: 'r3', type: 'rack', name: 'Rack 3', rows: 1, cols: 8, x: 50, y: 30, rotation: 0, gridData: {} },
-    { id: 'r4', type: 'rack', name: 'Rack 4', rows: 1, cols: 7, x: 600, y: 50, rotation: 90, gridData: {} },
-    {
-      id: 'r1', type: 'rack', name: 'Rack 1', rows: 4, cols: 10, x: 50, y: 220, rotation: 0,
-      gridData: {
-        "0-0": { name: "Paracetamol", qty: 50 },
-        "0-1": { name: "Ibuprofen", qty: 30 },
-        "1-4": { name: "Amoxicillin", qty: 15 },
-        "3-9": { name: "Vitamin C", qty: 100 },
+  const [elements, setElements] = useState<CanvasElement[]>([]);
+  const [layoutLoading, setLayoutLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState('');
+
+  // ── Load layout from DB on mount ──────────────────────────────────────────
+  const loadLayout = useCallback(async () => {
+    setLayoutLoading(true);
+    try {
+      const res = await fetch('/api/rack-layout');
+      if (res.ok) {
+        const data = await res.json();
+        // If no layout saved yet, start with an empty canvas
+        setElements(Array.isArray(data) && data.length > 0 ? data : []);
       }
-    },
-    { id: 'r2', type: 'rack', name: 'Rack 2', rows: 1, cols: 8, x: 50, y: 360, rotation: 0, gridData: {} },
-    { id: 'd1', type: 'door', name: 'Main Door', x: 20, y: 130, rotation: 0 },
-    { id: 'u1', type: 'user', name: 'Pharmacist', x: 120, y: 290, rotation: 0 },
-  ]);
+    } finally {
+      setLayoutLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { loadLayout(); }, [loadLayout]);
+
+  // ── Save layout to DB ─────────────────────────────────────────────────────
+  const saveLayout = async () => {
+    setSaving(true);
+    setSaveMsg('');
+    try {
+      const res = await fetch('/api/rack-layout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ elements }),
+      });
+      if (res.ok) {
+        setSaveMsg('Layout saved!');
+        setTimeout(() => setSaveMsg(''), 2500);
+      } else {
+        setSaveMsg('Save failed — try again');
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const [selectedId, setSelectedId] = useState<string | null>('r1');
   const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -397,6 +423,27 @@ export default function RackManagement() {
 
             {/* DETAIL PANEL */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 relative min-h-[250px]">
+
+              {/* ── Always-visible Save Layout bar ─────────────────────────── */}
+              <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+                <h3 className="text-base font-bold text-gray-700">Layout Details</h3>
+                <div className="flex items-center gap-3">
+                  {saveMsg && (
+                    <span className={`text-sm font-semibold ${
+                      saveMsg.includes('saved') ? 'text-green-600' : 'text-red-500'
+                    }`}>
+                      {saveMsg}
+                    </span>
+                  )}
+                  <button
+                    onClick={saveLayout}
+                    disabled={saving}
+                    className="bg-[#0056b3] hover:bg-blue-800 disabled:opacity-50 text-white font-bold py-2 px-8 rounded shadow-md"
+                  >
+                    {saving ? 'Saving…' : '💾 Save Layout'}
+                  </button>
+                </div>
+              </div>
               {selectedElement ? (
                 selectedElement.type === 'rack' ? (
                   <div className="space-y-4">
@@ -456,11 +503,7 @@ export default function RackManagement() {
                       </div>
                     </div>
 
-                    <div className="flex justify-end mt-4">
-                      <button className="bg-[#0056b3] hover:bg-blue-800 text-white font-bold py-2 px-8 rounded shadow-md">
-                        Save Layout
-                      </button>
-                    </div>
+                    {/* Save button removed from here — now always visible at top of panel */}
                   </div>
                 ) : (
                   <div className="space-y-6 max-w-md">
