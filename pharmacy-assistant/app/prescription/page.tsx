@@ -14,6 +14,13 @@ type Med = {
   notes: string | null;
 };
 
+type SideEffects = {
+  found: boolean;
+  common: string | null;
+  warnings: string | null;
+  source: string | null;
+};
+
 type IdentifiedMed = {
   input: string;
   canonical: string | null;
@@ -23,6 +30,7 @@ type IdentifiedMed = {
   method: string;
   manufacturers: string | null;
   alternatives: Array<{ canonical: string; score: number }>;
+  sideEffects: SideEffects | null;
 };
 
 // Helper: crop an image on a canvas and return data URL
@@ -86,6 +94,11 @@ export default function PrescriptionPage() {
   const [currentInput, setCurrentInput] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // --- Send to Patient (email) ---
+  const [patientEmail, setPatientEmail] = useState('');
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [emailStatus, setEmailStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -115,6 +128,7 @@ export default function PrescriptionPage() {
                 method: result.method || 'unknown',
                 manufacturers: result.manufacturers || null,
                 alternatives: result.alternatives || [],
+                sideEffects: result.side_effects || null,
               }
             : m
         )
@@ -143,6 +157,7 @@ export default function PrescriptionPage() {
         method: '',
         manufacturers: null,
         alternatives: [],
+        sideEffects: null,
       };
 
       const newIndex = manualMeds.length;
@@ -157,6 +172,38 @@ export default function PrescriptionPage() {
   // --- Remove a manually added medicine ---
   const removeManualMed = (index: number) => {
     setManualMeds((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // --- Send prescription + side effects to patient via email ---
+  const sendToPatient = async () => {
+    if (!patientEmail.trim()) {
+      alert('Please enter the patient\'s email address.');
+      return;
+    }
+
+    setSendingEmail(true);
+    setEmailStatus('idle');
+
+    try {
+      const res = await fetch('/api/prescription/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: patientEmail.trim(),
+          patientName: patientName || null,
+          medicines: manualMeds,
+        }),
+      });
+
+      if (!res.ok) throw new Error('Send failed');
+
+      setEmailStatus('success');
+    } catch (err) {
+      console.error('Send to patient error:', err);
+      setEmailStatus('error');
+    } finally {
+      setSendingEmail(false);
+    }
   };
 
   // 1) Start Camera
@@ -379,6 +426,7 @@ export default function PrescriptionPage() {
           method: '',
           manufacturers: null,
           alternatives: [],
+          sideEffects: null,
         }));
 
         setManualMeds((prev) => [...prev, ...newMeds]);
@@ -853,92 +901,122 @@ export default function PrescriptionPage() {
                         {manualMeds.map((med, idx) => {
                           const badge = getConfidenceBadge(med.confidence, med.found);
                           return (
-                            <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
-                              <td className="px-4 py-3 font-bold text-[#00A99D]">{idx + 1}</td>
-                              <td className="px-4 py-3 font-medium text-gray-800">{med.input}</td>
-                              <td className="px-4 py-3">
-                                {med.loading ? (
-                                  <span className="inline-flex items-center gap-1.5 text-blue-500">
-                                    <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
-                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                    </svg>
-                                    Identifying...
-                                  </span>
-                                ) : med.found && med.canonical ? (
-                                  <span className="font-semibold text-emerald-700">{med.canonical}</span>
-                                ) : (
-                                  <span className="text-gray-400 italic">—</span>
-                                )}
-                              </td>
-                              <td className="px-4 py-3 text-center">
-                                {!med.loading && (
-                                  <div className="flex flex-col items-center gap-1">
-                                    <div className="w-full max-w-[80px] bg-gray-200 rounded-full h-1.5">
-                                      <div
-                                        className={`h-1.5 rounded-full transition-all duration-500 ${
-                                          med.confidence >= 0.9 ? 'bg-emerald-500' :
-                                          med.confidence >= 0.7 ? 'bg-amber-500' : 'bg-red-500'
-                                        }`}
-                                        style={{ width: `${Math.round(med.confidence * 100)}%` }}
-                                      ></div>
+                            <React.Fragment key={idx}>
+                              <tr className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
+                                <td className="px-4 py-3 font-bold text-[#00A99D]">{idx + 1}</td>
+                                <td className="px-4 py-3 font-medium text-gray-800">{med.input}</td>
+                                <td className="px-4 py-3">
+                                  {med.loading ? (
+                                    <span className="inline-flex items-center gap-1.5 text-blue-500">
+                                      <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                      </svg>
+                                      Identifying...
+                                    </span>
+                                  ) : med.found && med.canonical ? (
+                                    <span className="font-semibold text-emerald-700">{med.canonical}</span>
+                                  ) : (
+                                    <span className="text-gray-400 italic">—</span>
+                                  )}
+                                </td>
+                                <td className="px-4 py-3 text-center">
+                                  {!med.loading && (
+                                    <div className="flex flex-col items-center gap-1">
+                                      <div className="w-full max-w-[80px] bg-gray-200 rounded-full h-1.5">
+                                        <div
+                                          className={`h-1.5 rounded-full transition-all duration-500 ${
+                                            med.confidence >= 0.9 ? 'bg-emerald-500' :
+                                            med.confidence >= 0.7 ? 'bg-amber-500' : 'bg-red-500'
+                                          }`}
+                                          style={{ width: `${Math.round(med.confidence * 100)}%` }}
+                                        ></div>
+                                      </div>
+                                      <span className="text-xs font-medium text-gray-600">{Math.round(med.confidence * 100)}%</span>
                                     </div>
-                                    <span className="text-xs font-medium text-gray-600">{Math.round(med.confidence * 100)}%</span>
-                                  </div>
-                                )}
-                              </td>
-                              <td className="px-4 py-3 text-center">
-                                {!med.loading && med.method && (
-                                  <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium ${
-                                    med.method === 'exact' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-                                    med.method === 'fuzzy' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
-                                    med.method === 'semantic' ? 'bg-purple-50 text-purple-700 border border-purple-200' :
-                                    'bg-gray-50 text-gray-600 border border-gray-200'
-                                  }`}>
-                                    {med.method}
-                                  </span>
-                                )}
-                              </td>
-                              <td className="px-4 py-3">
-                                {!med.loading && (
-                                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold ${badge.color}`}>
-                                    {med.found ? (
-                                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                                      </svg>
-                                    ) : (
-                                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                      </svg>
-                                    )}
-                                    {med.found ? 'Found' : 'Not Found'}
-                                  </span>
-                                )}
-                              </td>
-                              <td className="px-4 py-3">
-                                {med.loading ? (
-                                  <span className="text-gray-300 text-xs">—</span>
-                                ) : med.manufacturers ? (
-                                  <span className="text-xs font-medium text-gray-700 bg-gray-100 px-2 py-1 rounded-md">{med.manufacturers}</span>
-                                ) : (
-                                  <span className="text-gray-300 text-xs">—</span>
-                                )}
-                              </td>
-                              <td className="px-4 py-3">
-                                {!med.loading && med.alternatives && med.alternatives.length > 0 ? (
-                                  <div className="flex flex-wrap gap-1">
-                                    {med.alternatives.slice(0, 2).map((alt, ai) => (
-                                      <span key={ai} className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px]">
-                                        {alt.canonical}
-                                        <span className="text-gray-400">({Math.round((alt.score ?? 0) * 100)}%)</span>
-                                      </span>
-                                    ))}
-                                  </div>
-                                ) : !med.loading ? (
-                                  <span className="text-gray-300 text-xs">—</span>
-                                ) : null}
-                              </td>
-                            </tr>
+                                  )}
+                                </td>
+                                <td className="px-4 py-3 text-center">
+                                  {!med.loading && med.method && (
+                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium ${
+                                      med.method === 'exact' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                                      med.method === 'fuzzy' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
+                                      med.method === 'semantic' ? 'bg-purple-50 text-purple-700 border border-purple-200' :
+                                      'bg-gray-50 text-gray-600 border border-gray-200'
+                                    }`}>
+                                      {med.method}
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="px-4 py-3">
+                                  {!med.loading && (
+                                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold ${badge.color}`}>
+                                      {med.found ? (
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                      ) : (
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                      )}
+                                      {med.found ? 'Found' : 'Not Found'}
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="px-4 py-3">
+                                  {med.loading ? (
+                                    <span className="text-gray-300 text-xs">—</span>
+                                  ) : med.manufacturers ? (
+                                    <span className="text-xs font-medium text-gray-700 bg-gray-100 px-2 py-1 rounded-md">{med.manufacturers}</span>
+                                  ) : (
+                                    <span className="text-gray-300 text-xs">—</span>
+                                  )}
+                                </td>
+                                <td className="px-4 py-3">
+                                  {!med.loading && med.alternatives && med.alternatives.length > 0 ? (
+                                    <div className="flex flex-wrap gap-1">
+                                      {med.alternatives.slice(0, 2).map((alt, ai) => (
+                                        <span key={ai} className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px]">
+                                          {alt.canonical}
+                                          <span className="text-gray-400">({Math.round((alt.score ?? 0) * 100)}%)</span>
+                                        </span>
+                                      ))}
+                                    </div>
+                                  ) : !med.loading ? (
+                                    <span className="text-gray-300 text-xs">—</span>
+                                  ) : null}
+                                </td>
+                              </tr>
+
+                              {/* --- SIDE EFFECTS ROW (NEW) --- */}
+                              {!med.loading && med.found && med.sideEffects?.found && (
+                                <tr className="bg-gray-50/70 border-b border-gray-100">
+                                  <td></td>
+                                  <td colSpan={7} className="px-4 py-3">
+                                    <div className="space-y-1.5">
+                                      <div className="text-xs">
+                                        <span className="font-semibold text-gray-600">Common side effects: </span>
+                                        <span className="text-gray-600">{med.sideEffects.common}</span>
+                                      </div>
+                                      <div className="text-xs bg-red-50 border border-red-200 rounded px-2 py-1.5 inline-block">
+                                        <span className="font-semibold text-red-700">⚠ Warning: </span>
+                                        <span className="text-red-600">{med.sideEffects.warnings}</span>
+                                      </div>
+                                      <div className="text-[10px] text-gray-400">Source: {med.sideEffects.source}</div>
+                                    </div>
+                                  </td>
+                                </tr>
+                              )}
+                              {!med.loading && med.found && med.sideEffects && !med.sideEffects.found && (
+                                <tr className="bg-gray-50/50 border-b border-gray-100">
+                                  <td></td>
+                                  <td colSpan={7} className="px-4 py-3 text-xs text-gray-400 italic">
+                                    Side effects not yet available for this medicine — please verify with pharmacist.
+                                  </td>
+                                </tr>
+                              )}
+                            </React.Fragment>
                           );
                         })}
                       </tbody>
@@ -956,6 +1034,55 @@ export default function PrescriptionPage() {
                       <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-blue-100 border border-blue-300"></span> Fuzzy</span>
                       <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-purple-100 border border-purple-300"></span> Semantic</span>
                     </div>
+                  </div>
+
+                  {/* --- SEND TO PATIENT (NEW) --- */}
+                  <div className="px-6 py-4 bg-white border-t border-gray-200">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-2">Send to Patient</h4>
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <input
+                        type="email"
+                        value={patientEmail}
+                        onChange={(e) => setPatientEmail(e.target.value)}
+                        placeholder="patient@example.com"
+                        className="flex-1 min-w-[220px] px-4 py-2.5 text-sm border-2 border-gray-200 rounded-xl focus:border-[#00A99D] focus:ring-2 focus:ring-[#00A99D]/20 outline-none transition-all bg-gray-50 hover:bg-white text-gray-800 placeholder:text-gray-400"
+                      />
+                      <button
+                        onClick={sendToPatient}
+                        disabled={sendingEmail || manualMeds.filter(m => m.found).length === 0}
+                        className="bg-gradient-to-r from-[#00A99D] to-[#00C9B7] hover:from-[#008f85] hover:to-[#00A99D] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2.5 px-6 rounded-xl shadow-md flex items-center gap-2 text-sm whitespace-nowrap"
+                      >
+                        {sendingEmail ? (
+                          <>
+                            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                            Sending...
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            Send to Patient
+                          </>
+                        )}
+                      </button>
+                    </div>
+                    {emailStatus === 'success' && (
+                      <p className="text-sm text-emerald-600 mt-2 flex items-center gap-1.5">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Email sent successfully to {patientEmail}
+                      </p>
+                    )}
+                    {emailStatus === 'error' && (
+                      <p className="text-sm text-red-500 mt-2">
+                        Failed to send email. Please check the address and try again.
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
