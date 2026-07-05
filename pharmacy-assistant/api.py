@@ -15,9 +15,9 @@ app = Flask(__name__)
 
 CSV_PATH = os.environ.get("MEDICINE_CSV", "medicines_dataset.csv")
 
-print("🔄 Loading medicine identifier model...")
+print("[*] Loading medicine identifier model...")
 identifier = MedicineIdentifier(CSV_PATH)
-print("✅ Model ready!")
+print("[OK] Model ready!")
 
 
 @app.route("/api/identify", methods=["POST"])
@@ -41,6 +41,7 @@ def identify():
         "confidence": result["confidence"],
         "method": result["method"],
         "manufacturers": result.get("manufacturers", ""),
+        "unitPrice": result.get("unitPrice", 0.0),
         "alternatives": result.get("alternatives", []),
         "found": found,
         "side_effects": side_effects  # NEW
@@ -65,6 +66,7 @@ def identify_batch():
                 "confidence": r["confidence"],
                 "method": r["method"],
                 "manufacturers": r.get("manufacturers", ""),
+                "unitPrice": r.get("unitPrice", 0.0),
                 "found": r["canonical"] is not None,
                 # NEW: attach side effects only when a canonical match was found
                 "side_effects": get_side_effects(r["canonical"]) if r["canonical"] else None

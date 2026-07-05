@@ -10,6 +10,7 @@ export interface MedicineResult {
   method: "exact" | "fuzzy" | "semantic" | "no_match" | "empty";
   found: boolean;
   manufacturers: string;
+  unitPrice?: number;
   alternatives?: Array<{ canonical: string; score: number }>;
 }
 
