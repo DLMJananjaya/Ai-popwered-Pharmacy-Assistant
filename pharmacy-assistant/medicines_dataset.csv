@@ -33,7 +33,7 @@ multivitamin,"supradyn,revital,becadexamin,berocca,multibionta,centrum,eurovit,m
 insulin glargine,"lantus,basaglar,toujeo,abasaglar,glaritus,glargin","Sanofi (Lantus/Toujeo), Eli Lilly (Basaglar)"
 insulin regular,"actrapid,humulin r,novolin r,insuman rapid,regular insulin","Novo Nordisk (Actrapid/Novolin), Eli Lilly (Humulin)"
 insulin isophane,"humulin n,novolin n,insulatard,humulin nph,insuman basal","Novo Nordisk (Insulatard/Novolin), Eli Lilly (Humulin)"
-insulin aspart,"novorapid,novolog,fiasp,insulin aspart","Novo Nordisk (NovoRapid/Fiasp)"
+insulin aspart,"novorapid,novolog,fiasp,insulin aspart",Novo Nordisk (NovoRapid/Fiasp)
 insulin mixtard,"mixtard,novomix,humulin m3,insuman comb","Novo Nordisk (Mixtard/NovoMix), Eli Lilly"
 levothyroxine,"eltroxin,synthroid,thyrox,thyronorm,levoxyl,euthyrox,oroxine,levothroid,tirosint","Merck (Euthyrox), GSK (Eltroxin), AbbVie (Synthroid)"
 furosemide,"lasix,frusemide,frusamide,frusid,diuride,frusol,fusid,froop,furosemide tablets","Sanofi (Lasix), Various generics"
@@ -64,9 +64,9 @@ fexofenadine,"telfast,allegra,fexet,fexofast,altiva,fexofenadine hcl,allegra d",
 montelukast,"singulair,montair,montek,romilast,astharide,montelo,lukast,monticope","Merck (Singulair), Cipla (Montair), Sun Pharma (Montek)"
 budesonide,"pulmicort,budecort,rhinocort,budelin,symbicort,budesonide inhaler,noex","AstraZeneca (Pulmicort/Symbicort), Cipla (Budecort)"
 fluticasone,"flixotide,flixonase,seretide,flovent,flutide,fluticasone propionate,avamys,relvar","GSK (Flixotide/Seretide/Avamys), Various"
-magnesium sulfate,"magnesia,magtrate,slow-mag,epsom salt,magnesium sulphate,mag sulfate,mag sulphate","Various"
+magnesium sulfate,"magnesia,magtrate,slow-mag,epsom salt,magnesium sulphate,mag sulfate,mag sulphate",Various
 potassium chloride,"k-lor,slow-k,klor-con,potassium,kloref,kay ciel,micro-k","Abbott, Various generics"
-calcium gluconate,"calcium gluconate injection,calciglu,calcium gluconate tablets","Various"
+calcium gluconate,"calcium gluconate injection,calciglu,calcium gluconate tablets",Various
 valsartan,"diovan,valsartan,valzaar,vamlo,valtan,co-diovan","Novartis (Diovan), Sun Pharma (Valzaar), Cipla"
 ramipril,"altace,ramipril,cardace,hopace,tritace,ramicard,ramace","Sanofi (Tritace), AstraZeneca (Altace), Sun Pharma (Cardace)"
 lisinopril,"zestril,prinivil,lisinopril,listril,lipril,linvas,hipril","AstraZeneca (Zestril), Merck (Prinivil), Cipla (Listril)"
@@ -101,7 +101,7 @@ pregabalin,"lyrica,pregabalin capsules,pregalin,pregeb,nervigesic,lyrica cr","Pf
 tamsulosin,"flomax,urimax,tamsulosin hcl,contiflo,tamspar,veltam","Boehringer (Flomax), Cipla (Urimax)"
 sildenafil,"viagra,penegra,sildenafil citrate,suhagra,caverta,manforce","Pfizer (Viagra), Sun Pharma (Caverta), Cipla (Suhagra)"
 tadalafil,"cialis,tadacip,tadalafil tablets,tadalista,vidalista,tadarise","Eli Lilly (Cialis), Cipla (Tadacip)"
-methylprednisolone,"medrol,solumedrol,methylprednisolone tablets,medrox,depomedrol","Pfizer (Medrol/Solumedrol)"
+methylprednisolone,"medrol,solumedrol,methylprednisolone tablets,medrox,depomedrol",Pfizer (Medrol/Solumedrol)
 hydrocortisone,"cortef,solu-cortef,hydrocortisone cream,efcortesol,cortisol","Pfizer (Cortef/Solu-cortef), Various"
 betamethasone,"celestone,betnesol,betamethasone valerate,diprosone,becodisk","Merck (Celestone), GSK (Betnesol)"
 dexamethasone,"decadron,dexona,dexamethasone tablets,decdan,ozurdex,maxidex","Merck (Decadron), Sun Pharma (Dexona)"
@@ -111,13 +111,13 @@ albendazole,"albenza,zentel,albendazole tablets,noworm,bendex","GSK (Zentel), Ci
 mebendazole,"vermox,mebendazole tablets,wormin,nemasole","Janssen (Vermox), Various"
 ivermectin,"stromectol,ivermectin tablets,ivecop,scabo,ivomec","Merck (Stromectol), Cipla (Ivecop)"
 chloroquine,"aralen,chloroquine phosphate,resochin,avloclor","Sanofi (Resochin), Bayer (Avloclor)"
-artemether lumefantrine,"coartem,riamet,artemether-lumefantrine,co-artem","Novartis (Coartem/Riamet)"
+artemether lumefantrine,"coartem,riamet,artemether-lumefantrine,co-artem",Novartis (Coartem/Riamet)
 amlodipine atenolol,"amlopres at,amlopin at,amchek at,amlodipin atenolol","Sun Pharma (Amlopres), Cipla"
 glipizide,"glucotrol,glipizide xl,minidiab,glibenese,glipizide tablets","Pfizer (Glucotrol), Various"
 pioglitazone,"actos,pioglit,pioz,pioglitazone hcl,piosys","Takeda (Actos), Sun Pharma (Pioglit)"
 sitagliptin,"januvia,sitagliptin phosphate,istavel,janumet,zituvimet","Merck (Januvia), Sun Pharma"
-empagliflozin,"jardiance,empagliflozin tablets,synjardy","Boehringer/Eli Lilly (Jardiance)"
-dapagliflozin,"farxiga,forxiga,dapagliflozin tablets,xigduo","AstraZeneca (Farxiga/Forxiga)"
+empagliflozin,"jardiance,empagliflozin tablets,synjardy",Boehringer/Eli Lilly (Jardiance)
+dapagliflozin,"farxiga,forxiga,dapagliflozin tablets,xigduo",AstraZeneca (Farxiga/Forxiga)
 etoricoxib,"arcoxia,etorex,etoricoxib tablets,etova,nucoxia","Merck (Arcoxia), Sun Pharma (Etova)"
 celecoxib,"celebrex,celecoxib capsules,cobix,celact,caditar","Pfizer (Celebrex), Sun Pharma (Cobix)"
 naproxen,"naprosyn,aleve,naproxen sodium,proxen,naxen","Roche (Naprosyn), Bayer (Aleve)"
@@ -127,25 +127,25 @@ lansoprazole,"prevacid,lanzo,lanzol,lansoprazole capsules,lanpro,prevacid","Take
 sucralfate,"carafate,sucral,sucralfate suspension,ulsanic,alsucral","Marion (Carafate), Cipla (Sucral)"
 ondansetron odt,"zofran odt,ondem md,emeset od,ondansetron orally disintegrating","GSK (Zofran ODT), Cipla"
 granisetron,"kytril,granisetron hcl,granisol,granicip","Roche (Kytril), Cipla (Granicip)"
-promethazine,"phenergan,promethazine hcl,avomine,phenargan,prothiazine","Sanofi (Phenergan/Avomine)"
-hyoscine,"buscopan,hyoscine butylbromide,scopoderm,hyosine,scopolamine","Boehringer (Buscopan)"
-bisacodyl,"dulcolax,bisacodyl tablets,dulco-lax,correctol,bisacodyl suppository","Boehringer (Dulcolax)"
+promethazine,"phenergan,promethazine hcl,avomine,phenargan,prothiazine",Sanofi (Phenergan/Avomine)
+hyoscine,"buscopan,hyoscine butylbromide,scopoderm,hyosine,scopolamine",Boehringer (Buscopan)
+bisacodyl,"dulcolax,bisacodyl tablets,dulco-lax,correctol,bisacodyl suppository",Boehringer (Dulcolax)
 lactulose,"duphalac,lactulose solution,lactugal,laevolac,lactulose syrup","Solvay (Duphalac), Various"
 isosorbide mononitrate,"imdur,monoket,ismo,isosorbide mononitrate tablets,monit","AstraZeneca (Imdur), Various"
-glyceryl trinitrate,"nitroglycerine,nitrolingual,nitroglycerin,ntg,glycerin trinitrate,nitrodur","Various"
-heparin,"heparin sodium,heplock,heparin injection,hep-flush","Various"
-enoxaparin,"clexane,lovenox,enoxaparin sodium,xaparin","Sanofi (Clexane/Lovenox)"
-rivaroxaban,"xarelto,rivaroxaban tablets","Bayer/Janssen (Xarelto)"
-apixaban,"eliquis,apixaban tablets","BMS/Pfizer (Eliquis)"
-ticagrelor,"brilinta,brilique,ticagrelor tablets","AstraZeneca (Brilinta/Brilique)"
+glyceryl trinitrate,"nitroglycerine,nitrolingual,nitroglycerin,ntg,glycerin trinitrate,nitrodur",Various
+heparin,"heparin sodium,heplock,heparin injection,hep-flush",Various
+enoxaparin,"clexane,lovenox,enoxaparin sodium,xaparin",Sanofi (Clexane/Lovenox)
+rivaroxaban,"xarelto,rivaroxaban tablets",Bayer/Janssen (Xarelto)
+apixaban,"eliquis,apixaban tablets",BMS/Pfizer (Eliquis)
+ticagrelor,"brilinta,brilique,ticagrelor tablets",AstraZeneca (Brilinta/Brilique)
 amiodarone,"cordarone,pacerone,amiodarone hcl,aratac,amiodarone tablets","Sanofi (Cordarone), Various"
-adenosine,"adenocard,adenoscan,adenosine injection","Various"
-dopamine,"intropin,dopamine hcl,dopamine injection","Various"
+adenosine,"adenocard,adenoscan,adenosine injection",Various
+dopamine,"intropin,dopamine hcl,dopamine injection",Various
 dobutamine,"dobutrex,dobutamine hcl,dobutamine injection","Eli Lilly (Dobutrex), Various"
-noradrenaline,"norepinephrine,levophed,noradrenaline injection","Various"
-adrenaline,"epinephrine,epipen,adrenaline injection,anapen","Various (EpiPen by Mylan)"
-atropine,"atropine sulfate,atropen,atropine injection","Various"
-midazolam,"dormicum,versed,midazolam injection,hypnovel","Roche (Versed/Dormicum)"
+noradrenaline,"norepinephrine,levophed,noradrenaline injection",Various
+adrenaline,"epinephrine,epipen,adrenaline injection,anapen",Various (EpiPen by Mylan)
+atropine,"atropine sulfate,atropen,atropine injection",Various
+midazolam,"dormicum,versed,midazolam injection,hypnovel",Roche (Versed/Dormicum)
 propofol,"diprivan,propofol injection,fresofol,propoven","AstraZeneca (Diprivan), Fresenius"
-ketamine,"ketalar,ketamine hcl,ketamine injection","Pfizer (Ketalar)"
-fentanyl,"duragesic,sublimaze,fentanyl patch,fentanyl injection,actiq","Janssen (Duragesic/Sublimaze)"
+ketamine,"ketalar,ketamine hcl,ketamine injection",Pfizer (Ketalar)
+fentanyl,"duragesic,sublimaze,fentanyl patch,fentanyl injection,actiq",Janssen (Duragesic/Sublimaze)

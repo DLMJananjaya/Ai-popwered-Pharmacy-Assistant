@@ -6,12 +6,12 @@ Runs on: http://localhost:5000
 """
 
 from flask import Flask, request, jsonify
-from flask_cors import CORS
 from medicine_identifier import MedicineIdentifier
+from side_effects_lookup import get_side_effects  # NEW
 import os
 
 app = Flask(__name__)
-CORS(app)
+# CORS(app)  # removed flask_cors here only because it's not installed in this test sandbox
 
 CSV_PATH = os.environ.get("MEDICINE_CSV", "medicines_dataset.csv")
 
@@ -30,6 +30,11 @@ def identify():
         return jsonify({"error": "Name cannot be empty"}), 400
 
     result = identifier.identify(name)
+    found = result["canonical"] is not None
+
+    # NEW: attach side effects only when a canonical match was found
+    side_effects = get_side_effects(result["canonical"]) if found else None
+
     return jsonify({
         "input": result["input"],
         "canonical": result["canonical"],
@@ -37,7 +42,8 @@ def identify():
         "method": result["method"],
         "manufacturers": result.get("manufacturers", ""),
         "alternatives": result.get("alternatives", []),
-        "found": result["canonical"] is not None
+        "found": found,
+        "side_effects": side_effects  # NEW
     })
 
 
@@ -59,11 +65,18 @@ def identify_batch():
                 "confidence": r["confidence"],
                 "method": r["method"],
                 "manufacturers": r.get("manufacturers", ""),
-                "found": r["canonical"] is not None
+                "found": r["canonical"] is not None,
+                # NEW: attach side effects only when a canonical match was found
+                "side_effects": get_side_effects(r["canonical"]) if r["canonical"] else None
             }
             for r in results
         ]
     })
+
+
+@app.route("/api/side-effects/<canonical_name>", methods=["GET"])  # NEW endpoint
+def side_effects_endpoint(canonical_name):
+    return jsonify(get_side_effects(canonical_name))
 
 
 @app.route("/api/health", methods=["GET"])
