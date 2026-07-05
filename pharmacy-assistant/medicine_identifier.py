@@ -18,6 +18,7 @@ import pandas as pd
 from rapidfuzz import fuzz, process
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
+from side_effects_lookup import get_side_effects
 
 
 # ─────────────────────────────────────────────

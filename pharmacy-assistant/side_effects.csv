@@ -1,0 +1,152 @@
+canonical_name,common_side_effects,serious_warnings,source,risk_level
+paracetamol,"Nausea, stomach upset (uncommon at normal doses)","Serious liver damage if overdosed or combined with heavy alcohol use; do not exceed the maximum daily dose",MedlinePlus,standard
+amoxicillin,"Diarrhea, nausea, vomiting, skin rash","Can cause severe allergic reaction (swelling, difficulty breathing) in penicillin-allergic patients; seek immediate help if this occurs",MedlinePlus,standard
+amoxicillin clavulanate,"Diarrhea, nausea, vomiting, skin rash","Can cause severe allergic reaction in penicillin-allergic patients; may cause liver enzyme changes with prolonged use",MedlinePlus,standard
+ibuprofen,"Stomach upset, heartburn, dizziness, mild headache","Risk of stomach bleeding/ulcers with prolonged use; avoid in patients with kidney disease or certain heart conditions without medical advice",MedlinePlus,standard
+metformin,"Diarrhea, nausea, stomach upset, metallic taste","Rare but serious risk of lactic acidosis, especially with kidney problems or heavy alcohol use",MedlinePlus,standard
+atorvastatin,"Muscle aches, joint pain, mild headache, digestive upset","Rare risk of serious muscle breakdown (rhabdomyolysis); report unexplained muscle pain or weakness to your doctor",MedlinePlus,standard
+omeprazole,"Headache, diarrhea, nausea, stomach pain, gas","Long-term use linked to vitamin B12 and magnesium deficiency; rare risk of bone fracture with long-term high-dose use",MedlinePlus,standard
+esomeprazole,"Headache, diarrhea, nausea, stomach pain, gas","Long-term use linked to vitamin B12 and magnesium deficiency; rare risk of bone fracture with long-term high-dose use",MedlinePlus,standard
+cetirizine,"Drowsiness, dry mouth, fatigue","Use caution when driving or operating machinery due to possible drowsiness",MedlinePlus,standard
+salbutamol,"Tremor, headache, fast heartbeat, nervousness","Overuse may indicate worsening asthma control; seek medical review if needing more frequent doses than prescribed",MedlinePlus,standard
+metronidazole,"Nausea, metallic taste, loss of appetite, headache","Avoid alcohol completely during and for 48 hours after treatment - causes severe nausea/vomiting reaction",MedlinePlus,standard
+ciprofloxacin,"Nausea, diarrhea, headache, dizziness","Rare risk of tendon damage/rupture, especially in older adults; avoid strenuous exercise on the affected tendon if pain occurs",MedlinePlus,standard
+diclofenac,"Stomach upset, heartburn, headache","Increased risk of stomach bleeding and cardiovascular events with prolonged use",MedlinePlus,standard
+amlodipine,"Swelling of ankles/feet, flushing, headache, dizziness","Avoid stopping abruptly; can cause low blood pressure symptoms (dizziness, fainting) especially when standing up quickly",MedlinePlus,standard
+losartan,"Dizziness, fatigue, mild cough","Avoid in pregnancy; monitor potassium levels with prolonged use",MedlinePlus,standard
+azithromycin,"Diarrhea, nausea, abdominal pain","Rare risk of heart rhythm changes; inform doctor of any existing heart conditions",MedlinePlus,standard
+pantoprazole,"Headache, diarrhea, nausea, stomach pain","Long-term use linked to vitamin B12 and magnesium deficiency; rare risk of bone fracture with long-term high-dose use",MedlinePlus,standard
+enalapril,"Dry cough, dizziness, headache, fatigue","Avoid in pregnancy; can cause dangerously high potassium levels with certain other medicines",MedlinePlus,standard
+aspirin,"Stomach upset, heartburn","Increases bleeding risk; avoid before surgery or dental work without medical advice; not for children with viral infections (Reye's syndrome risk)",MedlinePlus,standard
+cefalexin,"Diarrhea, nausea, stomach upset","Can cause allergic reaction in penicillin-allergic patients; seek help if rash, swelling, or breathing difficulty occurs",MedlinePlus,standard
+doxycycline,"Nausea, stomach upset, sun sensitivity","Avoid prolonged sun exposure; can permanently discolor developing teeth in children under 8 and during pregnancy",MedlinePlus,standard
+prednisolone,"Increased appetite, mood changes, insomnia, indigestion","Do not stop abruptly after prolonged use; can mask signs of infection; monitor blood sugar with long-term use",MedlinePlus,standard
+ranitidine,"Headache, constipation, diarrhea","Inform doctor if you have kidney problems, as dose adjustment may be needed",MedlinePlus,standard
+cotrimoxazole,"Nausea, vomiting, loss of appetite, skin rash","Can cause severe allergic skin reactions; seek immediate help for rash with blistering or peeling",MedlinePlus,standard
+clotrimazole,"Mild burning, itching, or irritation at application site (topical use)","Discontinue and consult doctor if irritation worsens",MedlinePlus,standard
+folic acid,"Generally well tolerated; rare nausea or bloating","Inform doctor before use if undiagnosed anemia is present, as it can mask vitamin B12 deficiency",MedlinePlus,standard
+calcium carbonate,"Constipation, gas, bloating","Avoid taking with certain antibiotics or thyroid medication; space doses apart as advised by pharmacist",MedlinePlus,standard
+vitamin d,"Generally well tolerated at recommended doses","Excessive long-term use can cause high calcium levels; follow recommended dosing",MedlinePlus,standard
+vitamin c,"Stomach upset, diarrhea at high doses","Very high doses over long periods may increase risk of kidney stones in susceptible individuals",MedlinePlus,standard
+zinc,"Nausea, stomach upset","Long-term high-dose use can interfere with copper absorption",MedlinePlus,standard
+multivitamin,"Generally well tolerated; mild stomach upset possible","Avoid exceeding recommended dose; some formulations contain iron which is dangerous in overdose, especially for children",MedlinePlus,standard
+insulin glargine,"Low blood sugar (hypoglycemia), weight gain, injection site reactions","Monitor blood sugar regularly; know the signs of hypoglycemia (shakiness, sweating, confusion) and how to treat it",MedlinePlus,high
+insulin regular,"Low blood sugar (hypoglycemia), weight gain, injection site reactions","Monitor blood sugar regularly; know the signs of hypoglycemia and how to treat it",MedlinePlus,high
+insulin isophane,"Low blood sugar (hypoglycemia), weight gain, injection site reactions","Monitor blood sugar regularly; know the signs of hypoglycemia and how to treat it",MedlinePlus,high
+insulin aspart,"Low blood sugar (hypoglycemia), weight gain, injection site reactions","Monitor blood sugar regularly; know the signs of hypoglycemia and how to treat it",MedlinePlus,high
+insulin mixtard,"Low blood sugar (hypoglycemia), weight gain, injection site reactions","Monitor blood sugar regularly; know the signs of hypoglycemia and how to treat it",MedlinePlus,high
+levothyroxine,"Generally well tolerated when dosed correctly; can cause palpitations, anxiety, or weight loss if dose too high","Requires periodic blood tests to confirm correct dose; do not adjust dose without doctor guidance",MedlinePlus,standard
+furosemide,"Increased urination, dizziness, low potassium levels","Monitor electrolyte levels with prolonged use; rise slowly from sitting/lying to avoid dizziness",MedlinePlus,standard
+spironolactone,"Increased urination, dizziness, breast tenderness","Risk of dangerously high potassium levels, especially with kidney problems or certain other medicines",MedlinePlus,standard
+nifedipine,"Flushing, headache, swelling of ankles/feet, dizziness","Avoid grapefruit juice, which can increase drug levels; avoid abrupt discontinuation",MedlinePlus,standard
+glibenclamide,"Low blood sugar (hypoglycemia), nausea, weight gain","Risk of hypoglycemia is higher in elderly patients; know the warning signs",MedlinePlus,standard
+glimepiride,"Low blood sugar (hypoglycemia), nausea, weight gain","Risk of hypoglycemia, especially if meals are skipped or delayed",MedlinePlus,standard
+simvastatin,"Muscle aches, joint pain, digestive upset","Rare risk of serious muscle breakdown (rhabdomyolysis); report unexplained muscle pain to your doctor",MedlinePlus,standard
+clopidogrel,"Bruising, mild bleeding, stomach upset","Increases bleeding risk; inform any doctor/dentist before procedures; do not stop without medical advice",MedlinePlus,standard
+warfarin,"Bruising, bleeding gums, prolonged bleeding from cuts","Requires regular blood tests (INR) to monitor dose; many food and drug interactions; seek urgent care for unusual bleeding or severe headache",MedlinePlus,high
+digoxin,"Nausea, loss of appetite, dizziness","Narrow safe dosing range; requires monitoring; seek medical help for vision changes, irregular heartbeat, or severe nausea",MedlinePlus,high
+phenytoin,"Drowsiness, dizziness, gum swelling","Requires blood level monitoring; report rash, fever, or swollen glands immediately - may signal serious reaction",MedlinePlus,high
+carbamazepine,"Drowsiness, dizziness, nausea","Requires blood monitoring; report rash, fever, or unusual bruising immediately - may signal serious blood or skin reaction",MedlinePlus,high
+valproate,"Nausea, drowsiness, tremor, weight gain","Avoid in pregnancy if possible due to birth defect risk; requires liver function monitoring",MedlinePlus,high
+methotrexate,"Nausea, mouth sores, fatigue","Requires regular blood test monitoring; avoid alcohol; avoid in pregnancy; take exactly as prescribed (often weekly, not daily) - dosing errors can be fatal",MedlinePlus,high
+hydroxychloroquine,"Nausea, stomach upset, headache","Requires periodic eye examinations with long-term use due to rare risk of retinal damage",MedlinePlus,standard
+colchicine,"Diarrhea, nausea, abdominal pain","Narrow safe dosing range; overdose can be life-threatening; do not exceed prescribed dose",MedlinePlus,high
+allopurinol,"Skin rash, nausea","Stop and seek medical attention immediately if a rash develops - can signal a serious reaction",MedlinePlus,standard
+tramadol,"Nausea, dizziness, constipation, drowsiness","Risk of dependence with prolonged use; avoid alcohol; can cause seizures at high doses or combined with certain other medicines",MedlinePlus,high
+ondansetron,"Headache, constipation, fatigue","Rare risk of heart rhythm changes, particularly with higher doses or existing heart conditions",MedlinePlus,standard
+domperidone,"Dry mouth, headache, stomach cramps, diarrhea","Rare risk of heart rhythm problems, especially at high doses or in patients with existing heart conditions; avoid with certain other medicines without medical advice",MedlinePlus,standard
+metoclopramide,"Drowsiness, restlessness, fatigue","Risk of movement disorders with prolonged use; not usually recommended for more than 5 days continuous use",MedlinePlus,standard
+loperamide,"Constipation, dizziness, nausea","Do not use for diarrhea with high fever or blood in stool without medical advice; stop if abdominal swelling occurs",MedlinePlus,standard
+oral rehydration salts,"Generally well tolerated; rare mild nausea","Prepare exactly as directed - too concentrated a solution can be harmful, especially for infants",MedlinePlus,standard
+chlorpheniramine,"Drowsiness, dry mouth, dizziness","Use caution when driving or operating machinery due to drowsiness",MedlinePlus,standard
+loratadine,"Headache, drowsiness (less common than older antihistamines), dry mouth","Generally well tolerated; inform doctor of liver problems as dose adjustment may be needed",MedlinePlus,standard
+fexofenadine,"Headache, drowsiness (uncommon), nausea","Avoid taking with fruit juices, which can reduce effectiveness",MedlinePlus,standard
+montelukast,"Headache, stomach pain","Rare reports of mood or behavior changes; inform doctor if these occur",MedlinePlus,standard
+budesonide,"Throat irritation, cough, headache (inhaled use)","Rinse mouth after inhaled use to prevent oral thrush",MedlinePlus,standard
+fluticasone,"Headache, nosebleeds (nasal spray), throat irritation (inhaled)","Rinse mouth after inhaled use to prevent oral thrush",MedlinePlus,standard
+magnesium sulfate,"Diarrhea, stomach cramps (oral use)","Use with caution in kidney disease; follow dosing instructions carefully",MedlinePlus,standard
+potassium chloride,"Nausea, stomach upset","Requires monitoring of blood potassium levels; too much can cause dangerous heart rhythm changes",MedlinePlus,high
+calcium gluconate,"Generally well tolerated orally; injection site irritation if given by injection","Use with caution in kidney disease",MedlinePlus,standard
+valsartan,"Dizziness, fatigue, mild cough","Avoid in pregnancy; monitor potassium levels with prolonged use",MedlinePlus,standard
+ramipril,"Dry cough, dizziness, headache, fatigue","Avoid in pregnancy; can cause dangerously high potassium levels with certain other medicines",MedlinePlus,standard
+lisinopril,"Dry cough, dizziness, headache, fatigue","Avoid in pregnancy; can cause dangerously high potassium levels with certain other medicines",MedlinePlus,standard
+telmisartan,"Dizziness, fatigue, mild back pain","Avoid in pregnancy; monitor potassium levels with prolonged use",MedlinePlus,standard
+bisoprolol,"Fatigue, dizziness, cold hands/feet","Do not stop abruptly - can cause rebound increase in heart rate/blood pressure; use caution with diabetes as it can mask low blood sugar signs",MedlinePlus,standard
+metoprolol,"Fatigue, dizziness, cold hands/feet","Do not stop abruptly; use caution with diabetes as it can mask low blood sugar signs",MedlinePlus,standard
+atenolol,"Fatigue, dizziness, cold hands/feet","Do not stop abruptly; use caution with diabetes as it can mask low blood sugar signs",MedlinePlus,standard
+propranolol,"Fatigue, dizziness, cold hands/feet","Do not stop abruptly; avoid in uncontrolled asthma due to risk of breathing difficulty",MedlinePlus,standard
+amlodipine besylate,"Swelling of ankles/feet, flushing, headache, dizziness","Avoid stopping abruptly; can cause low blood pressure symptoms when standing up quickly",MedlinePlus,standard
+diltiazem,"Headache, dizziness, swelling of ankles/feet","Avoid grapefruit juice; do not stop abruptly",MedlinePlus,standard
+cefuroxime,"Diarrhea, nausea, stomach upset","Can cause allergic reaction in penicillin-allergic patients",MedlinePlus,standard
+ceftriaxone,"Diarrhea, nausea, injection site pain","Can cause allergic reaction in penicillin-allergic patients; inform doctor of any prior reactions",MedlinePlus,standard
+cefixime,"Diarrhea, nausea, stomach upset","Can cause allergic reaction in penicillin-allergic patients",MedlinePlus,standard
+clarithromycin,"Nausea, altered taste, stomach upset","Can interact with many other medicines; inform doctor of all medications being taken",MedlinePlus,standard
+levofloxacin,"Nausea, diarrhea, headache, dizziness","Rare risk of tendon damage/rupture, especially in older adults",MedlinePlus,standard
+moxifloxacin,"Nausea, diarrhea, headache, dizziness","Rare risk of tendon damage/rupture and heart rhythm changes",MedlinePlus,standard
+fluconazole,"Headache, nausea, stomach pain","Can interact with many other medicines; inform doctor of all medications being taken",MedlinePlus,standard
+acyclovir,"Nausea, headache, stomach upset","Drink plenty of fluids during treatment to protect kidney function",MedlinePlus,standard
+oseltamivir,"Nausea, vomiting, headache","Most effective if started within 48 hours of symptom onset; rare reports of mood/behavior changes in children",MedlinePlus,standard
+hydroxyzine,"Drowsiness, dry mouth, dizziness","Use caution when driving or operating machinery due to drowsiness",MedlinePlus,standard
+diazepam,"Drowsiness, dizziness, muscle weakness","Risk of dependence with prolonged use; avoid alcohol; do not stop abruptly after extended use",MedlinePlus,high
+alprazolam,"Drowsiness, dizziness, memory problems","Risk of dependence with prolonged use; avoid alcohol; do not stop abruptly after extended use",MedlinePlus,high
+clonazepam,"Drowsiness, dizziness, fatigue","Risk of dependence with prolonged use; do not stop abruptly after extended use",MedlinePlus,high
+amitriptyline,"Drowsiness, dry mouth, constipation, weight gain","Use caution when driving; can affect heart rhythm in susceptible individuals",MedlinePlus,standard
+sertraline,"Nausea, headache, sleep changes, sexual side effects","May increase suicidal thoughts in young people initially; report any worsening mood to doctor promptly",MedlinePlus,high
+fluoxetine,"Nausea, headache, sleep changes, sexual side effects","May increase suicidal thoughts in young people initially; report any worsening mood to doctor promptly",MedlinePlus,high
+escitalopram,"Nausea, headache, sleep changes, sexual side effects","May increase suicidal thoughts in young people initially; report any worsening mood to doctor promptly",MedlinePlus,high
+olanzapine,"Drowsiness, weight gain, increased appetite","Can raise blood sugar and cholesterol; requires periodic monitoring",MedlinePlus,high
+risperidone,"Drowsiness, weight gain, dizziness","Can cause movement-related side effects; requires periodic monitoring with long-term use",MedlinePlus,high
+gabapentin,"Drowsiness, dizziness, fatigue","Use caution when driving; do not stop abruptly after prolonged use",MedlinePlus,standard
+pregabalin,"Drowsiness, dizziness, weight gain","Use caution when driving; do not stop abruptly after prolonged use",MedlinePlus,standard
+tamsulosin,"Dizziness, headache, runny nose","Can cause a drop in blood pressure on standing, especially with the first dose",MedlinePlus,standard
+sildenafil,"Headache, flushing, indigestion","Do not use with nitrate medicines (e.g. for chest pain) - dangerous blood pressure drop",MedlinePlus,standard
+tadalafil,"Headache, back pain, indigestion","Do not use with nitrate medicines (e.g. for chest pain) - dangerous blood pressure drop",MedlinePlus,standard
+methylprednisolone,"Increased appetite, mood changes, insomnia","Do not stop abruptly after prolonged use; can mask signs of infection",MedlinePlus,standard
+hydrocortisone,"Mild skin irritation (topical); increased appetite, mood changes (oral)","Do not stop abruptly after prolonged oral use",MedlinePlus,standard
+betamethasone,"Mild skin irritation (topical); increased appetite, mood changes (oral)","Do not stop abruptly after prolonged oral use",MedlinePlus,standard
+dexamethasone,"Increased appetite, insomnia, mood changes, indigestion, increased blood sugar","Do not stop abruptly after prolonged use; can mask signs of infection; use exact prescribed duration",MedlinePlus,standard
+ketoconazole,"Itching, irritation at application site (topical); nausea (oral)","Oral form rarely used now due to liver risk; follow prescribed duration",MedlinePlus,standard
+terbinafine,"Headache, stomach upset, rash","Rare risk of liver problems with oral use; report unusual fatigue or yellowing of skin/eyes",MedlinePlus,standard
+albendazole,"Headache, nausea, stomach pain","Take with fatty food to improve absorption as directed",MedlinePlus,standard
+mebendazole,"Stomach pain, diarrhea (uncommon at standard dose)","Generally well tolerated; follow dosing instructions",MedlinePlus,standard
+ivermectin,"Dizziness, nausea, diarrhea","Inform doctor if you have other parasitic infections, as treatment order may matter",MedlinePlus,standard
+chloroquine,"Nausea, headache, dizziness","Requires periodic eye examination with long-term use; avoid in certain heart rhythm conditions",MedlinePlus,standard
+artemether lumefantrine,"Headache, dizziness, loss of appetite","Take with fatty food to improve absorption; inform doctor of any heart conditions",MedlinePlus,standard
+amlodipine atenolol,"Swelling of ankles/feet, fatigue, dizziness","Do not stop abruptly; can cause low blood pressure symptoms when standing up quickly",MedlinePlus,standard
+glipizide,"Low blood sugar (hypoglycemia), nausea, weight gain","Risk of hypoglycemia is higher in elderly patients; know the warning signs",MedlinePlus,standard
+pioglitazone,"Weight gain, swelling of ankles/feet","Avoid in heart failure; requires liver function monitoring",MedlinePlus,standard
+sitagliptin,"Headache, upper respiratory symptoms, stomach upset","Rare risk of pancreatitis; seek medical help for severe abdominal pain",MedlinePlus,standard
+empagliflozin,"Increased urination, genital yeast infections","Rare risk of diabetic ketoacidosis even with normal blood sugar; seek help for unusual fatigue, nausea, or breathing changes",MedlinePlus,standard
+dapagliflozin,"Increased urination, genital yeast infections","Rare risk of diabetic ketoacidosis even with normal blood sugar; seek help for unusual fatigue, nausea, or breathing changes",MedlinePlus,standard
+etoricoxib,"Stomach upset, dizziness, swelling of ankles/feet","Increased cardiovascular risk with long-term use; avoid in uncontrolled high blood pressure",MedlinePlus,standard
+celecoxib,"Stomach upset, dizziness, swelling of ankles/feet","Increased cardiovascular risk with long-term use; lower stomach bleeding risk than older NSAIDs but not risk-free",MedlinePlus,standard
+naproxen,"Stomach upset, heartburn, headache","Risk of stomach bleeding/ulcers with prolonged use",MedlinePlus,standard
+meloxicam,"Stomach upset, dizziness, swelling of ankles/feet","Risk of stomach bleeding and cardiovascular events with prolonged use",MedlinePlus,standard
+rabeprazole,"Headache, diarrhea, nausea, stomach pain","Long-term use linked to vitamin B12 and magnesium deficiency",MedlinePlus,standard
+lansoprazole,"Headache, diarrhea, nausea, stomach pain","Long-term use linked to vitamin B12 and magnesium deficiency",MedlinePlus,standard
+sucralfate,"Constipation, dry mouth","Take on an empty stomach as directed; separate from other medicines by 2 hours",MedlinePlus,standard
+ondansetron odt,"Headache, constipation, fatigue","Rare risk of heart rhythm changes, particularly with higher doses",MedlinePlus,standard
+granisetron,"Headache, constipation, fatigue","Rare risk of heart rhythm changes",MedlinePlus,standard
+promethazine,"Drowsiness, dry mouth, dizziness","Use caution when driving; not recommended for children under 2 due to breathing risk",MedlinePlus,standard
+hyoscine,"Dry mouth, blurred vision, drowsiness","Use caution when driving; avoid in certain eye conditions (glaucoma) without medical advice",MedlinePlus,standard
+bisacodyl,"Abdominal cramps, diarrhea","Avoid prolonged regular use without medical advice; can cause dependence on laxatives",MedlinePlus,standard
+lactulose,"Bloating, gas, abdominal cramps","Effects may take 1-2 days to begin; ensure adequate fluid intake",MedlinePlus,standard
+isosorbide mononitrate,"Headache, dizziness, flushing","Avoid alcohol; rise slowly from sitting/lying to avoid dizziness",MedlinePlus,standard
+glyceryl trinitrate,"Headache, dizziness, flushing","Do not use with sildenafil/tadalafil-type medicines - dangerous blood pressure drop",MedlinePlus,standard
+heparin,"Bruising, bleeding at injection site","Requires monitoring in hospital settings; report unusual bleeding immediately",MedlinePlus,high
+enoxaparin,"Bruising, bleeding at injection site","Increases bleeding risk; report unusual bleeding immediately",MedlinePlus,high
+rivaroxaban,"Bruising, mild bleeding","Increases bleeding risk; inform any doctor/dentist before procedures; do not stop without medical advice",MedlinePlus,high
+apixaban,"Bruising, mild bleeding","Increases bleeding risk; inform any doctor/dentist before procedures; do not stop without medical advice",MedlinePlus,high
+ticagrelor,"Bruising, shortness of breath, bleeding","Increases bleeding risk; inform any doctor/dentist before procedures",MedlinePlus,high
+amiodarone,"Nausea, fatigue, skin sensitivity to sunlight","Requires regular monitoring of thyroid, liver, and lung function with long-term use",MedlinePlus,high
+adenosine,"Brief flushing, chest discomfort, shortness of breath","Administered only in hospital/clinical settings under monitoring",MedlinePlus,high
+dopamine,"Nausea, headache, irregular heartbeat","Administered only in hospital settings under continuous monitoring",MedlinePlus,high
+dobutamine,"Increased heart rate, headache, nausea","Administered only in hospital settings under continuous monitoring",MedlinePlus,high
+noradrenaline,"Headache, slow heart rate, anxiety","Administered only in hospital/ICU settings under continuous monitoring",MedlinePlus,high
+adrenaline,"Anxiety, tremor, rapid heartbeat, headache","Used for emergency treatment (e.g. severe allergic reactions); seek emergency care after any use",MedlinePlus,high
+atropine,"Dry mouth, blurred vision, rapid heartbeat","Administered or prescribed under medical supervision; avoid in certain eye conditions without medical advice",MedlinePlus,high
+midazolam,"Drowsiness, confusion, low blood pressure","Administered under medical supervision, often for sedation before procedures; do not drive for 24 hours after use",MedlinePlus,high
+propofol,"Low blood pressure, breathing changes at injection","Administered only by trained medical professionals in monitored settings",MedlinePlus,high
+ketamine,"Confusion, elevated blood pressure, hallucination-like effects","Administered only by trained medical professionals in monitored settings",MedlinePlus,high
+fentanyl,"Drowsiness, nausea, constipation, slowed breathing","High overdose risk; never adjust dose without medical guidance; seek emergency help for slowed or difficult breathing",MedlinePlus,high
+misoprostol,"Diarrhea, abdominal cramps, nausea, vomiting","Can cause uterine contractions; not for use in pregnancy unless directed by a doctor for that specific purpose",MedlinePlus,standard
