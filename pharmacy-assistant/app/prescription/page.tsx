@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import AppSidebar from '../components/AppSidebar';
 import TopHeader from '../components/TopHeader';
 import ReactCrop, { type Crop, type PixelCrop } from 'react-image-crop';
@@ -31,6 +32,13 @@ type IdentifiedMed = {
   manufacturers: string | null;
   alternatives: Array<{ canonical: string; score: number }>;
   sideEffects: SideEffects | null;
+};
+
+type InvItem = {
+  id: string;
+  name: string;
+  qty: number;
+  unitPrice: number;
 };
 
 // Helper: crop an image on a canvas and return data URL
@@ -98,6 +106,10 @@ export default function PrescriptionPage() {
   const [patientEmail, setPatientEmail] = useState('');
   const [sendingEmail, setSendingEmail] = useState(false);
   const [emailStatus, setEmailStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [sendingToBilling, setSendingToBilling] = useState(false);
+  const [billingMatchCount, setBillingMatchCount] = useState<number | null>(null);
+
+  const router = useRouter();
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -242,6 +254,7 @@ export default function PrescriptionPage() {
     setPrescriptionDate(null);
     setDiagnosis(null);
     setManualMeds([]);
+    setBillingMatchCount(null);
   };
 
   // 2) Capture Photo
@@ -1033,6 +1046,85 @@ export default function PrescriptionPage() {
                       <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-emerald-100 border border-emerald-300"></span> Exact</span>
                       <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-blue-100 border border-blue-300"></span> Fuzzy</span>
                       <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-purple-100 border border-purple-300"></span> Semantic</span>
+                    </div>
+                  </div>
+
+                  {/* --- SEND TO BILLING (NEW) --- */}
+                  <div className="px-6 py-4 bg-teal-50 border-t-2 border-teal-200">
+                    <div className="flex items-center justify-between flex-wrap gap-3">
+                      <div>
+                        <h4 className="text-sm font-bold text-teal-800">Send to Billing</h4>
+                        <p className="text-xs text-teal-600 mt-0.5">
+                          Medicines found in your inventory will be pre-loaded into the billing page.
+                        </p>
+                        {billingMatchCount !== null && billingMatchCount === 0 && (
+                          <p className="text-xs text-amber-600 mt-1 font-medium">⚠ None of the identified medicines are in your inventory. Add them first.</p>
+                        )}
+                        {billingMatchCount !== null && billingMatchCount > 0 && (
+                          <p className="text-xs text-emerald-600 mt-1 font-medium">✓ {billingMatchCount} medicine{billingMatchCount !== 1 ? 's' : ''} matched in inventory — opening billing...</p>
+                        )}
+                      </div>
+                      <button
+                        id="send-to-billing-btn"
+                        disabled={sendingToBilling || manualMeds.filter(m => m.found && !m.loading).length === 0}
+                        onClick={async () => {
+                          setSendingToBilling(true);
+                          setBillingMatchCount(null);
+                          try {
+                            const invRes = await fetch('/api/inventory');
+                            if (!invRes.ok) throw new Error('Failed to load inventory');
+                            const inventory: InvItem[] = await invRes.json();
+
+                            const foundMeds = manualMeds.filter(m => m.found && m.canonical && !m.loading);
+                            const matched: Array<{ inventoryId: string; name: string; qty: number; unitPrice: number }> = [];
+
+                            for (const med of foundMeds) {
+                              const canonical = med.canonical!.toLowerCase().trim();
+                              const invItem = inventory.find(
+                                (inv) => inv.name.toLowerCase().trim() === canonical && inv.qty > 0
+                              );
+                              if (invItem) {
+                                matched.push({
+                                  inventoryId: invItem.id,
+                                  name: invItem.name,
+                                  qty: 1,
+                                  unitPrice: invItem.unitPrice,
+                                });
+                              }
+                            }
+
+                            setBillingMatchCount(matched.length);
+
+                            if (matched.length > 0) {
+                              sessionStorage.setItem('prescriptionBillItems', JSON.stringify(matched));
+                              setTimeout(() => router.push('/billing'), 800);
+                            }
+                          } catch (err) {
+                            console.error('Send to billing error:', err);
+                            alert('Failed to check inventory. Please try again.');
+                          } finally {
+                            setSendingToBilling(false);
+                          }
+                        }}
+                        className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2.5 px-6 rounded-xl shadow-md flex items-center gap-2 text-sm whitespace-nowrap transition-all"
+                      >
+                        {sendingToBilling ? (
+                          <>
+                            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                            Checking inventory...
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            Send to Billing
+                          </>
+                        )}
+                      </button>
                     </div>
                   </div>
 
