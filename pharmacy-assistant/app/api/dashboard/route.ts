@@ -1,16 +1,24 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import dbConnect from '@/lib/db';
 import BillingRecord from '@/models/BillingRecord';
 
 export async function GET(req: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
     await dbConnect();
 
     const { searchParams } = new URL(req.url);
     const fromDate = searchParams.get('from');
     const toDate = searchParams.get('to');
 
-    let query: any = {};
+    // Always scope to the currently signed-in user
+    let query: any = { userId: session.user.id };
     
     if (fromDate || toDate) {
       query.createdAt = {};

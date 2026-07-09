@@ -353,17 +353,15 @@ export default function RackManagement() {
                   </div>
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-bold text-gray-800">Rows</label>
-                    <select value={rackForm.rows} onChange={e => setRackForm({ ...rackForm, rows: e.target.value })}
-                      className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50">
-                      {[1, 2, 3, 4, 5, 6].map(n => <option key={n} value={n}>{n}</option>)}
-                    </select>
+                    <input type="number" min="1" max="20" value={rackForm.rows}
+                      onChange={e => setRackForm({ ...rackForm, rows: e.target.value })}
+                      className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50 text-center" />
                   </div>
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-bold text-gray-800">Columns</label>
-                    <select value={rackForm.cols} onChange={e => setRackForm({ ...rackForm, cols: e.target.value })}
-                      className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50">
-                      {[1, 3, 5, 7, 8, 10, 12].map(n => <option key={n} value={n}>{n}</option>)}
-                    </select>
+                    <input type="number" min="1" max="30" value={rackForm.cols}
+                      onChange={e => setRackForm({ ...rackForm, cols: e.target.value })}
+                      className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50 text-center" />
                   </div>
                   <button onClick={addRack} className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 rounded shadow-md mt-2">
                     ADD RACK
@@ -379,10 +377,9 @@ export default function RackManagement() {
                   </div>
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-bold text-gray-800">Count</label>
-                    <select value={userForm.count} onChange={e => setUserForm({ ...userForm, count: e.target.value })}
-                      className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50">
-                      {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n}</option>)}
-                    </select>
+                    <input type="number" min="1" max="20" value={userForm.count}
+                      onChange={e => setUserForm({ ...userForm, count: e.target.value })}
+                      className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50 text-center" />
                   </div>
                   <button onClick={addUser} className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 rounded shadow-md mt-2">
                     ADD PERSON
@@ -398,10 +395,9 @@ export default function RackManagement() {
                   </div>
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-bold text-gray-800">Count</label>
-                    <select value={doorForm.count} onChange={e => setDoorForm({ ...doorForm, count: e.target.value })}
-                      className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50">
-                      {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n}</option>)}
-                    </select>
+                    <input type="number" min="1" max="20" value={doorForm.count}
+                      onChange={e => setDoorForm({ ...doorForm, count: e.target.value })}
+                      className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50 text-center" />
                   </div>
                   <button onClick={addDoor} className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 rounded shadow-md mt-2">
                     ADD DOOR
