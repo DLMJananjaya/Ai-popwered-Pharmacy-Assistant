@@ -18,6 +18,7 @@ import pandas as pd
 from rapidfuzz import fuzz, process
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
+from side_effects_lookup import get_side_effects
 
 
 # ─────────────────────────────────────────────
@@ -29,10 +30,12 @@ def load_dataset(csv_path: str):
     Loads the CSV and builds:
       alias_map:        alias (lowercase) -> canonical name
       manufacturer_map: canonical name   -> manufacturer string
+      price_map:        canonical name   -> unit price (LKR float)
       canonical_list:   list of all canonical names
     """
     alias_map = {}
     manufacturer_map = {}
+    price_map = {}
     canonical_list = []
 
     with open(csv_path, "r", encoding="utf-8") as f:
@@ -48,6 +51,12 @@ def load_dataset(csv_path: str):
             manufacturers = row.get("manufacturers", "").strip()
             manufacturer_map[canonical] = manufacturers
 
+            # Parse unit price (LKR) if present
+            try:
+                price_map[canonical] = float(row.get("unitPrice", "0") or "0")
+            except (ValueError, TypeError):
+                price_map[canonical] = 0.0
+
             # Add canonical itself
             alias_map[canonical] = canonical
 
@@ -57,8 +66,8 @@ def load_dataset(csv_path: str):
                 if alias:
                     alias_map[alias] = canonical
 
-    print(f"✅ Loaded {len(canonical_list)} medicines, {len(alias_map)} total aliases")
-    return alias_map, canonical_list, manufacturer_map
+    print(f"[OK] Loaded {len(canonical_list)} medicines, {len(alias_map)} total aliases")
+    return alias_map, canonical_list, manufacturer_map, price_map
 
 
 # ─────────────────────────────────────────────
@@ -78,7 +87,7 @@ def normalize(text: str) -> str:
 
 class MedicineEmbeddingIndex:
     def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
-        print("🔄 Loading embedding model (first run downloads ~80MB)...")
+        print("[*] Loading embedding model (first run downloads ~80MB)...")
         self.model = SentenceTransformer(model_name)
         self.alias_list = []
         self.alias_to_canonical = {}
@@ -87,12 +96,12 @@ class MedicineEmbeddingIndex:
     def build(self, alias_map: dict):
         self.alias_to_canonical = alias_map
         self.alias_list = list(alias_map.keys())
-        print(f"🔄 Encoding {len(self.alias_list)} aliases...")
+        print(f"[*] Encoding {len(self.alias_list)} aliases...")
         self.embeddings = self.model.encode(
             self.alias_list, batch_size=64,
             show_progress_bar=True, normalize_embeddings=True
         )
-        print("✅ Embedding index built!")
+        print("[OK] Embedding index built!")
 
     def save(self, path: str = "medicine_index.pkl"):
         with open(path, "wb") as f:
@@ -101,7 +110,7 @@ class MedicineEmbeddingIndex:
                 "alias_to_canonical": self.alias_to_canonical,
                 "embeddings": self.embeddings
             }, f)
-        print(f"💾 Index saved to {path}")
+        print(f"[SAVE] Index saved to {path}")
 
     def load(self, path: str = "medicine_index.pkl"):
         with open(path, "rb") as f:
@@ -109,7 +118,7 @@ class MedicineEmbeddingIndex:
         self.alias_list = data["alias_list"]
         self.alias_to_canonical = data["alias_to_canonical"]
         self.embeddings = data["embeddings"]
-        print(f"✅ Index loaded from {path} ({len(self.alias_list)} aliases)")
+        print(f"[OK] Index loaded from {path} ({len(self.alias_list)} aliases)")
 
     def search(self, query: str, top_k: int = 3) -> list:
         query_embedding = self.model.encode([query], normalize_embeddings=True)
@@ -133,7 +142,7 @@ class MedicineEmbeddingIndex:
 
 class MedicineIdentifier:
     def __init__(self, csv_path: str, index_path: str = "medicine_index.pkl"):
-        self.alias_map, self.canonical_list, self.manufacturer_map = load_dataset(csv_path)
+        self.alias_map, self.canonical_list, self.manufacturer_map, self.price_map = load_dataset(csv_path)
         self.index = MedicineEmbeddingIndex()
 
         # Always rebuild index if CSV is newer than pkl
@@ -143,7 +152,7 @@ class MedicineIdentifier:
                 rebuild = False
 
         if rebuild:
-            print("🔄 Rebuilding index (dataset updated)...")
+            print("[*] Rebuilding index (dataset updated)...")
             self.index.build(self.alias_map)
             self.index.save(index_path)
         else:
@@ -166,6 +175,7 @@ class MedicineIdentifier:
                 "confidence": 1.0,
                 "method": "exact",
                 "manufacturers": self.manufacturer_map.get(canonical, ""),
+                "unitPrice": self.price_map.get(canonical, 0.0),
                 "alternatives": []
             }
 
@@ -189,6 +199,7 @@ class MedicineIdentifier:
                 "confidence": round(score / 100, 2),
                 "method": "fuzzy",
                 "manufacturers": self.manufacturer_map.get(canonical, ""),
+                "unitPrice": self.price_map.get(canonical, 0.0),
                 "alternatives": alternatives[:2]
             }
 
@@ -206,6 +217,7 @@ class MedicineIdentifier:
                 "confidence": round(best["score"], 2),
                 "method": "semantic",
                 "manufacturers": self.manufacturer_map.get(canonical, ""),
+                "unitPrice": self.price_map.get(canonical, 0.0),
                 "alternatives": semantic_results[1:]
             }
 
@@ -215,6 +227,7 @@ class MedicineIdentifier:
             "confidence": 0.0,
             "method": "no_match",
             "manufacturers": None,
+            "unitPrice": 0.0,
             "alternatives": semantic_results
         }
 
@@ -236,7 +249,7 @@ def evaluate(identifier, test_cases: list) -> None:
     for input_name, expected in test_cases:
         result = identifier.identify(input_name)
         got = result["canonical"]
-        ok = "✅" if got == expected else "❌"
+        ok = "[OK]" if got == expected else "❌"
         if got == expected:
             correct += 1
         print(f"{input_name:<20} {expected:<25} {str(got):<25} {ok}")
@@ -251,7 +264,7 @@ def evaluate(identifier, test_cases: list) -> None:
 if __name__ == "__main__":
     CSV_PATH = "medicines_dataset.csv"
 
-    print("\n🏥 Medicine Identifier - Training & Testing")
+    print("\n[PHARMACY] Medicine Identifier - Training & Testing")
     print("=" * 50)
 
     identifier = MedicineIdentifier(CSV_PATH)
