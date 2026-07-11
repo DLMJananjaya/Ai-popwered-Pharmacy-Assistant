@@ -3,11 +3,20 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import dbConnect from '@/lib/db';
 import BillingRecord from '@/models/BillingRecord';
+import { verifyMobileToken } from '@/lib/verifyMobileToken';
+
+/** Resolves userId from NextAuth session or mobile Bearer token. */
+async function resolveUserId(req: Request): Promise<string | null> {
+  const session = await getServerSession(authOptions);
+  if (session?.user?.id) return session.user.id as string;
+  const payload = verifyMobileToken(req.headers.get('authorization'));
+  return payload?.userId ?? null;
+}
 
 export async function GET(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    const userId = await resolveUserId(req);
+    if (!userId) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
@@ -18,8 +27,8 @@ export async function GET(req: Request) {
     const toDate = searchParams.get('to');
 
     // Always scope to the currently signed-in user
-    let query: any = { userId: session.user.id };
-    
+    let query: any = { userId };
+
     if (fromDate || toDate) {
       query.createdAt = {};
       if (fromDate) {
@@ -40,16 +49,15 @@ export async function GET(req: Request) {
     const formattedRecords = records.map((r: any) => {
       const amount = r.amountPayable !== undefined ? r.amountPayable : (r.total || 0);
       const paymentMethodLower = (r.paymentMethod || '').toLowerCase();
-      
+
       const hasPrescriptionMedication = r.items?.some((item: any) => {
         const name = (item.name || '').toLowerCase();
         return name.includes('barlen') || name.includes('yescort') || name.includes('celcoxx');
       });
 
-      
       if (
-        amount === 0 || 
-        paymentMethodLower.includes('prescription') || 
+        amount === 0 ||
+        paymentMethodLower.includes('prescription') ||
         paymentMethodLower.includes('scan') ||
         hasPrescriptionMedication
       ) {
@@ -74,7 +82,7 @@ export async function GET(req: Request) {
         totalSales: `Rs. ${totalSalesAmt.toFixed(2)}`,
         revenue: `Rs. ${(totalSalesAmt * 0.15).toFixed(2)}`,
       },
-      records: formattedRecords
+      records: formattedRecords,
     });
 
   } catch (error: any) {

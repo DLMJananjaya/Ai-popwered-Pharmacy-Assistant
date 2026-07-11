@@ -278,18 +278,28 @@ export default function RackManagement() {
     };
 
     if (el.type === 'rack') {
+      // Show a compact horizontal strip: first few columns + badge for total
+      const maxVisible = Math.min(el.cols, 8);
+      const hasMore = el.cols > maxVisible;
       return (
         <div key={el.id} style={baseStyle} onMouseDown={(e) => handleMouseDown(e, el.id)}
           className={`flex flex-col bg-white ${isSelected ? 'ring-2 ring-blue-600 ring-offset-2 ring-offset-gray-300 z-10' : 'border border-gray-500 z-0'}`}>
           <div className="absolute -top-6 left-0 text-sm font-bold text-gray-800 pointer-events-none whitespace-nowrap">{el.name}</div>
-          <div className="flex border border-gray-600">
-            {Array.from({ length: el.cols }).map((_, i) => (
-              <div key={i} style={{ width: 35, height: 35 }}
+          <div className="flex items-center border border-gray-600">
+            {Array.from({ length: maxVisible }).map((_, i) => (
+              <div key={i} style={{ width: 28, height: 28 }}
                 className="border-r border-gray-400 last:border-r-0 bg-white flex items-center justify-center pointer-events-none">
-                <span className="text-[10px] font-bold text-gray-400 select-none">{i + 1}</span>
+                <span className="text-[9px] font-bold text-gray-400 select-none">{i + 1}</span>
               </div>
             ))}
+            {hasMore && (
+              <div style={{ height: 28 }}
+                className="bg-gray-100 flex items-center justify-center px-2 pointer-events-none border-l border-gray-400">
+                <span className="text-[9px] font-bold text-teal-600 select-none whitespace-nowrap">…{el.cols}</span>
+              </div>
+            )}
           </div>
+          <div className="text-[8px] text-gray-400 text-center pointer-events-none mt-0.5">{el.rows}R × {el.cols}P</div>
         </div>
       );
     }
@@ -359,7 +369,7 @@ export default function RackManagement() {
                   </div>
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-bold text-gray-800">Columns</label>
-                    <input type="number" min="1" max="30" value={rackForm.cols}
+                    <input type="number" min="1" max="100" value={rackForm.cols}
                       onChange={e => setRackForm({ ...rackForm, cols: e.target.value })}
                       className="w-16 border border-gray-300 p-1 text-sm rounded bg-gray-50 text-center" />
                   </div>
@@ -464,38 +474,57 @@ export default function RackManagement() {
                         </div>
                         <div className="flex items-center space-x-2">
                           <label className="text-sm font-bold text-gray-700">Partitions:</label>
-                          <input type="number" min="1" max="20" value={selectedElement.cols}
+                          <input type="number" min="1" max="100" value={selectedElement.cols}
                             onChange={(e) => updateRackDimensions(selectedElement.id, selectedElement.rows, parseInt(e.target.value) || 1)}
                             className="w-16 border border-gray-300 rounded p-1 text-center font-semibold text-teal-700 focus:ring-2 focus:ring-teal-500" />
                         </div>
                       </div>
                     </div>
 
-                    <div className="bg-[#f0f0f0] p-4 rounded-lg border border-gray-300 w-full overflow-x-auto shadow-inner">
-                      <div className="flex flex-col">
-                        {Array.from({ length: selectedElement.rows }).map((_, rIdx) => (
-                          <div key={rIdx} className="flex border-t border-l border-gray-500 first:border-t-0">
-                            {Array.from({ length: selectedElement.cols }).map((_, cIdx) => {
-                              const cellData = selectedElement.gridData[`${rIdx}-${cIdx}`];
-                              return (
-                                <div key={cIdx} onClick={() => openCellEditor(rIdx, cIdx)}
-                                  className={`w-28 h-20 border-r border-b border-gray-500 shrink-0 p-1.5 flex flex-col cursor-pointer transition-colors hover:ring-2 hover:ring-inset hover:ring-blue-400 ${cellData ? 'bg-teal-50' : 'bg-white hover:bg-gray-50'}`}>
-                                  <span className="text-[10px] text-gray-500 font-bold tracking-wider mb-1">R{rIdx + 1} - P{cIdx + 1}</span>
-                                  {cellData ? (
-                                    <div className="flex flex-col flex-1 overflow-hidden">
-                                      <span className="text-xs font-bold text-teal-800 truncate" title={cellData.name}>{cellData.name}</span>
-                                      <span className="text-[11px] text-teal-600 font-medium mt-auto">Qty: {cellData.qty}</span>
-                                    </div>
-                                  ) : (
-                                    <div className="flex-1 flex items-center justify-center">
-                                      <span className="text-xs text-gray-300 italic">+ Add</span>
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        ))}
+                    {/* Single scrollable container for column header + grid body */}
+                    <div className="w-full overflow-x-auto rounded-lg border border-gray-300 shadow-inner">
+                      <div style={{ minWidth: `${selectedElement.cols * 112 + 40}px` }}>
+                        {/* Column index header: 1 | 2 | 3 | ... | N */}
+                        <div className="flex bg-gray-200 sticky top-0 z-10">
+                          {/* Row label spacer */}
+                          <div className="w-10 shrink-0" />
+                          {Array.from({ length: selectedElement.cols }).map((_, cIdx) => (
+                            <div key={cIdx}
+                              className="w-28 shrink-0 flex items-center justify-center py-1.5 border-r border-b border-gray-300 last:border-r-0">
+                              <span className="text-xs font-bold text-gray-600">{cIdx + 1}</span>
+                            </div>
+                          ))}
+                        </div>
+                        {/* Grid body with row labels */}
+                        <div className="flex flex-col bg-[#f0f0f0]">
+                          {Array.from({ length: selectedElement.rows }).map((_, rIdx) => (
+                            <div key={rIdx} className="flex">
+                              {/* Row label */}
+                              <div className="w-10 shrink-0 flex items-center justify-center bg-gray-200 border-b border-r border-gray-400">
+                                <span className="text-[10px] font-bold text-gray-600">R{rIdx + 1}</span>
+                              </div>
+                              {Array.from({ length: selectedElement.cols }).map((_, cIdx) => {
+                                const cellData = selectedElement.gridData[`${rIdx}-${cIdx}`];
+                                return (
+                                  <div key={cIdx} onClick={() => openCellEditor(rIdx, cIdx)}
+                                    className={`w-28 h-20 border-r border-b border-gray-500 shrink-0 p-1.5 flex flex-col cursor-pointer transition-colors hover:ring-2 hover:ring-inset hover:ring-blue-400 ${cellData ? 'bg-teal-50' : 'bg-white hover:bg-gray-50'}`}>
+                                    <span className="text-[10px] text-gray-500 font-bold tracking-wider mb-1">R{rIdx + 1} - P{cIdx + 1}</span>
+                                    {cellData ? (
+                                      <div className="flex flex-col flex-1 overflow-hidden">
+                                        <span className="text-xs font-bold text-teal-800 truncate" title={cellData.name}>{cellData.name}</span>
+                                        <span className="text-[11px] text-teal-600 font-medium mt-auto">Qty: {cellData.qty}</span>
+                                      </div>
+                                    ) : (
+                                      <div className="flex-1 flex items-center justify-center">
+                                        <span className="text-xs text-gray-300 italic">+ Add</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
 

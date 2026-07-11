@@ -1,0 +1,485 @@
+Enhancin 625mg 10 119.1
+Curam 375mg 20 64.55
+Claneksi 500mg 30 119
+Uniclav 625mg 12 119.16
+Augmontin 375mg 20 70.31
+Wovaclav 375mg 6 59.33
+Wovaclav 625mg 60 99.16
+Solmax 500mg 100 119.16
+Ataline 2.5mg 500 11
+Theofin 125mg 1000 7.47
+Nuelin 250mg 100 45.45
+Deriphylllin 150mg 300 5.24
+Deriphylllin 300mg 100 10.06
+Terbulane 2.5mg 100 4.32
+Turline 2.5mg 100 6.95
+Turbute 2.5mg 100 8.5
+Zeos 10mg 50 37
+Allergel 10mg 10 25.8
+Loratadine 10mg 100 32.76
+Clavamox 250mg 50 69.7
+Clavamox 500mg 40 98.7
+Zithrin 250 mg 65 74.68
+Zithrin 500 mg 24 104.78
+Azigen 500 mg 70 69
+Rozith 500 mg 100 104.16
+SwiLide 500 mg 210 88
+Zithrox 500 mg 120 104.5
+Azee 250 mg 100 52.66
+Klaricid 250 mg 50 72.3
+Claritek 500 mg 65 104.9
+Clarion 250 mg 55 58.73
+Neo-Klar 250 mg 50 69
+Neo-Klar 500 mg 100 131.2
+Clarithro 250 mg 100 72.21
+Clarithro 500 mg 100 146.7
+Levoxin 500 mg 200 29.73
+Leflox 500 mg 120 56.76
+CEFVIC 500 mg 110 125.5
+CEFVIC 250 mg 110 74.35
+Ki-bac 500mg 100 90
+ceftil 125mg 40 47.4
+Cefasyn 500 mg 70 128.8
+Kefixim 200 mg 80 84
+Trifix 200 mg 90 84.4
+Phylopen DS 300 mg 45 74.3
+Phylopen 250 mg 123 46.45
+Flucloxacillin 500 mg 20 23.6
+Climycin 300 mg 41 116.1
+Flubotic 250 mg 55 40
+Phylogen 250 mg 60 32.25
+Clinagen 300 mg 55 95
+Climycin 150 mg 60 83.16
+L-Trim 61 11.5
+Metronidazole 400 mg 40 9.35
+Microdox-DT 100 mg 100 47.88
+Metrogyl 400 mg 21 22.24
+Metrogyl 200 mg 30 12.04
+Doxyn 100 mg 100 20.5
+Allerdin 10mg 100 8
+Getceb 5mg 100 19.35
+Swicet 5mg 100 12
+Cetrizet 10mg 100 29.75
+Desloratadine 5mg 100 5
+Sedn 5mg 100 37.15
+Ntoloridin 5mg 30 39.33
+Fextoigra 120mg 30 36.73
+Fexofcnadine 180mg 100 52.95
+Fexico 120mg 100 34.5
+Omlek 20mg 100 5.18
+Lomac 20mg 100 8.5
+Omez 20mg 20 8.14
+Rabesid 20mg 20 20.92
+Happi 20mg 100 22.68
+Pentac 150mg 100 5.62
+Mosart 5 5mg 100 24.82
+Famogen 20mg 100 2.04
+Famotidine 20mg 100 2
+Famocid 20mg 100 20.19
+Famogen 20mg 100 4.75
+Alldox 100 mg 18.6
+Agidox 100 mg 14
+Famo-D 20mg 100 5.08
+Famo-D 40mg 100 6
+Nexium 20mg 14 40
+Nexium 40mg 14 76.07
+Es-Loprot 20mg 14 39.92
+Es-Loprot 40mg 14 76.07
+Esomac 40mg 30 32.7
+Esomac 20mg 30 23.8
+Esoral 20mg 70 26.14
+Esoral 40mg 70 67.11
+Nexpro 20mg 100 40.1
+Nexpro 40mg 100 76.27
+Pantropasole 40mg 100 12
+Peptazd 40mg 100 55.6
+Panfrod 40mg 30 12.65
+Panzole 20mg 100 10
+Carti-RD 750mg 20 62.97
+Cartisafe-OD 1500mg 30 62.15
+Carticare 1000mg 30 120
+Carticare 750mg 30 45
+Cartigen 1500mg 30 157
+StarMuno 755mg 30 129
+Square Zinc 20mg 100 24.14
+Jointeez 450mg 30 37
+Neurosanee 500mg 100 51.5
+Kalzana 500mg 56 25
+Senatogen 500mg 30 60
+Ferup SG 400mg 120 22
+Orofer 650mg 100 29.68
+Anemidox 1450mg 30 28.68
+Minterra 30 40
+Ascel 450mg 30 21
+Neurobin 500mg 50 58
+Guardiangold 650mg 30 63.16
+DM 1000 1000mg 56 38
+Nervijen 500mg 30 84.6
+Deplus 1000mg 50 38
+DK 1000 1000mg 30 33
+Solbion 600mg 100 33.9
+Zincovit 500mg 30 38.36
+DM 6600 6000mg 10 230
+Ecovit 400mg 100 2500
+Deplus 5000mg 50 65
+Deplus 3000mg 50 45
+D-tabs 1000mg 30 8.49
+DM 2000 2000mg 50 53
+DM 5000 5000mg 50 68
+DK 2000 2000mg 30 39.5
+Evion 400mg 30 27.67
+Nefin 20mg 200 3.07
+Nicardia 30mg 30 53.39
+Nicardia 10mg 100 14.25
+Nicardia 20mg 50 5.58
+Betaloc 25mg 14 43.71
+Betaloc 50mg 100 32.07
+Irovel 150mg 100 69.54
+Irbezyd 150mg 100 65.24
+Irbezyd 75mg 100 33.4
+Lorvas SR 1.5mg 30 50.43
+Ezita 10mg 10 38.8
+RanCV 500mg 50 49.02
+Atacand 8mg 28 231.67
+Natrilix 30mg 30 64.8
+Advant 16mg 14 64.5
+Aldren 70mg 4 163.7
+Sacvin 25mg 30 125
+WARF-5 5mg 100 16.34
+Methyldopa 250mg 100 18.56
+WARF-1 1mg 100 9.18
+Cortivex 6mg 30 32
+Warfin 1mg 500 17.27
+Nicodil 10mg 100 25.3
+Angiopril 25mg 100 6.12
+Prazo 5mg 30 70
+Prazo 2.5mg 30 50
+Minipress 5mg 30 118.4
+Prazoright 1mg 100 4.9
+Alphapress 1mg 100 7.93
+Alphadol 0.25mg 100 30
+Ampril 5mg 100 3
+Envas 10mg 100 5.85
+Envas 5mg 100 4.17
+Amlopress 5mg 100 0.73
+Atenolol 50mg 196 6
+Amloson 5mg 100 30.38
+Amlonova 5mg 100 5.2
+Amlong 2.5mg 100 22.28
+Amlong 10mg 100 42.31
+Telday 80mg 100 60.37
+Telday 40mg 100 32.17
+Aciclovir 200mg 100 73.47
+Herperer 800mg 20 380
+Telday 20mg 100 20.24
+Tel.OD 80mg 100 43.69
+Tel.OD 40mg 100 26.32
+Tel.OD 20mg 100 16.29
+Telirol 40mg 100 4.35
+Tazloc 40mg 30 32.13
+Coralan 5mg 50 105.57
+Bisovic 5mg 30 38.75
+Concor 2.5mg 30 36
+Bisprol 5mg 30 6.83
+Ivabradine 5mg 28 70
+Dapazin 5mg 14 99.57
+Dapa 5mg 30 88
+Dapa 10mg 30 119
+Dytor 10mg 40 19.65
+Orion 10mg 20 33.25
+Herbessor 100mg 100 80.11
+Logout 100mg 200 11.13
+Sosorbide 50mg 120 12.15
+Solotrate 60mg 100 39.16
+Solotrate 30mg 120 20.79
+Carvil 3.125mg 100 6.67
+Carvil 6.25mg 100 10.45
+Dilcardia 90mg 100 16.7
+Dilcardia 60mg 100 7.2
+Dilcardia 30mg 100 5
+Dilzem 90mg 100 40.61
+Alrin 180mg 100 89.44
+Alrin 120mg 100 39
+Hexilon 16mg 30 61.13
+Hexilon 4mg 50 28.52
+Alegra 120mg 10 43.46
+Fexet 60mg 10 22.7
+Fexet 180mg 20 47.55
+Fexet 120mg 20 32.7
+Montiget 4mg 14 21
+Montiget 10mg 14 32.71
+Montiget 5mg 14 25.14
+Montair 10mg 10 39.7
+Montair 5mg 10 28.3
+Rupa 10mg 30 42
+Tascit 1080mg 30 75.46
+Medixon 16mg 30 81.43
+Methipred 16mg 20 62.3
+Methipred 4mg 45 23.46
+Medixon 4mg 100 23.52
+Transamin 250mg 100 50.59
+Noroxin 400mg 14 152.92
+Transamin 500mg 20 100.15
+Duinum 50mg 30 99.4
+Finast 5mg 30 59.16
+Norethisterone 5mg 100 9.9
+Finasteride 1mg 30 55.7
+AMSO 0.4mg 30 25
+Bestelo 0.4mg 30 34.73
+Norgest 5mg 100 24.2
+vrimax 0.4mg 30 39.66
+Primolut 5mg 30 27.43
+Griseben 500mg 100 46.8
+Icon 100mg 20 113.04
+Terbinaforce 250mg 30 176.46
+Izole 100mg 12 78
+Itrason 100mg 16 92.5
+Sporanox 100mg 15 840.46
+Itragen 100mg 40 100
+Unitrac 100mg 30 275.5
+Itraconazole 100mg 40 79.5
+Itracon 100mg 50 30.33
+Omastin 150mg 20 85.12
+Fungicon 150mg 10 85.02
+Canditral 100mg 4 226.25
+Aciherpin 400mg 50 45
+Cyclovir 200mg 100 13.86
+Cyclovir 200mg 100 20
+Omastin 50mg 50 47.28
+Gablin 150mg 98 45.4
+Gablin 75mg 98 29.33
+Sobicarb 600mg 100 18
+Gabica 75mg 35 26.85
+Gabica 150mg 35 32.4
+Gabica 100mg 35 29.4
+Gabica 50mg 35 21
+Renadium 600mg 100 17.5
+Neurogab 100mg 100 16.69
+Gabanin 100mg 30 33
+Gabapentin 300mg 100 17.47
+Nabjflam 500mg 100 50.76
+Celox-R 100mg 50 27.58
+Celox-R 200mg 50 41.38
+Swizcox 200mg 100 28.11
+Celecoxib 200mg 100 13.82
+Zycel 100mg 100 28.97
+Zycel 200mg 100 48.98
+Neoprox 250mg 30 40.79
+Lazo 500mg 100 32
+Neoprox 500mg 30 70.22
+Diaflam 50mg 50 18.68
+Melox 15mg 100 19.4
+Melox 7.5mg 100 12.25
+Feck 100mg 30 28
+Voltabid 50mg 250 5
+Dicloright 50mg 100 2.9
+Celox-R 200mg 50 41.38
+Celox-R 100mg 50 27.58
+Voltaren 75mg 100 64.8
+HCQS 200mg 60 75.34
+Voltaren 50mg 100 25.81
+Methorex 2.5mg 100 17
+Ecorin 75mg 100 5.93
+Ecorin 150mg 100 12.9
+Clopet 75mg 100 10
+Clopidogrel 75mg 100 10
+Ecosprin 75mg 30 5.91
+Clopid 75mg 100 10
+Clopivas 75mg 100 15.87
+Cardiprin 100mg 30 10.5
+Clopilet 75mg 30 34.73
+Noklot 75mg 100 34.78
+Clopiace 75mg 30 13
+Cardace 5mg 90 54.86
+Cardace 2.5mg 90 30.33
+Duecard 10mg 30 62.76
+Cilacar 5mg 30 47.83
+Cliacar 10mg 30 62
+Losacar 25mg 150 14.59
+Losacar 50mg 150 20.46
+Losacar-H 125mg 100 38.62
+Repace 25mg 100 14.58
+Repace 12.5mg 100 38.16
+Repace 50mg 100 20.46
+Zaart 25mg 100 12.48
+Zaart 50mg 100 20.43
+Zaart-H 62.5mg 100 28.18
+Zem XL 120mg 100 30.38
+Zem XL 90mg 100 22.56
+Osartil 50mg 100 8.8
+Osartil 25mg 100 7.8
+Losatrust 25mg 100 5.3
+Losatrust 50mg 100 7.58
+Losaright 50mg 100 5.2
+Losatace 50mg 100 4.6
+Losartan 50mg 200 3.5
+Celenid 25mg 500 27.17
+Rosuvastatin 10mg 200 5
+CRestor 5mg 28 42.67
+CRestor 10mg 28 73.35
+Rosuvas 20mg 10 132
+Rosuvas 10mg 30 73.47
+Rosuvas 5mg 30 42.7
+Rosulip 5mg 30 29.73
+Rosulip 10mg 40 58.4
+X plended 10mg 60 55
+Zyrova 5mg 100 38.22
+Zyrova 10mg 100 73.47
+Fenochol 67mg 60 24.6
+Rovista 10mg 30 63.83
+Rovista 5mg 30 37.8
+Rovista 20mg 30 103.81
+Aurora 10mg 10 53.4
+Atorva 40mg 100 49.17
+Atorva 20mg 100 34.95
+Atorva 10mg 100 22.14
+Lipicard 200mg 28 72.42
+Atorva-5 5mg 100 12.76
+Vasolip 10mg 100 22.12
+Lipitor 10mg 30 22.1
+Lipitor 20mg 30 34.9
+Atogen 40mg 100 38
+Atogen 20mg 100 20
+Atogen 10mg 100 11
+Atorlip 20mg 100 17.78
+Atorlip 40mg 30 39.66
+Atorvastatin 20mg 100 3.8
+Atorvastatin 10mg 100 3.12
+Hepachol 750mg 30 120.66
+Dormicum 7.5mg 10 242.84
+Nodep 5mg 14 32.29
+Nitrest 10 10mg 30 63.27
+Qutipin 25 25mg 50 37.34
+Qutipin 100 100mg 30 59.81
+NEXITO 10 10mg 50 57.35
+NEXITO 5 5mg 50 32.56
+CITOPAM 10 10mg 30 45.42
+Dothip-25 25mg 100 18.48
+SULPITAC 100 100mg 50 68.13
+TOPIROL 25 25mg 50 37.83
+TOPIROL 50 50mg 30 60.53
+TOPORE-25 25mg 100 5.19
+TOPORE-50 50mg 100 6.2
+Cupid 100 100mg 10 300
+Cupid 50 50mg 10 225.5
+Silagra 100 100mg 20 102.5
+ENOGRA-50 50mg 40 50
+EUGLIM 2 2mg 100 12.96
+EUGLIM 4 4mg 100 23.65
+GP-1 1mg 100 13.52
+GP-2 2mg 100 19.18
+Gentryl 4mg 20 24.95
+Amaryl 1mg 60 13.48
+Gentryl 1mg 20 9.65
+Gentryl 2mg 20 13.65
+Amaryl 2mg 60 19.17
+Diabose-50 50mg 100 52.82
+EmpaMor 25 25mg 30 98.5
+EmpaMor 10 10mg 30 54.5
+EG-25 25mg 10 160.4
+EG-10 10mg 30 57
+Empazin 10 10mg 30 64
+Empa 25 25mg 30 135
+EMPAVIC 25 25mg 30 149
+LINAVIC 5 5mg 30 69.9
+Empa 10 10mg 30 69
+SITA MAX 50mg 100 25
+SITA MAX 100mg 100 47
+Trevia 50mg 70 40.31
+Sitagen 100mg 30 63.84
+Trevia 100mg 70 69.37
+Silagen 25mg 50 28.37
+Sitagen 50mg 30 40.31
+Inosita 100mg 70 75
+GEMID-5 5mg 100 3.16
+SITA 100mg 70 91.74
+SITA 50mg 70 53.89
+Amile b-10 10mg 20 4.32
+Amile b-25 25mg 20 4.67
+BETAHIST FORTE16mg 100 8.16
+BetaSerc 8mg 100 63.18
+VENIZ XR 150 150mg 30 79.84
+VENIZ XR 75 75mg 30 56.01
+OLEANZ 5 5mg 50 19.87
+OLEANZ 10 10mg 50 41.29
+VENIZ XR 37.5 37.5mg 30 29.04
+Lamosyn 100 100mg 50 66.21
+Lamosyn 25 25mg 50 22.71
+Admenta 5 5mg 30 73.26
+SYNDOPA 275 25mg 50 89.72
+Mirtaz 15 15mg 30 87.2
+Mirtaz 30 30mg 30 112.25
+SYNDOPA CR 200mg 30 132.38
+SYNDOPA PLUS 100mg 50 64.24
+Levipil 250 250mg 30 44.94
+NEXITO 20 20mg 50 99.78
+Zosert 25 25mg 50 28.21
+Levipil 500 500mg 50 89.21
+Zosert 100 100mg 50 72.29
+Zosert 50 50mg 50 49.99
+Zotral-100 100mg 100 65
+Zotral-50 50mg 100 50
+Sertraline Hydrochloride 50mg 100 11.1
+Risnia 2mg 100 13.7
+Risnia 1mg 100 8.87
+Rispond-1 1mg 100 15.7
+Rispond-2 2mg 100 16.68
+Betahistine Dihydrochloride 8mg 100 3.7
+Pizofen 0.5mg 30 60
+Stugeron 25mg 50 38.4
+Lexotanil 1.5mg 30 80.94
+Pantodec 40 40mg 100 55.51
+Pantodec 20 20mg 150 33.75
+Pantocid 20 20mg 50 33.74
+Ultop 20mg 100 21
+Selexid Tables 200mg 100 228
+Solsicare 5mg 30 90
+ORNIGIL 500mg 100 51.31
+MEBIZ SR 200mg 50 127.62
+Rifaxa 550mg 10 195.71
+Duphaston 10mg 20 225
+VOMIKIND-MD 8 8mg 10 55.4
+VOMIKIND-MD 4 4mg 10 42.8
+DOMPITAB 10mg 100 6
+DOMPERON 10mg 100 10.73
+Zycopan 10 10mg 20 29.97
+Delax 5mg 100 9.03
+Zycolax 5mg 100 13.1
+Hyoscine Butylbromide 10mg 100 30
+Regurg 10mg 20 2.5
+Movicol 13.81g 10 158.4
+BIFILAC 0.5g 15 197.93
+RILLUS Jr 2.5g 30 194
+Lasix 40mg 600 6.38
+Ibut-400 400mg 100 6.7
+Asmef 500mg 100 29
+Meftal 500mg 100 16.87
+Voltabid 50mg 250 5
+Lazo 500mg 100 32
+Salaz 500mg 100 30.34
+Zyg 200mg 100 73.64
+Acedol 100mg 100 24.08
+Feck SR SR 200mg 30 60
+BACLON-10 10mg 100 34.83
+BACLON-5 5mg 100 24.57
+Indol 25mg 100 5.75
+Tizorel 2mg 30 59.93
+MEFTAL-P 100mg 150 12.44
+Tufnil 200mg 40 50.8
+Diaflam 50mg 50 18.68
+Cataflam 50mg 100 21.74
+Voltaren SR 75mg 100 64.8
+Voltaren 50 50mg 100 25.81
+Dicloright 50mg 100 290
+Dicloright 60 50mg 100 3.33
+DIVOLTAR 50mg 50 22.04
+ACLOFRE 100mg 30 13.33
+Azoran 50 50mg 100 24.33
+Hcos 200mg 60 75.34
+Feck 100mg 30 28
+Neoprox 500mg 30 70.22
+Neoprox 250mg 30 40.79
+Nucoxia 90 90mg 100 70.15
+Nucoxia 60 60mg 100 70.15
+Methodrex 2.5 2.5mg 100 17
+Mclox 7.5mg 100 12.25
