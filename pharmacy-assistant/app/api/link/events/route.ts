@@ -62,6 +62,14 @@ export async function GET(req: Request) {
         pairingCode: linkSession.pairingCode,
       });
 
+      if (linkSession.lastPhoto && linkSession.lastPhoto.result) {
+        sendEvent('photo-result', {
+          type: linkSession.lastPhoto.type,
+          result: linkSession.lastPhoto.result,
+          timestamp: linkSession.lastPhoto.timestamp,
+        });
+      }
+
       // Poll MongoDB for changes (simple approach, works without change streams)
       let lastStatus = linkSession.status;
       let lastPhotoTimestamp = linkSession.lastPhoto?.timestamp?.getTime() || 0;

@@ -95,7 +95,11 @@ export default function LinkPhoneModal({ isOpen, onClose }: LinkPhoneModalProps)
 
     es.addEventListener('photo-result', (e: MessageEvent) => {
       const data = JSON.parse(e.data);
-      setResults(prev => [data, ...prev]);
+      setResults(prev => {
+        const exists = prev.some(r => new Date(r.timestamp).getTime() === new Date(data.timestamp).getTime());
+        if (exists) return prev;
+        return [data, ...prev];
+      });
     });
 
     es.addEventListener('session-expired', () => {
