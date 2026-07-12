@@ -2,8 +2,10 @@
 
 import React, { useMemo, useState, useEffect } from "react";
 import AppSidebar from "../components/AppSidebar";
-import { MinusCircle, PlusCircle, Loader2, CheckCircle } from "lucide-react";
+import { MinusCircle, PlusCircle, Loader2, CheckCircle, Download, Mail } from "lucide-react";
 import TopHeader from "../components/TopHeader";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 type BillItem = {
   id: string;
@@ -131,6 +133,12 @@ export default function BillingPage() {
   const [paying, setPaying]               = useState(false);
   const [paid, setPaid]                   = useState(false);
 
+  const [patientEmail, setPatientEmail]   = useState("");
+  const [patientName, setPatientName]     = useState("");
+  const [prescriptionMeds, setPrescriptionMeds] = useState<any[]>([]);
+  const [emailing, setEmailing]           = useState(false);
+  const [emailStatus, setEmailStatus]     = useState<'idle' | 'success' | 'error'>('idle');
+
   // Rack location lookup map
   const [locationMap, setLocationMap]     = useState<Map<string, RackLocation>>(new Map());
 
@@ -167,6 +175,18 @@ export default function BillingPage() {
 
           // Check sessionStorage for pre-populated items from prescription
           try {
+            const storedMeds = sessionStorage.getItem("prescriptionMeds");
+            if (storedMeds) {
+              setPrescriptionMeds(JSON.parse(storedMeds));
+              sessionStorage.removeItem("prescriptionMeds");
+            }
+            
+            const storedName = sessionStorage.getItem("prescriptionPatientName");
+            if (storedName) {
+              setPatientName(storedName);
+              sessionStorage.removeItem("prescriptionPatientName");
+            }
+
             const stored = sessionStorage.getItem("prescriptionBillItems");
             if (stored) {
               const prescItems: Array<{ inventoryId: string; name: string; qty: number; unitPrice: number }> = JSON.parse(stored);
@@ -256,6 +276,147 @@ export default function BillingPage() {
       ]);
     }
     setSelectedQty(1);
+  };
+
+  // ── PDF Generation ─────────────────────────────────────────────────────────
+  const generatePDF = (action: 'download' | 'base64' = 'download'): string | void => {
+    const doc = new jsPDF();
+    
+    // Header
+    doc.setFontSize(22);
+    doc.setTextColor(0, 169, 157); // #00A99D
+    doc.text("VAIDIA Pharmacy", 14, 20);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text(`Date: ${dateTime.date} ${dateTime.time}`, 14, 28);
+    if (patientName) {
+      doc.text(`Patient Name: ${patientName}`, 14, 34);
+    }
+    
+    // Bill Items
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Bill Summary", 14, 45);
+    
+    const tableData = billItems.map((item) => [
+      item.name,
+      item.qty.toString(),
+      `Rs. ${formatPrice(item.unitPrice)}`,
+      `Rs. ${formatPrice(item.qty * item.unitPrice)}`
+    ]);
+    
+    autoTable(doc, {
+      startY: 50,
+      head: [['Item', 'Qty', 'Unit Price', 'Total']],
+      body: tableData,
+      theme: 'grid',
+      headStyles: { fillColor: [0, 169, 157] },
+    });
+    
+    let finalY = (doc as any).lastAutoTable.finalY + 10;
+    
+    // Totals
+    doc.setFontSize(10);
+    doc.text(`Subtotal: Rs. ${formatPrice(totals.total)}`, 14, finalY);
+    doc.text(`Discount: - Rs. ${formatPrice(totals.discount)}`, 14, finalY + 6);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text(`Amount Payable: Rs. ${formatPrice(totals.amountPayable)}`, 14, finalY + 14);
+    doc.setFont("helvetica", "normal");
+    
+    finalY += 30;
+
+    // Medicines Info (Warnings/Side Effects)
+    if (prescriptionMeds.length > 0) {
+      const medsFound = prescriptionMeds.filter(m => m.found);
+      if (medsFound.length > 0) {
+        doc.addPage();
+        finalY = 20;
+        doc.setFontSize(16);
+        doc.setTextColor(0, 169, 157);
+        doc.text("Medicine Information & Warnings", 14, finalY);
+        finalY += 10;
+        
+        medsFound.forEach((med) => {
+          if (finalY > 270) {
+            doc.addPage();
+            finalY = 20;
+          }
+          
+          doc.setFontSize(12);
+          doc.setTextColor(0, 0, 0);
+          doc.setFont("helvetica", "bold");
+          doc.text(med.canonical || med.input, 14, finalY);
+          finalY += 6;
+          
+          doc.setFontSize(10);
+          doc.setFont("helvetica", "normal");
+          
+          if (med.sideEffects && med.sideEffects.found) {
+            doc.setTextColor(80, 80, 80);
+            const commonLines = doc.splitTextToSize(`Common side effects: ${med.sideEffects.common}`, 180);
+            doc.text(commonLines, 14, finalY);
+            finalY += (commonLines.length * 5) + 2;
+            
+            if (med.sideEffects.warnings) {
+              doc.setTextColor(185, 28, 28); // red
+              const warnLines = doc.splitTextToSize(`Warning: ${med.sideEffects.warnings}`, 180);
+              doc.text(warnLines, 14, finalY);
+              finalY += (warnLines.length * 5) + 2;
+            }
+            
+            doc.setTextColor(150, 150, 150);
+            doc.text(`Source: ${med.sideEffects.source}`, 14, finalY);
+            finalY += 8;
+          } else {
+            doc.setTextColor(150, 150, 150);
+            doc.text("Side effect information not available.", 14, finalY);
+            finalY += 8;
+          }
+          
+          finalY += 4; // space between meds
+        });
+      }
+    }
+
+    if (action === 'download') {
+      doc.save(`Invoice_${Date.now()}.pdf`);
+    } else {
+      return doc.output('datauristring');
+    }
+  };
+
+  const handleEmailPDF = async () => {
+    if (!patientEmail.trim()) {
+      alert("Please enter the patient's email address.");
+      return;
+    }
+    
+    setEmailing(true);
+    setEmailStatus('idle');
+    
+    try {
+      const pdfBase64 = generatePDF('base64');
+      
+      const res = await fetch('/api/prescription/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: patientEmail.trim(),
+          patientName: patientName || null,
+          pdfBase64: pdfBase64,
+        }),
+      });
+
+      if (!res.ok) throw new Error('Failed to send email');
+      setEmailStatus('success');
+    } catch (err) {
+      console.error(err);
+      setEmailStatus('error');
+    } finally {
+      setEmailing(false);
+    }
   };
 
   // ── Pay: save billing record AND deduct inventory ──────────────────────────
@@ -557,6 +718,48 @@ export default function BillingPage() {
                     {paying ? <Loader2 size={18} className="animate-spin" /> : null}
                     {paying ? "Processing…" : "Pay"}
                   </button>
+
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Receipt & Information</h3>
+                    
+                    <button
+                      onClick={() => generatePDF('download')}
+                      disabled={billItems.length === 0}
+                      className="w-full mb-3 rounded-lg border-2 border-[#10b7ab] bg-white py-2 text-sm font-bold text-[#10b7ab] transition hover:bg-[#10b7ab] hover:text-white disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      <Download size={16} />
+                      Download PDF Bill
+                    </button>
+                    
+                    <div className="flex flex-col gap-2">
+                      <input
+                        type="email"
+                        value={patientEmail}
+                        onChange={(e) => setPatientEmail(e.target.value)}
+                        placeholder="patient@example.com"
+                        className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-[#10b7ab] focus:outline-none focus:ring-1 focus:ring-[#10b7ab]"
+                      />
+                      <button
+                        onClick={handleEmailPDF}
+                        disabled={emailing || billItems.length === 0 || !patientEmail.trim()}
+                        className="w-full rounded-lg bg-gray-800 py-2 text-sm font-bold text-white transition hover:bg-gray-900 disabled:opacity-50 flex items-center justify-center gap-2"
+                      >
+                        {emailing ? <Loader2 size={16} className="animate-spin" /> : <Mail size={16} />}
+                        {emailing ? "Sending..." : "Email PDF Bill"}
+                      </button>
+                    </div>
+                    
+                    {emailStatus === 'success' && (
+                      <p className="text-xs text-emerald-600 mt-2 flex items-center justify-center gap-1">
+                        <CheckCircle size={12} /> Email sent successfully!
+                      </p>
+                    )}
+                    {emailStatus === 'error' && (
+                      <p className="text-xs text-red-500 mt-2 text-center">
+                        Failed to send email. Please try again.
+                      </p>
+                    )}
+                  </div>
                 </aside>
               </div>
             </div>

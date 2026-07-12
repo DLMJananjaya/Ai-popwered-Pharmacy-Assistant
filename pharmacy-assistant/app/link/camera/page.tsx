@@ -102,6 +102,10 @@ export default function MobileCameraPage() {
         audio: false,
       };
 
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera access is blocked. Please ensure you are using HTTPS or have enabled the insecure origins flag in chrome://flags for local testing.');
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       streamRef.current = stream;
 
@@ -123,7 +127,7 @@ export default function MobileCameraPage() {
       }
     } catch (err) {
       console.error('Camera error:', err);
-      setErrorMsg('Could not access camera. Please check permissions and try again.');
+      setErrorMsg(err instanceof Error ? err.message : 'Could not access camera. Please check permissions and try again.');
     }
   }, [facingMode, flashEnabled]);
 

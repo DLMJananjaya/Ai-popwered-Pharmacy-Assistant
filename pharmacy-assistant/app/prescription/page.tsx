@@ -22,6 +22,16 @@ type SideEffects = {
   source: string | null;
 };
 
+type InventoryMatch = {
+  inventoryId: string;
+  name: string;
+  strength: string;
+  qty: number;
+  unitPrice: number;
+  matchConfidence: number;
+  matchMethod: 'alias' | 'fuzzy' | 'containment';
+};
+
 type IdentifiedMed = {
   input: string;
   canonical: string | null;
@@ -32,11 +42,14 @@ type IdentifiedMed = {
   manufacturers: string | null;
   alternatives: Array<{ canonical: string; score: number }>;
   sideEffects: SideEffects | null;
+  inventoryMatch: InventoryMatch | null;
+  inventoryLoading: boolean;
 };
 
 type InvItem = {
   id: string;
   name: string;
+  strength: string;
   qty: number;
   unitPrice: number;
 };
@@ -102,11 +115,7 @@ export default function PrescriptionPage() {
   const [currentInput, setCurrentInput] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // --- Send to Patient (email) ---
-  const [patientEmail, setPatientEmail] = useState('');
-  const [sendingEmail, setSendingEmail] = useState(false);
-  const [emailStatus, setEmailStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [sendingToBilling, setSendingToBilling] = useState(false);
+    const [sendingToBilling, setSendingToBilling] = useState(false);
   const [billingMatchCount, setBillingMatchCount] = useState<number | null>(null);
 
   const router = useRouter();
@@ -114,6 +123,53 @@ export default function PrescriptionPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // --- Match identified medicines against inventory ---
+  const matchInventory = useCallback(async (meds: IdentifiedMed[]) => {
+    // Only match medicines that have been identified
+    const toMatch = meds.filter((m) => m.found && m.canonical && !m.loading);
+    if (toMatch.length === 0) return;
+
+    // Mark all as inventory loading
+    setManualMeds((prev) =>
+      prev.map((m) =>
+        m.found && m.canonical && !m.loading
+          ? { ...m, inventoryLoading: true }
+          : m
+      )
+    );
+
+    try {
+      const res = await fetch('/api/inventory/match', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          medicines: meds.map((m) => ({
+            canonical: m.canonical,
+            input: m.input,
+            alternatives: m.alternatives,
+          })),
+        }),
+      });
+
+      if (!res.ok) throw new Error('Inventory match API error');
+
+      const { matches } = await res.json();
+
+      setManualMeds((prev) =>
+        prev.map((m, i) => ({
+          ...m,
+          inventoryMatch: matches[i] || null,
+          inventoryLoading: false,
+        }))
+      );
+    } catch (err) {
+      console.error('Inventory match error:', err);
+      setManualMeds((prev) =>
+        prev.map((m) => ({ ...m, inventoryLoading: false }))
+      );
+    }
+  }, []);
 
   // --- Identify medicine via API ---
   const identifyMedicineClient = useCallback(async (name: string, index: number) => {
@@ -128,8 +184,8 @@ export default function PrescriptionPage() {
 
       const result = await res.json();
 
-      setManualMeds((prev) =>
-        prev.map((m, i) =>
+      setManualMeds((prev) => {
+        const updated = prev.map((m, i) =>
           i === index
             ? {
                 ...m,
@@ -143,17 +199,32 @@ export default function PrescriptionPage() {
                 sideEffects: result.side_effects || null,
               }
             : m
-        )
-      );
+        );
+
+        // Trigger inventory matching once all meds are done loading
+        const allDone = updated.every((m) => !m.loading);
+        if (allDone) {
+          setTimeout(() => matchInventory(updated), 100);
+        }
+
+        return updated;
+      });
     } catch (err) {
       console.error('Medicine identify error:', err);
-      setManualMeds((prev) =>
-        prev.map((m, i) =>
+      setManualMeds((prev) => {
+        const updated = prev.map((m, i) =>
           i === index ? { ...m, loading: false, found: false } : m
-        )
-      );
+        );
+
+        const allDone = updated.every((m) => !m.loading);
+        if (allDone) {
+          setTimeout(() => matchInventory(updated), 100);
+        }
+
+        return updated;
+      });
     }
-  }, []);
+  }, [matchInventory]);
 
   // --- Handle Enter key to add medicine ---
   const handleMedInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -170,6 +241,8 @@ export default function PrescriptionPage() {
         manufacturers: null,
         alternatives: [],
         sideEffects: null,
+        inventoryMatch: null,
+        inventoryLoading: false,
       };
 
       const newIndex = manualMeds.length;
@@ -186,37 +259,7 @@ export default function PrescriptionPage() {
     setManualMeds((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // --- Send prescription + side effects to patient via email ---
-  const sendToPatient = async () => {
-    if (!patientEmail.trim()) {
-      alert('Please enter the patient\'s email address.');
-      return;
-    }
 
-    setSendingEmail(true);
-    setEmailStatus('idle');
-
-    try {
-      const res = await fetch('/api/prescription/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: patientEmail.trim(),
-          patientName: patientName || null,
-          medicines: manualMeds,
-        }),
-      });
-
-      if (!res.ok) throw new Error('Send failed');
-
-      setEmailStatus('success');
-    } catch (err) {
-      console.error('Send to patient error:', err);
-      setEmailStatus('error');
-    } finally {
-      setSendingEmail(false);
-    }
-  };
 
   // 1) Start Camera
   const startCamera = async () => {
@@ -440,6 +483,8 @@ export default function PrescriptionPage() {
           manufacturers: null,
           alternatives: [],
           sideEffects: null,
+          inventoryMatch: null,
+          inventoryLoading: false,
         }));
 
         setManualMeds((prev) => [...prev, ...newMeds]);
@@ -908,6 +953,7 @@ export default function PrescriptionPage() {
                           <th className="px-4 py-3 font-semibold text-gray-600">Status</th>
                           <th className="px-4 py-3 font-semibold text-gray-600">Manufacturers</th>
                           <th className="px-4 py-3 font-semibold text-gray-600">Alternatives</th>
+                          <th className="px-4 py-3 font-semibold text-gray-600">Inventory Match</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1000,13 +1046,53 @@ export default function PrescriptionPage() {
                                     <span className="text-gray-300 text-xs">—</span>
                                   ) : null}
                                 </td>
+                                <td className="px-4 py-3">
+                                  {med.loading ? (
+                                    <span className="text-gray-300 text-xs">—</span>
+                                  ) : med.inventoryLoading ? (
+                                    <span className="inline-flex items-center gap-1.5 text-blue-500">
+                                      <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                      </svg>
+                                      Matching...
+                                    </span>
+                                  ) : med.inventoryMatch ? (
+                                    <div className="flex flex-col gap-1">
+                                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-semibold">
+                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        {med.inventoryMatch.name}
+                                      </span>
+                                      <div className="flex items-center gap-2 text-[10px] text-gray-500">
+                                        <span>Qty: <strong className="text-gray-700">{med.inventoryMatch.qty}</strong></span>
+                                        <span>LKR <strong className="text-gray-700">{med.inventoryMatch.unitPrice.toFixed(2)}</strong></span>
+                                        <span className={`px-1 py-0.5 rounded text-[9px] font-medium ${
+                                          med.inventoryMatch.matchMethod === 'alias' ? 'bg-emerald-50 text-emerald-600' :
+                                          med.inventoryMatch.matchMethod === 'containment' ? 'bg-blue-50 text-blue-600' :
+                                          'bg-purple-50 text-purple-600'
+                                        }`}>{med.inventoryMatch.matchMethod}</span>
+                                      </div>
+                                    </div>
+                                  ) : med.found ? (
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-50 text-amber-600 border border-amber-200 rounded-md text-[11px] font-medium">
+                                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                      </svg>
+                                      Not in stock
+                                    </span>
+                                  ) : (
+                                    <span className="text-gray-300 text-xs">—</span>
+                                  )}
+                                </td>
                               </tr>
 
                               {/* --- SIDE EFFECTS ROW (NEW) --- */}
                               {!med.loading && med.found && med.sideEffects?.found && (
                                 <tr className="bg-gray-50/70 border-b border-gray-100">
                                   <td></td>
-                                  <td colSpan={7} className="px-4 py-3">
+                                  <td colSpan={8} className="px-4 py-3">
                                     <div className="space-y-1.5">
                                       <div className="text-xs">
                                         <span className="font-semibold text-gray-600">Common side effects: </span>
@@ -1040,6 +1126,7 @@ export default function PrescriptionPage() {
                     <div className="flex items-center gap-4 text-xs text-gray-500">
                       <span>Total: <strong className="text-gray-700">{manualMeds.length}</strong> medicine{manualMeds.length !== 1 ? 's' : ''}</span>
                       <span>Found: <strong className="text-emerald-600">{manualMeds.filter(m => m.found).length}</strong></span>
+                      <span>In Stock: <strong className="text-teal-600">{manualMeds.filter(m => m.inventoryMatch).length}</strong></span>
                       <span>Not Found: <strong className="text-red-500">{manualMeds.filter(m => !m.found && !m.loading).length}</strong></span>
                     </div>
                     <div className="flex items-center gap-2 text-[10px] text-gray-400">
@@ -1066,45 +1153,31 @@ export default function PrescriptionPage() {
                       </div>
                       <button
                         id="send-to-billing-btn"
-                        disabled={sendingToBilling || manualMeds.filter(m => m.found && !m.loading).length === 0}
-                        onClick={async () => {
+                        disabled={sendingToBilling || manualMeds.filter(m => m.inventoryMatch && !m.loading).length === 0}
+                        onClick={() => {
                           setSendingToBilling(true);
                           setBillingMatchCount(null);
-                          try {
-                            const invRes = await fetch('/api/inventory');
-                            if (!invRes.ok) throw new Error('Failed to load inventory');
-                            const inventory: InvItem[] = await invRes.json();
 
-                            const foundMeds = manualMeds.filter(m => m.found && m.canonical && !m.loading);
-                            const matched: Array<{ inventoryId: string; name: string; qty: number; unitPrice: number }> = [];
+                          // Use the pre-matched inventory items from AI pipeline
+                          const matched = manualMeds
+                            .filter((m) => m.inventoryMatch && !m.loading)
+                            .map((m) => ({
+                              inventoryId: m.inventoryMatch!.inventoryId,
+                              name: m.inventoryMatch!.name,
+                              qty: 1,
+                              unitPrice: m.inventoryMatch!.unitPrice,
+                            }));
 
-                            for (const med of foundMeds) {
-                              const canonical = med.canonical!.toLowerCase().trim();
-                              const invItem = inventory.find(
-                                (inv) => inv.name.toLowerCase().trim() === canonical && inv.qty > 0
-                              );
-                              if (invItem) {
-                                matched.push({
-                                  inventoryId: invItem.id,
-                                  name: invItem.name,
-                                  qty: 1,
-                                  unitPrice: invItem.unitPrice,
-                                });
-                              }
-                            }
+                          setBillingMatchCount(matched.length);
 
-                            setBillingMatchCount(matched.length);
-
-                            if (matched.length > 0) {
-                              sessionStorage.setItem('prescriptionBillItems', JSON.stringify(matched));
-                              setTimeout(() => router.push('/billing'), 800);
-                            }
-                          } catch (err) {
-                            console.error('Send to billing error:', err);
-                            alert('Failed to check inventory. Please try again.');
-                          } finally {
-                            setSendingToBilling(false);
+                          if (matched.length > 0) {
+                            sessionStorage.setItem('prescriptionBillItems', JSON.stringify(matched));
+                            sessionStorage.setItem('prescriptionMeds', JSON.stringify(manualMeds));
+                            sessionStorage.setItem('prescriptionPatientName', patientName || "");
+                            setTimeout(() => router.push('/billing'), 800);
                           }
+
+                          setSendingToBilling(false);
                         }}
                         className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2.5 px-6 rounded-xl shadow-md flex items-center gap-2 text-sm whitespace-nowrap transition-all"
                       >
@@ -1126,55 +1199,6 @@ export default function PrescriptionPage() {
                         )}
                       </button>
                     </div>
-                  </div>
-
-                  {/* --- SEND TO PATIENT (NEW) --- */}
-                  <div className="px-6 py-4 bg-white border-t border-gray-200">
-                    <h4 className="text-sm font-semibold text-gray-700 mb-2">Send to Patient</h4>
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <input
-                        type="email"
-                        value={patientEmail}
-                        onChange={(e) => setPatientEmail(e.target.value)}
-                        placeholder="patient@example.com"
-                        className="flex-1 min-w-[220px] px-4 py-2.5 text-sm border-2 border-gray-200 rounded-xl focus:border-[#00A99D] focus:ring-2 focus:ring-[#00A99D]/20 outline-none transition-all bg-gray-50 hover:bg-white text-gray-800 placeholder:text-gray-400"
-                      />
-                      <button
-                        onClick={sendToPatient}
-                        disabled={sendingEmail || manualMeds.filter(m => m.found).length === 0}
-                        className="bg-gradient-to-r from-[#00A99D] to-[#00C9B7] hover:from-[#008f85] hover:to-[#00A99D] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2.5 px-6 rounded-xl shadow-md flex items-center gap-2 text-sm whitespace-nowrap"
-                      >
-                        {sendingEmail ? (
-                          <>
-                            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                            </svg>
-                            Sending...
-                          </>
-                        ) : (
-                          <>
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                            Send to Patient
-                          </>
-                        )}
-                      </button>
-                    </div>
-                    {emailStatus === 'success' && (
-                      <p className="text-sm text-emerald-600 mt-2 flex items-center gap-1.5">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                        </svg>
-                        Email sent successfully to {patientEmail}
-                      </p>
-                    )}
-                    {emailStatus === 'error' && (
-                      <p className="text-sm text-red-500 mt-2">
-                        Failed to send email. Please check the address and try again.
-                      </p>
-                    )}
                   </div>
                 </div>
               )}

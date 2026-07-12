@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { email, patientName, medicines } = await req.json();
+    const { email, patientName, medicines, pdfBase64 } = await req.json();
 
     if (!email || typeof email !== "string" || !email.trim()) {
       return NextResponse.json(
@@ -12,16 +12,14 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!medicines || !Array.isArray(medicines) || medicines.length === 0) {
+    if (!medicines && !pdfBase64) {
       return NextResponse.json(
-        { error: "Missing or empty 'medicines' field" },
+        { error: "Missing 'medicines' or 'pdfBase64' field" },
         { status: 400 }
       );
     }
 
-    
-
-    const success = await sendPrescriptionEmail(email.trim(), patientName || null, medicines);
+    const success = await sendPrescriptionEmail(email.trim(), patientName || null, medicines, pdfBase64);
 
     if (!success) {
       return NextResponse.json(

@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     const linkSession = await LinkSession.findOneAndUpdate(
       {
         pairingCode: code.toUpperCase().trim(),
-        status: 'waiting',
+        status: { $in: ['waiting', 'connected'] },
         expiresAt: { $gt: new Date() },
       },
       {

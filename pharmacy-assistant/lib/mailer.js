@@ -73,12 +73,12 @@ function renderMedicineBlock(med) {
  * and side effects. `medicines` should be the array of identified medicines
  * (same shape as `manualMeds` in the frontend) that were found (med.found === true).
  */
-export const sendPrescriptionEmail = async (email, patientName, medicines) => {
+export const sendPrescriptionEmail = async (email, patientName, medicines, pdfBase64 = null) => {
   const user = process.env.EMAIL_USER;
   const pass = process.env.EMAIL_PASS;
 
   if (!user || !pass) {
-    console.warn(`[Mock Email] Prescription info for ${email}:`, medicines);
+    console.warn(`[Mock Email] Prescription info for ${email}`);
     console.warn('Set EMAIL_USER and EMAIL_PASS in .env.local to send real emails.');
     return true;
   }
@@ -88,19 +88,19 @@ export const sendPrescriptionEmail = async (email, patientName, medicines) => {
     auth: { user, pass },
   });
 
-  const foundMedicines = medicines.filter((m) => m.found);
+  const foundMedicines = (medicines || []).filter((m) => m.found);
   const medicineBlocksHtml = foundMedicines.map(renderMedicineBlock).join('');
 
   const mailOptions = {
     from: `"VAIDIA Pharmacy Assistant" <${user}>`,
     to: email,
-    subject: 'Your Prescription - Medicine Information & Side Effects',
+    subject: 'Your Pharmacy Bill & Prescription Information',
     html: `
       <div style="font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
-        <h2 style="color:#00A99D;">Your Prescription Information</h2>
+        <h2 style="color:#00A99D;">Your Pharmacy Bill</h2>
         ${patientName ? `<p>Dear ${patientName},</p>` : '<p>Dear Patient,</p>'}
-        <p>Here is the information about your prescribed medicines, including possible side effects to be aware of.</p>
-        ${medicineBlocksHtml}
+        <p>Please find attached your pharmacy bill and prescription details.</p>
+        ${medicineBlocksHtml ? `<br><h3>Medicine Information</h3>${medicineBlocksHtml}` : ''}
         <p style="font-size:12px; color:#888; margin-top:20px;">
           This information is provided for your awareness and is not a substitute for advice from your doctor or pharmacist.
           If you experience any severe or unexpected symptoms, contact your healthcare provider immediately.
@@ -108,7 +108,17 @@ export const sendPrescriptionEmail = async (email, patientName, medicines) => {
         <p style="font-size:12px; color:#888;">— VAIDIA Pharmacy Assistant</p>
       </div>
     `,
+    attachments: []
   };
+
+  if (pdfBase64) {
+    const base64Data = pdfBase64.includes('base64,') ? pdfBase64.split('base64,')[1] : pdfBase64;
+    mailOptions.attachments.push({
+      filename: `Pharmacy_Bill_${Date.now()}.pdf`,
+      content: base64Data,
+      encoding: 'base64',
+    });
+  }
 
   try {
     await transporter.sendMail(mailOptions);
