@@ -177,11 +177,11 @@ export default function DashboardPage() {
                         <div className="flex items-center gap-6">
                             <div className="flex items-center gap-2">
                                 <span className="font-bold text-sm text-black">From :</span>
-                                <input type="date" className="border border-black rounded px-2 py-1 text-sm bg-transparent" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
+                                <input type="date" className="border border-black rounded px-2 py-1 text-sm bg-transparent" value={fromDate} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFromDate(e.target.value)} />
                             </div>
                             <div className="flex items-center gap-2">
                                 <span className="font-bold text-sm text-black">To :</span>
-                                <input type="date" className="border border-black rounded px-2 py-1 text-sm bg-transparent" value={toDate} onChange={(e) => setToDate(e.target.value)} />
+                                <input type="date" className="border border-black rounded px-2 py-1 text-sm bg-transparent" value={toDate} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setToDate(e.target.value)} />
                             </div>
                             {loading && <span className="text-xs text-teal-600 animate-pulse font-medium">Syncing database values...</span>}
                         </div>

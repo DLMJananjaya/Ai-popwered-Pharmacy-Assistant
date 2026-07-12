@@ -249,7 +249,7 @@ export default function AdminUsersPage() {
         >
           <div
             className="bg-white rounded-2xl overflow-hidden max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e: React.SyntheticEvent) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100">
               <h3 className="font-semibold text-gray-800">Verification Document</h3>

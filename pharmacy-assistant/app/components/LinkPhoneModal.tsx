@@ -82,7 +82,7 @@ export default function LinkPhoneModal({ isOpen, onClose }: LinkPhoneModalProps)
     const es = new EventSource(`/api/link/events?sessionId=${sessionId}`);
     eventSourceRef.current = es;
 
-    es.addEventListener('phone-connected', (e) => {
+    es.addEventListener('phone-connected', (e: MessageEvent) => {
       const data = JSON.parse(e.data);
       setStatus('connected');
 
@@ -93,7 +93,7 @@ export default function LinkPhoneModal({ isOpen, onClose }: LinkPhoneModalProps)
       setPhoneInfo(isIOS ? '📱 iPhone connected' : isAndroid ? '📱 Android connected' : '📱 Phone connected');
     });
 
-    es.addEventListener('photo-result', (e) => {
+    es.addEventListener('photo-result', (e: MessageEvent) => {
       const data = JSON.parse(e.data);
       setResults(prev => [data, ...prev]);
     });

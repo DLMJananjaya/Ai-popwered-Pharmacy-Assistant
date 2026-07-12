@@ -282,7 +282,7 @@ export default function RackManagement() {
       const maxVisible = Math.min(el.cols, 8);
       const hasMore = el.cols > maxVisible;
       return (
-        <div key={el.id} style={baseStyle} onMouseDown={(e) => handleMouseDown(e, el.id)}
+        <div key={el.id} style={baseStyle} onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => handleMouseDown(e, el.id)}
           className={`flex flex-col bg-white ${isSelected ? 'ring-2 ring-blue-600 ring-offset-2 ring-offset-gray-300 z-10' : 'border border-gray-500 z-0'}`}>
           <div className="absolute -top-6 left-0 text-sm font-bold text-gray-800 pointer-events-none whitespace-nowrap">{el.name}</div>
           <div className="flex items-center border border-gray-600">
@@ -306,7 +306,7 @@ export default function RackManagement() {
 
     if (el.type === 'door') {
       return (
-        <div key={el.id} style={baseStyle} onMouseDown={(e) => handleMouseDown(e, el.id)}
+        <div key={el.id} style={baseStyle} onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => handleMouseDown(e, el.id)}
           className={`flex flex-col items-center p-1 bg-gray-200 rounded-sm ${isSelected ? 'ring-2 ring-blue-600 z-10' : 'border border-gray-600 z-0'}`}>
           <span className="absolute -top-5 text-xs font-bold text-gray-800 pointer-events-none whitespace-nowrap">{el.name}</span>
           <DoorOpen size={40} className="text-black" />
@@ -316,7 +316,7 @@ export default function RackManagement() {
 
     if (el.type === 'user') {
       return (
-        <div key={el.id} style={baseStyle} onMouseDown={(e) => handleMouseDown(e, el.id)}
+        <div key={el.id} style={baseStyle} onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => handleMouseDown(e, el.id)}
           className={`flex flex-col items-center p-1 bg-transparent ${isSelected ? 'ring-2 ring-blue-600 rounded-full z-10' : 'z-0'}`}>
           <span className="absolute -top-5 text-xs font-bold text-gray-800 pointer-events-none whitespace-nowrap">{el.name}</span>
           <User size={48} className="text-black fill-black" />
@@ -462,20 +462,20 @@ export default function RackManagement() {
                         <div className="flex items-center space-x-2">
                           <label className="text-sm font-bold text-gray-700">Name:</label>
                           <input type="text" value={selectedElement.name}
-                            onChange={(e) => updateElementName(selectedElement.id, e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateElementName(selectedElement.id, e.target.value)}
                             className="w-24 border border-gray-300 rounded p-1 font-semibold text-teal-700 focus:ring-2 focus:ring-teal-500" />
                         </div>
                         <div className="flex items-center space-x-2">
                           <Settings2 size={16} className="text-gray-400" />
                           <label className="text-sm font-bold text-gray-700">Rows:</label>
                           <input type="number" min="1" max="10" value={selectedElement.rows}
-                            onChange={(e) => updateRackDimensions(selectedElement.id, parseInt(e.target.value) || 1, selectedElement.cols)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateRackDimensions(selectedElement.id, parseInt(e.target.value) || 1, selectedElement.cols)}
                             className="w-16 border border-gray-300 rounded p-1 text-center font-semibold text-teal-700 focus:ring-2 focus:ring-teal-500" />
                         </div>
                         <div className="flex items-center space-x-2">
                           <label className="text-sm font-bold text-gray-700">Partitions:</label>
                           <input type="number" min="1" max="100" value={selectedElement.cols}
-                            onChange={(e) => updateRackDimensions(selectedElement.id, selectedElement.rows, parseInt(e.target.value) || 1)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateRackDimensions(selectedElement.id, selectedElement.rows, parseInt(e.target.value) || 1)}
                             className="w-16 border border-gray-300 rounded p-1 text-center font-semibold text-teal-700 focus:ring-2 focus:ring-teal-500" />
                         </div>
                       </div>
@@ -538,7 +538,7 @@ export default function RackManagement() {
                     <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
                       <label className="block text-sm font-bold text-gray-700 mb-2">Display Name</label>
                       <input type="text" value={selectedElement.name || ''}
-                        onChange={(e) => updateElementName(selectedElement.id, e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateElementName(selectedElement.id, e.target.value)}
                         className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-teal-500 font-medium text-gray-800 shadow-sm"
                         placeholder="Enter name..." />
                       <p className="text-xs text-gray-500 mt-2 italic">This name is displayed on the canvas map.</p>

@@ -642,17 +642,17 @@ export default function PrescriptionPage() {
                         {/* Zoom controls overlay */}
                         <div className="absolute bottom-2 right-2 flex flex-col gap-1 z-10">
                           <button
-                            onClick={(e) => { e.stopPropagation(); setZoom(z => Math.min(5, z + 0.25)); }}
+                            onClick={(e: React.ChangeEvent<HTMLInputElement>) => { e.stopPropagation(); setZoom(z => Math.min(5, z + 0.25)); }}
                             className="w-7 h-7 rounded-md bg-black/40 hover:bg-black/60 text-white flex items-center justify-center text-lg leading-none backdrop-blur-sm transition"
                             title="Zoom in"
                           >+</button>
                           <button
-                            onClick={(e) => { e.stopPropagation(); setZoom(z => Math.max(0.5, z - 0.25)); }}
+                            onClick={(e: React.ChangeEvent<HTMLInputElement>) => { e.stopPropagation(); setZoom(z => Math.max(0.5, z - 0.25)); }}
                             className="w-7 h-7 rounded-md bg-black/40 hover:bg-black/60 text-white flex items-center justify-center text-lg leading-none backdrop-blur-sm transition"
                             title="Zoom out"
                           >−</button>
                           <button
-                            onClick={(e) => { e.stopPropagation(); resetPanZoom(); }}
+                            onClick={(e: React.ChangeEvent<HTMLInputElement>) => { e.stopPropagation(); resetPanZoom(); }}
                             className="w-7 h-7 rounded-md bg-black/40 hover:bg-black/60 text-white flex items-center justify-center backdrop-blur-sm transition"
                             title="Reset view"
                           >
@@ -752,7 +752,7 @@ export default function PrescriptionPage() {
                           ref={inputRef}
                           type="text"
                           value={currentInput}
-                          onChange={(e) => setCurrentInput(e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCurrentInput(e.target.value)}
                           onKeyDown={handleMedInputKeyDown}
                           placeholder="Type medicine name & press Enter"
                           className="w-full pl-10 pr-4 py-2.5 text-sm border-2 border-gray-200 rounded-xl focus:border-[#00A99D] focus:ring-2 focus:ring-[#00A99D]/20 outline-none transition-all bg-gray-50 hover:bg-white text-gray-800 placeholder:text-gray-400"

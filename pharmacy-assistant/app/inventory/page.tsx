@@ -144,17 +144,17 @@ export default function InventoryPage() {
                   <h2 className="text-xl font-bold text-center mb-4">Add / Remove Items</h2>
 
                   <div className="grid grid-cols-5 gap-2">
-                    <input placeholder="Name"     value={itemName}   onChange={(e) => setItemName(e.target.value)}   className="border p-2" />
-                    <input placeholder="Strength" value={strength}   onChange={(e) => setStrength(e.target.value)}   className="border p-2" />
-                    <input type="number" placeholder="Qty"   value={qty}        onChange={(e) => setQty(e.target.value)}        className="border p-2" />
-                    <input type="date"            value={expireDate} onChange={(e) => setExpireDate(e.target.value)} className="border p-2" />
-                    <input type="number" placeholder="Price" value={unitPrice}  onChange={(e) => setUnitPrice(e.target.value)}  className="border p-2" />
+                    <input placeholder="Name"     value={itemName}   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setItemName(e.target.value)}   className="border p-2" />
+                    <input placeholder="Strength" value={strength}   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStrength(e.target.value)}   className="border p-2" />
+                    <input type="number" placeholder="Qty"   value={qty}        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQty(e.target.value)}        className="border p-2" />
+                    <input type="date"            value={expireDate} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setExpireDate(e.target.value)} className="border p-2" />
+                    <input type="number" placeholder="Price" value={unitPrice}  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUnitPrice(e.target.value)}  className="border p-2" />
                   </div>
 
                   <input
                     placeholder="Remove by name"
                     value={removeName}
-                    onChange={(e) => setRemoveName(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRemoveName(e.target.value)}
                     className="border p-2 w-full mt-3"
                   />
 

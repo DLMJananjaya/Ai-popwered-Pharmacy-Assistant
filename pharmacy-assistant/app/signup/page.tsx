@@ -44,12 +44,11 @@ const SignUpPage = () => {
 
   const { score: pwdScore, checks: pwdChecks } = getPasswordStrength(formData.password);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => { setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   // Step 1: Signup → triggers OTP send
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setError("");
 
@@ -86,7 +85,7 @@ const SignUpPage = () => {
   };
 
   // Step 2: Verify OTP
-  const handleVerify = async (e) => {
+  const handleVerify = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setError("");
     try {
@@ -136,7 +135,7 @@ const SignUpPage = () => {
   };
 
   // Step 3: Upload document and finalize registration
-  const handleDocumentUpload = async (e) => {
+  const handleDocumentUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setError("");
 
@@ -344,7 +343,7 @@ const SignUpPage = () => {
                       className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 focus:outline-none focus:border-emerald-600 transition-colors bg-white text-center text-xl tracking-widest"
                       onFocus={() => setOtpFocused(true)}
                       onBlur={() => setOtpFocused(false)}
-                      onChange={(e) => setOtp(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setOtp(e.target.value)}
                       required
                     />
                     {!otpFocused && otp === '' && (

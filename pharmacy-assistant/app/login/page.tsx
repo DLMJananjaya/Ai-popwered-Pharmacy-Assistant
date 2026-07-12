@@ -132,7 +132,7 @@ const LoginPage = () => {
                         value={email}
                         placeholder="Email Address"
                         className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                         required
                       />
                     </div>
@@ -143,7 +143,7 @@ const LoginPage = () => {
                         value={password}
                         placeholder="Password"
                         className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 placeholder-gray-500 focus:outline-none focus:border-emerald-600 transition-colors bg-white"
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                         required
                       />
                     </div>
@@ -168,7 +168,7 @@ const LoginPage = () => {
                         className="w-full px-4 py-3 rounded-xl border-2 border-black text-gray-700 focus:outline-none focus:border-emerald-600 transition-colors bg-white text-center text-xl tracking-widest"
                         onFocus={() => setOtpFocused(true)}
                         onBlur={() => setOtpFocused(false)}
-                        onChange={(e) => setOtp(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setOtp(e.target.value)}
                         required
                       />
                       {/* Only show this if the OTP state is actually empty */}

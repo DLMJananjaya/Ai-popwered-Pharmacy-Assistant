@@ -501,7 +501,7 @@ export default function BillingPage() {
                     ) : (
                       <select
                         value={selectedItemId}
-                        onChange={(e) => setSelectedItemId(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedItemId(e.target.value)}
                         className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
                       >
                         {catalog.map((item) => {
@@ -524,7 +524,7 @@ export default function BillingPage() {
                     <label className="mb-1 block text-sm font-semibold text-gray-700">Quantity</label>
                     <input
                       type="number" min={1} value={selectedQty}
-                      onChange={(e) => setSelectedQty(Math.max(1, Number(e.target.value) || 1))}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedQty(Math.max(1, Number(e.target.value) || 1))}
                       className="w-full rounded-md border border-gray-300 bg-white px-3 py-2"
                     />
                   </div>
@@ -735,7 +735,7 @@ export default function BillingPage() {
                       <input
                         type="email"
                         value={patientEmail}
-                        onChange={(e) => setPatientEmail(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPatientEmail(e.target.value)}
                         placeholder="patient@example.com"
                         className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-[#10b7ab] focus:outline-none focus:ring-1 focus:ring-[#10b7ab]"
                       />
