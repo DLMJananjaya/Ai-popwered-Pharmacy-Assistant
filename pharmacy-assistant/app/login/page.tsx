@@ -98,7 +98,7 @@ const LoginPage = () => {
 
           <div className="w-full md:w-1/2 flex flex-col items-center md:items-start space-y-8">
             <div className="flex items-center space-x-4 mb-4 md:mb-12 self-start">
-              <div className="w-12 h-12 bg-gray-300 rounded-sm shrink-0"></div>
+              {/* <div className="w-12 h-12 bg-gray-300 rounded-sm shrink-0"></div> */}
               <h1 className="text-2xl md:text-3xl font-bold text-black tracking-tight">
                 AI-Powered Pharmacy Assistant
               </h1>

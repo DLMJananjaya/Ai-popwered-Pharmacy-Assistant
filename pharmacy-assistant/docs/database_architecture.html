@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Database Architecture — AI-Powered Pharmacy Assistant</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --accent: #6366f1;
+      --accent-light: #e0e7ff;
+      --border: #e2e8f0;
+      --surface: #f8fafc;
+      --green: #16a34a;
+      --green-bg: #f0fdf4;
+      --amber: #d97706;
+      --amber-bg: #fffbeb;
+      --red: #dc2626;
+      --red-bg: #fef2f2;
+      --blue: #2563eb;
+      --blue-bg: #eff6ff;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.7;
+      font-size: 11pt;
+      padding: 0;
+    }
+
+    .page {
+      max-width: 210mm;
+      margin: 0 auto;
+      padding: 15mm 18mm;
+    }
+
+    /* ── Cover Page ─────────────────────────── */
+    .cover {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 90vh;
+      text-align: center;
+      page-break-after: always;
+    }
+    .cover-icon {
+      font-size: 64px;
+      margin-bottom: 24px;
+    }
+    .cover h1 {
+      font-size: 28pt;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+    .cover h2 {
+      font-size: 15pt;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+    }
+    .cover-meta {
+      font-size: 10pt;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      margin-top: 20px;
+    }
+    .cover-meta span { display: block; margin: 4px 0; }
+
+    /* ── Headings ───────────────────────────── */
+    h1 {
+      font-size: 20pt;
+      font-weight: 800;
+      color: var(--accent);
+      margin: 36px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 3px solid var(--accent);
+    }
+    h2 {
+      font-size: 14pt;
+      font-weight: 700;
+      color: var(--text);
+      margin: 28px 0 12px;
+    }
+    h3 {
+      font-size: 11pt;
+      font-weight: 600;
+      color: var(--text);
+      margin: 20px 0 8px;
+    }
+
+    /* ── Tables ─────────────────────────────── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 9.5pt;
+    }
+    thead th {
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+      text-align: left;
+      padding: 8px 10px;
+    }
+    thead th:first-child { border-radius: 6px 0 0 0; }
+    thead th:last-child { border-radius: 0 6px 0 0; }
+    tbody td {
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tbody tr:nth-child(even) { background: var(--surface); }
+    tbody tr:hover { background: var(--accent-light); }
+
+    /* ── Callout Boxes ─────────────────────── */
+    .callout {
+      border-left: 4px solid;
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin: 16px 0;
+      font-size: 9.5pt;
+    }
+    .callout-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+      font-size: 10pt;
+    }
+    .callout.note    { border-color: var(--blue);  background: var(--blue-bg);  }
+    .callout.tip     { border-color: var(--green); background: var(--green-bg); }
+    .callout.warning { border-color: var(--amber); background: var(--amber-bg); }
+    .callout.danger  { border-color: var(--red);   background: var(--red-bg);   }
+    .callout.note .callout-title    { color: var(--blue);  }
+    .callout.tip .callout-title     { color: var(--green); }
+    .callout.warning .callout-title { color: var(--amber); }
+    .callout.danger .callout-title  { color: var(--red);   }
+
+    /* ── Mermaid Diagrams ──────────────────── */
+    .diagram-container {
+      margin: 20px 0;
+      padding: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow-x: auto;
+      text-align: center;
+    }
+    .diagram-container .mermaid {
+      display: inline-block;
+      text-align: left;
+    }
+    .diagram-caption {
+      font-size: 9pt;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 8px;
+      font-style: italic;
+    }
+
+    /* ── Misc ───────────────────────────────── */
+    p { margin: 8px 0; }
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 9pt;
+    }
+    ul, ol { margin: 8px 0 8px 24px; }
+    li { margin: 4px 0; }
+    hr {
+      border: none;
+      border-top: 2px solid var(--border);
+      margin: 32px 0;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 8pt;
+      font-weight: 600;
+    }
+    .badge-yes { background: #dcfce7; color: #166534; }
+    .badge-no  { background: #fee2e2; color: #991b1b; }
+    .badge-warn { background: #fef3c7; color: #92400e; }
+
+    /* ── Print Styles ──────────────────────── */
+    @media print {
+      body { font-size: 10pt; }
+      .page { padding: 10mm 14mm; }
+      .page-break { page-break-before: always; }
+      .no-break { page-break-inside: avoid; }
+      .diagram-container { background: white; border-color: #ccc; }
+      tbody tr:hover { background: inherit; }
+      h1 { margin-top: 0; }
+    }
+
+    /* ── TOC ────────────────────────────────── */
+    .toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 28px;
+      margin: 20px 0;
+    }
+    .toc h2 {
+      margin-top: 0;
+      font-size: 13pt;
+    }
+    .toc ol {
+      counter-reset: toc-counter;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .toc li {
+      counter-increment: toc-counter;
+      padding: 6px 0;
+      border-bottom: 1px dotted var(--border);
+      font-size: 10.5pt;
+    }
+    .toc li:last-child { border-bottom: none; }
+    .toc li::before {
+      content: counter(toc-counter) ".";
+      font-weight: 700;
+      color: var(--accent);
+      margin-right: 8px;
+    }
+    .toc a {
+      color: var(--text);
+      text-decoration: none;
+    }
+    .toc a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════ COVER PAGE ═══════════════════ -->
+  <div class="page cover">
+    <div class="cover-icon">💊</div>
+    <h1>Database Architecture</h1>
+    <h2>AI-Powered Pharmacy Assistant</h2>
+    <div class="cover-meta">
+      <span><strong>Project:</strong> Ai-popwered-Pharmacy-Assistant</span>
+      <span><strong>Database:</strong> MongoDB Atlas (Mongoose ODM)</span>
+      <span><strong>Framework:</strong> Next.js 16 + NextAuth</span>
+      <span><strong>Date:</strong> <span id="gen-date"></span></span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ TABLE OF CONTENTS ═══════════════════ -->
+  <div class="page">
+    <div class="toc">
+      <h2>📑 Table of Contents</h2>
+      <ol>
+        <li><a href="#er-diagram">Entity-Relationship (ER) Diagram</a></li>
+        <li><a href="#db-connectivity">Database Connectivity Architecture</a></li>
+        <li><a href="#user-isolation">User Isolation — How Each User Is Unique</a></li>
+        <li><a href="#auth-flow">Authentication & Signup Flow</a></li>
+        <li><a href="#document-storage">Pharmacist Verification Document Storage</a></li>
+        <li><a href="#system-flow">Complete System Data Flow</a></li>
+        <li><a href="#collection-ref">Quick Reference — All Collections</a></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SECTION 1: ER DIAGRAM ═══════════════════ -->
+  <div class="page page-break" id="er-diagram">
+    <h1>1. Entity-Relationship (ER) Diagram</h1>
+    <p>The system uses <strong>MongoDB Atlas</strong> with <strong>5 collections</strong>. All data collections reference the <code>User</code> collection via a <code>userId</code> field, creating a single-tenant-per-user architecture.</p>
+
+    <div class="diagram-container no-break">
+      <div class="mermaid">
+erDiagram
+    USER {
+        ObjectId _id PK "Auto-generated"
+        String name "Required"
+        String email UK "Unique, lowercase"
+        String password "bcrypt hashed"
+        String image "Avatar URL"
+        String pharmacyName "Optional"
+        String role "Default: admin"
+        String otp "6-digit OTP"
+        Date otpExpiry "OTP validity"
+        Date lastLoginAt "Grace-period anchor"
+        Boolean isVerified "Email verified"
+        String documentUrl "Verification doc path"
+        Boolean isAdminVerified "Admin approval"
+        Date createdAt "Auto"
+        Date updatedAt "Auto"
+    }
+
+    INVENTORY_ITEM {
+        ObjectId _id PK
+        ObjectId userId FK "Ref User"
+        String name "Medicine name"
+        String strength "e.g. 500mg"
+        Number qty "Stock count"
+        Date expireDate "Expiry date"
+        Number unitPrice "Price per unit"
+        Date createdAt "Auto"
+        Date updatedAt "Auto"
+    }
+
+    BILLING_RECORD {
+        ObjectId _id PK
+        ObjectId userId FK "Ref User"
+        Array items "Embedded subdocs"
+        Number total "Total amount"
+        Number discount "Default 0"
+        Number amountPayable "After discount"
+        String paymentMethod "card or cash"
+        Date createdAt "Auto"
+        Date updatedAt "Auto"
+    }
+
+    RACK {
+        ObjectId _id PK
+        ObjectId userId FK "Ref User"
+        String rackName "e.g. A-1"
+        String category "e.g. Antibiotics"
+        Date createdAt "Auto"
+        Date updatedAt "Auto"
+    }
+
+    RACK_LAYOUT {
+        ObjectId _id PK
+        ObjectId userId FK_UK "Unique per user"
+        Mixed elements "Canvas JSON"
+        Date createdAt "Auto"
+        Date updatedAt "Auto"
+    }
+
+    USER ||--o{ INVENTORY_ITEM : "owns"
+    USER ||--o{ BILLING_RECORD : "creates"
+    USER ||--o{ RACK : "manages"
+    USER ||--|| RACK_LAYOUT : "has one"
+      </div>
+      <div class="diagram-caption">Figure 1 — Entity-Relationship diagram showing all 5 MongoDB collections and their relationships</div>
+    </div>
+
+    <div class="callout note no-break">
+      <div class="callout-title">ℹ️ Note</div>
+      MongoDB does not enforce foreign keys at the database level. The <code>userId</code> references are maintained at the <strong>application layer</strong> via Mongoose's <code>ref: 'User'</code> and validated in API route handlers using session-based ownership checks.
+    </div>
+
+    <h2>Embedded Sub-document: Billing Line Items</h2>
+    <p>The <code>BillingRecord.items</code> field is an <strong>embedded array</strong> of sub-documents (not a separate collection):</p>
+    <div class="diagram-container no-break">
+      <div class="mermaid">
+classDiagram
+    class BillingRecord {
+        +ObjectId _id
+        +ObjectId userId
+        +BillingItem[] items
+        +Number total
+        +Number discount
+        +Number amountPayable
+        +String paymentMethod
+    }
+    class BillingItem {
+        +String name
+        +Number qty
+        +Number unitPrice
+    }
+    BillingRecord *-- BillingItem : embeds
+      </div>
+      <div class="diagram-caption">Figure 2 — BillingRecord embeds an array of BillingItem sub-documents</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SECTION 2: DB CONNECTIVITY ═══════════════════ -->
+  <div class="page page-break" id="db-connectivity">
+    <h1>2. Database Connectivity Architecture</h1>
+
+    <div class="diagram-container">
+      <div class="mermaid">
+flowchart TB
+    subgraph CLIENT["Client Browser"]
+        UI["Next.js React Pages"]
+    end
+
+    subgraph NEXTJS["Next.js Server - Node.js Runtime"]
+        subgraph ROUTES["API Route Handlers"]
+            AUTH["/api/auth/*"]
+            INV["/api/inventory"]
+            BILL["/api/billing"]
+            DASH["/api/dashboard"]
+            MED["/api/medicine/identify"]
+            PRESC["/api/prescription/read"]
+            RACK_API["/api/rack-layout"]
+            UPLOAD["/api/upload-document"]
+            ADMIN["/api/admin/*"]
+        end
+
+        subgraph CONN["lib/db.js"]
+            CACHE{"global.mongoose cache"}
+            CONNECT["mongoose.connect&#40;&#41;"]
+        end
+
+        subgraph MDL["Mongoose Models"]
+            M1["User.js"]
+            M2["InventoryItem.js"]
+            M3["BillingRecord.js"]
+            M4["Rack.js"]
+            M5["RackLayout.js"]
+        end
+    end
+
+    subgraph ATLAS["MongoDB Atlas Cluster"]
+        DB[("mydb")]
+    end
+
+    UI -->|"HTTPS"| ROUTES
+    ROUTES --> CACHE
+    CACHE -->|"miss"| CONNECT
+    CONNECT -->|"mongodb+srv://"| DB
+    CACHE -->|"hit"| MDL
+    MDL --> DB
+      </div>
+      <div class="diagram-caption">Figure 3 — Database connectivity architecture from client to MongoDB Atlas</div>
+    </div>
+
+    <h2>Connection Steps</h2>
+    <table>
+      <thead>
+        <tr><th>Step</th><th>What Happens</th><th>Location</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Client sends HTTPS request to an API route</td><td>Browser → Next.js</td></tr>
+        <tr><td>2</td><td>API handler calls <code>await dbConnect()</code></td><td>lib/db.js</td></tr>
+        <tr><td>3</td><td><code>dbConnect()</code> checks <code>global.mongoose.conn</code> cache</td><td>lib/db.js:17</td></tr>
+        <tr><td>4</td><td>If no connection cached → <code>mongoose.connect(MONGODB_URI)</code></td><td>lib/db.js:20</td></tr>
+        <tr><td>5</td><td>Connection is cached in <code>global.mongoose</code> for reuse</td><td>lib/db.js:32</td></tr>
+        <tr><td>6</td><td>Mongoose model performs CRUD on the correct collection</td><td>models/*.js</td></tr>
+        <tr><td>7</td><td>MongoDB Atlas responds with data</td><td>Atlas Cluster</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout tip no-break">
+      <div class="callout-title">💡 Why Cache?</div>
+      The <code>global.mongoose</code> caching pattern is critical for Next.js — without it, every hot-reload in development would create a new database connection, exhausting the Atlas connection pool.
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SECTION 3: USER ISOLATION ═══════════════════ -->
+  <div class="page page-break" id="user-isolation">
+    <h1>3. User Isolation — How Each User Is Unique</h1>
+
+    <div class="diagram-container">
+      <div class="mermaid">
+flowchart TB
+    subgraph ID["Identity Layer"]
+        EMAIL["email - unique index, lowercase"]
+        OID["_id - MongoDB ObjectId, 12-byte"]
+        PWD["password - bcrypt hashed"]
+    end
+
+    subgraph AUTH["Authentication Flow"]
+        S1["1. Email + Password validate"]
+        S2["2. isAdminVerified check"]
+        S3["3. OTP or grace period"]
+        S4["4. JWT issued with user._id"]
+        S5["5. Session available server-side"]
+    end
+
+    subgraph ISO["Data Ownership"]
+        UA["Pharmacist A - userId: 64a..."]
+        UB["Pharmacist B - userId: 64b..."]
+        DA["A's Data: own inventory, bills, racks"]
+        DB2["B's Data: own inventory, bills, racks"]
+    end
+
+    EMAIL --> S1
+    OID --> S4
+    S1 --> S2 --> S3 --> S4 --> S5
+    UA --> DA
+    UB --> DB2
+      </div>
+      <div class="diagram-caption">Figure 4 — Three-layer user uniqueness: Identity → Authentication → Data isolation</div>
+    </div>
+
+    <h2>Isolation Enforcement Summary</h2>
+    <table>
+      <thead>
+        <tr><th>Layer</th><th>Mechanism</th><th>Details</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Email uniqueness</strong></td>
+          <td><code>unique: true</code> + <code>lowercase: true</code></td>
+          <td>MongoDB creates a unique index. No two accounts share an email.</td>
+        </tr>
+        <tr>
+          <td><strong>ObjectId (_id)</strong></td>
+          <td>Auto-generated by MongoDB</td>
+          <td>12-byte globally unique ID (timestamp + machine + process + counter)</td>
+        </tr>
+        <tr>
+          <td><strong>Password hashing</strong></td>
+          <td><code>bcrypt.hash(password, 10)</code></td>
+          <td>Even identical passwords produce different hashes</td>
+        </tr>
+        <tr>
+          <td><strong>JWT session</strong></td>
+          <td>NextAuth <code>jwt</code> callback</td>
+          <td>Every request carries the user's <code>_id</code> in the token</td>
+        </tr>
+        <tr>
+          <td><strong>Data ownership</strong></td>
+          <td><code>userId: { ref: 'User' }</code></td>
+          <td>API routes filter all queries by <code>userId: session.user.id</code></td>
+        </tr>
+        <tr>
+          <td><strong>Admin approval</strong></td>
+          <td><code>isAdminVerified</code> flag</td>
+          <td>New accounts blocked until super-admin approves</td>
+        </tr>
+        <tr>
+          <td><strong>2FA (OTP)</strong></td>
+          <td>Email OTP, 10-min expiry</td>
+          <td>Fresh OTP required after 1-hour grace period</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout tip no-break">
+      <div class="callout-title">💡 Single-Tenant-Per-User</div>
+      The system behaves like a <strong>single-tenant-per-user</strong> model. Each pharmacist sees <em>only</em> their own inventory, billing records, and rack layout — completely isolated from other pharmacists — all enforced by the <code>userId</code> foreign key on every query.
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SECTION 4: AUTH FLOW ═══════════════════ -->
+  <div class="page page-break" id="auth-flow">
+    <h1>4. Authentication & Signup Flow</h1>
+
+    <div class="diagram-container">
+      <div class="mermaid">
+sequenceDiagram
+    actor P as Pharmacist
+    participant UI as Signup Page
+    participant API as /api/auth/signup
+    participant MAIL as Email OTP
+    participant VERIFY as /api/auth/verify-signup
+    participant UPLOAD as /api/auth/upload-signup-doc
+    participant FS as File System
+    participant DB as MongoDB Atlas
+    participant ADMIN as Super Admin
+    participant APPROVE as /api/admin/verify-user
+    participant LOGIN as NextAuth
+
+    P->>UI: Fill name, email, password
+    UI->>API: POST signup data
+    API->>DB: Check if email exists
+    DB-->>API: No existing user
+    API->>DB: Create User isVerified=false
+    API->>MAIL: Send 6-digit OTP
+    MAIL-->>P: OTP email received
+    P->>VERIFY: Submit OTP
+    VERIFY->>DB: Validate OTP, set isVerified=true
+
+    Note over P,FS: Document Upload Phase
+    P->>UPLOAD: Upload verification doc
+    UPLOAD->>DB: Confirm user is verified
+    UPLOAD->>FS: Save to public/uploads/documents/
+    UPLOAD->>DB: Set user.documentUrl
+
+    Note over ADMIN,DB: Admin Review Phase
+    ADMIN->>APPROVE: Review and approve
+    APPROVE->>DB: Set isAdminVerified=true
+
+    Note over P,LOGIN: Login Phase
+    P->>LOGIN: POST email + password
+    LOGIN->>DB: Validate credentials
+    LOGIN->>MAIL: Send fresh OTP
+    P->>LOGIN: Submit OTP
+    LOGIN-->>P: JWT session issued
+      </div>
+      <div class="diagram-caption">Figure 5 — Complete signup → verification → admin approval → login sequence</div>
+    </div>
+
+    <h2>Authentication State Machine</h2>
+    <div class="diagram-container no-break">
+      <div class="mermaid">
+stateDiagram-v2
+    [*] --> Registered: POST /api/auth/signup
+    Registered --> EmailVerified: Submit correct OTP
+    EmailVerified --> DocUploaded: Upload verification document
+    DocUploaded --> AdminApproved: Admin reviews and approves
+    AdminApproved --> LoggedIn: Login with credentials + OTP
+    LoggedIn --> GracePeriod: Within 1 hour
+    GracePeriod --> LoggedIn: Auto re-login
+    GracePeriod --> OTPRequired: After 1 hour
+    OTPRequired --> LoggedIn: Submit fresh OTP
+
+    Registered --> [*]: OTP expired, re-register
+    EmailVerified --> [*]: Admin rejects
+      </div>
+      <div class="diagram-caption">Figure 6 — User state machine from registration to active session</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SECTION 5: DOCUMENT STORAGE ═══════════════════ -->
+  <div class="page page-break" id="document-storage">
+    <h1>5. Pharmacist Verification Document Storage</h1>
+
+    <h2>Current Implementation</h2>
+    <div class="diagram-container">
+      <div class="mermaid">
+flowchart LR
+    A["Pharmacist uploads\nPDF / JPG / PNG\nmax 5MB"] --> B["API Validates:\n• File type\n• File size\n• User is OTP-verified"]
+    B --> C["Generate filename\ntimestamp_sanitized_name"]
+    C --> D["Write to\npublic/uploads/documents/"]
+    D --> E["Save URL to\nUser.documentUrl"]
+      </div>
+      <div class="diagram-caption">Figure 7 — Current verification document upload flow</div>
+    </div>
+
+    <h3>File System Layout</h3>
+    <table>
+      <thead><tr><th>Item</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Storage path</strong></td><td><code>public/uploads/documents/</code></td></tr>
+        <tr><td><strong>Filename format</strong></td><td><code>{timestamp}_{sanitized_original_name}</code></td></tr>
+        <tr><td><strong>Allowed types</strong></td><td>PDF, JPEG, PNG</td></tr>
+        <tr><td><strong>Max size</strong></td><td>5 MB</td></tr>
+        <tr><td><strong>DB field</strong></td><td><code>User.documentUrl</code> (relative URL string)</td></tr>
+        <tr><td><strong>Example</strong></td><td><code>/uploads/documents/1720000001_pharmacy_license.pdf</code></td></tr>
+      </tbody>
+    </table>
+
+    <h2>Current vs Recommended (Production)</h2>
+    <table>
+      <thead>
+        <tr><th>Aspect</th><th>Current (Local FS)</th><th>Recommended (Cloud)</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Where</strong></td>
+          <td><code>public/uploads/documents/</code></td>
+          <td>AWS S3 / Google Cloud Storage / Cloudinary</td>
+        </tr>
+        <tr>
+          <td><strong>Survives redeployment?</strong></td>
+          <td><span class="badge badge-no">❌ No</span></td>
+          <td><span class="badge badge-yes">✅ Yes</span></td>
+        </tr>
+        <tr>
+          <td><strong>Scalable?</strong></td>
+          <td><span class="badge badge-no">❌ Single server</span></td>
+          <td><span class="badge badge-yes">✅ CDN-backed</span></td>
+        </tr>
+        <tr>
+          <td><strong>Secure?</strong></td>
+          <td><span class="badge badge-warn">⚠️ Public URL</span></td>
+          <td><span class="badge badge-yes">✅ Signed URLs</span></td>
+        </tr>
+        <tr>
+          <td><strong>Backup</strong></td>
+          <td><span class="badge badge-no">❌ Manual</span></td>
+          <td><span class="badge badge-yes">✅ Auto versioning</span></td>
+        </tr>
+        <tr>
+          <td><strong>Cost</strong></td>
+          <td>Free (local disk)</td>
+          <td>Low (~$0.023/GB/month on S3)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout warning no-break">
+      <div class="callout-title">⚠️ Security Warning</div>
+      Files in <code>public/</code> are <strong>publicly accessible</strong> to anyone who knows the URL. For production deployment with sensitive pharmacist licenses, migrate to a cloud storage solution with <strong>signed URLs</strong> and proper access controls.
+    </div>
+
+    <h2>Recommended Production Architecture</h2>
+    <div class="diagram-container no-break">
+      <div class="mermaid">
+flowchart LR
+    A["Pharmacist"] -->|"Upload"| B["Next.js API"]
+    B -->|"Store file"| C["Cloud Storage\nS3 / GCS / Cloudinary"]
+    B -->|"Save key"| D[("MongoDB Atlas\nUser.documentUrl")]
+    E["Admin Panel"] -->|"Request signed URL\nvalid 15 min"| C
+    C -->|"Temporary secure link"| E
+      </div>
+      <div class="diagram-caption">Figure 8 — Recommended production architecture with cloud storage and signed URLs</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SECTION 6: SYSTEM DATA FLOW ═══════════════════ -->
+  <div class="page page-break" id="system-flow">
+    <h1>6. Complete System Data Flow</h1>
+
+    <div class="diagram-container">
+      <div class="mermaid">
+flowchart TB
+    subgraph EXT["External Services"]
+        GEMINI["Google Gemini AI"]
+        SMTP["Email / SMTP"]
+        ATLAS2[("MongoDB Atlas")]
+    end
+
+    subgraph APP["Next.js Application"]
+        subgraph PG["Frontend Pages"]
+            P1["Signup / Login"]
+            P2["Dashboard"]
+            P3["Inventory"]
+            P4["Billing"]
+            P5["Prescription Reader"]
+            P6["Medicine Identifier"]
+            P7["Rack Management"]
+            P8["Admin Panel"]
+        end
+
+        subgraph APIS2["API Layer"]
+            A1["Auth APIs"]
+            A2["Data APIs - CRUD"]
+            A3["AI APIs - Gemini"]
+            A4["File Upload APIs"]
+        end
+
+        subgraph SEC["Security Layer"]
+            S1["NextAuth JWT"]
+            S2["userId Ownership"]
+        end
+    end
+
+    subgraph STORE["Storage"]
+        ATLAS2
+        FS2["Local FS\nVerification Docs"]
+    end
+
+    PG --> APIS2
+    APIS2 --> SEC
+    SEC --> ATLAS2
+    A3 --> GEMINI
+    A1 --> SMTP
+    A4 --> FS2
+      </div>
+      <div class="diagram-caption">Figure 9 — End-to-end system architecture overview</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SECTION 7: COLLECTION REF ═══════════════════ -->
+  <div class="page page-break" id="collection-ref">
+    <h1>7. Quick Reference — All Collections</h1>
+
+    <table>
+      <thead>
+        <tr><th>Collection</th><th>Model File</th><th>Purpose</th><th>User-Scoped?</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>users</code></td>
+          <td>User.js</td>
+          <td>Pharmacist accounts, auth, verification</td>
+          <td>— (is the user)</td>
+        </tr>
+        <tr>
+          <td><code>inventoryitems</code></td>
+          <td>InventoryItem.js</td>
+          <td>Medicine stock (name, strength, qty, price, expiry)</td>
+          <td><span class="badge badge-yes">✅ userId</span></td>
+        </tr>
+        <tr>
+          <td><code>billingrecords</code></td>
+          <td>BillingRecord.js</td>
+          <td>Sales transactions with embedded line items</td>
+          <td><span class="badge badge-yes">✅ userId</span></td>
+        </tr>
+        <tr>
+          <td><code>racks</code></td>
+          <td>Rack.js</td>
+          <td>Named rack/shelf categories</td>
+          <td><span class="badge badge-yes">✅ userId</span></td>
+        </tr>
+        <tr>
+          <td><code>racklayouts</code></td>
+          <td>RackLayout.js</td>
+          <td>Visual canvas layout (1 per user, upserted)</td>
+          <td><span class="badge badge-yes">✅ userId (unique)</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Field-Level Detail: User Collection</h2>
+    <table>
+      <thead>
+        <tr><th>Field</th><th>Type</th><th>Constraint</th><th>Purpose</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>_id</code></td><td>ObjectId</td><td>PK, auto</td><td>Primary key</td></tr>
+        <tr><td><code>name</code></td><td>String</td><td>Required</td><td>Pharmacist's full name</td></tr>
+        <tr><td><code>email</code></td><td>String</td><td>Required, Unique, Lowercase</td><td>Login identifier — enforces uniqueness</td></tr>
+        <tr><td><code>password</code></td><td>String</td><td>Required</td><td>bcrypt-hashed password (10 salt rounds)</td></tr>
+        <tr><td><code>image</code></td><td>String</td><td>Default avatar</td><td>Profile picture URL</td></tr>
+        <tr><td><code>pharmacyName</code></td><td>String</td><td>Optional</td><td>Name of the pharmacy</td></tr>
+        <tr><td><code>role</code></td><td>String</td><td>Default: "admin"</td><td>User role for access control</td></tr>
+        <tr><td><code>otp</code></td><td>String</td><td>Temporary</td><td>6-digit email verification code</td></tr>
+        <tr><td><code>otpExpiry</code></td><td>Date</td><td>—</td><td>OTP valid until this timestamp</td></tr>
+        <tr><td><code>lastLoginAt</code></td><td>Date</td><td>—</td><td>Anchor for 1-hour grace period</td></tr>
+        <tr><td><code>isVerified</code></td><td>Boolean</td><td>Default: false</td><td>Email OTP verified?</td></tr>
+        <tr><td><code>documentUrl</code></td><td>String</td><td>Default: null</td><td>Path to uploaded verification document</td></tr>
+        <tr><td><code>isAdminVerified</code></td><td>Boolean</td><td>Default: false</td><td>Super-admin approved?</td></tr>
+        <tr><td><code>createdAt</code></td><td>Date</td><td>Auto (timestamps)</td><td>Account creation time</td></tr>
+        <tr><td><code>updatedAt</code></td><td>Date</td><td>Auto (timestamps)</td><td>Last modification time</td></tr>
+      </tbody>
+    </table>
+
+    <hr/>
+    <p style="text-align:center; color: var(--text-muted); font-size: 9pt; margin-top: 32px;">
+      Generated for <strong>AI-Powered Pharmacy Assistant</strong> — Database Architecture Documentation
+    </p>
+  </div>
+
+  <!-- ═══════════════════ MERMAID JS ═══════════════════ -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    // Set generated date
+    document.getElementById('gen-date').textContent = new Date().toLocaleDateString('en-US', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    // Initialize mermaid
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        primaryColor: '#e0e7ff',
+        primaryTextColor: '#1e293b',
+        primaryBorderColor: '#6366f1',
+        lineColor: '#6366f1',
+        secondaryColor: '#f0fdf4',
+        tertiaryColor: '#f8fafc',
+        fontSize: '13px',
+        fontFamily: 'Inter, sans-serif'
+      },
+      flowchart: { curve: 'basis', htmlLabels: true },
+      sequence: { mirrorActors: false, messageAlign: 'center' },
+      er: { fontSize: 12 }
+    });
+  </script>
+</body>
+</html>
