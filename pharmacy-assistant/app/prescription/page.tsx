@@ -414,6 +414,65 @@ export default function PrescriptionPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [image]);
 
+  // Listen for scanned prescription event from LinkPhoneModal
+  useEffect(() => {
+    const handleScannedPrescription = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      const data = customEvent.detail;
+      if (!data) return;
+
+      const meds: Med[] = (data.medicines || []).map((m: any) => ({
+        name: m.name || 'Unknown',
+        strength: m.strength || null,
+        frequency: m.frequency || null,
+        timing: m.timing || null,
+        notes: m.notes || null,
+      }));
+      setMedicines(meds);
+
+      // Automatically add Gemini-extracted medicines to manualMeds to trigger identification
+      if (meds.length > 0) {
+        setManualMeds((prev) => {
+          const existingCount = prev.length;
+          const newMeds: IdentifiedMed[] = meds.map((m) => ({
+            input: m.name,
+            canonical: null,
+            confidence: 0,
+            found: false,
+            loading: true,
+            method: '',
+            manufacturers: null,
+            alternatives: [],
+            sideEffects: null,
+            inventoryMatch: null,
+            inventoryLoading: false,
+          }));
+
+          meds.forEach((m, idx) => {
+            identifyMedicineClient(m.name, existingCount + idx);
+          });
+
+          return [...prev, ...newMeds];
+        });
+      }
+
+      setOcrText(data.rawText || '');
+      setUsageText(data.usageInstructions || 'No usage instructions detected.');
+      setAllergyText(data.allergyWarnings || 'No allergy information detected.');
+      setWarnings(data.warnings || []);
+      setPatientName(data.patientName || null);
+      setDoctorName(data.doctorName || null);
+      setPrescriptionDate(data.date || null);
+      setDiagnosis(data.diagnosis || null);
+      setIsProcessed(true);
+    };
+
+    window.addEventListener('apply-scanned-prescription', handleScannedPrescription);
+    return () => {
+      window.removeEventListener('apply-scanned-prescription', handleScannedPrescription);
+    };
+  }, [identifyMedicineClient]);
+
   // --- Crop controls ---
   const startCropping = () => {
     setIsCropping(true);

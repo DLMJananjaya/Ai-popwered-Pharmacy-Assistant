@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   devIndicators: false,
   typescript: {
     // Allow production builds to succeed even with TypeScript errors
@@ -10,6 +10,6 @@ const nextConfig: NextConfig = {
     // Allow production builds to succeed even with ESLint errors
     ignoreDuringBuilds: true,
   },
-};
+} as any;
 
 export default nextConfig;

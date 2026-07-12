@@ -44,6 +44,12 @@ export default function LinkPhoneModal({ isOpen, onClose }: LinkPhoneModalProps)
   const [error, setError] = useState('');
   const eventSourceRef = useRef<EventSource | null>(null);
 
+  const handleApplyResult = (result: any) => {
+    const event = new CustomEvent('apply-scanned-prescription', { detail: result });
+    window.dispatchEvent(event);
+    handleClose();
+  };
+
   // Create a new pairing session
   const createSession = useCallback(async () => {
     setStatus('generating');
@@ -249,6 +255,13 @@ export default function LinkPhoneModal({ isOpen, onClose }: LinkPhoneModalProps)
                           <strong>Diagnosis:</strong> {r.result.diagnosis}
                         </p>
                       )}
+
+                      <button
+                        onClick={() => handleApplyResult(r.result)}
+                        style={s.applyResultBtn}
+                      >
+                        📥 Send to Prescription Reader
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -594,6 +607,18 @@ const s: Record<string, React.CSSProperties> = {
     background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
     color: 'white',
     fontSize: '13px',
+    fontWeight: 600,
+    cursor: 'pointer',
+  },
+  applyResultBtn: {
+    width: '100%',
+    marginTop: '12px',
+    padding: '8.5px 12px',
+    border: 'none',
+    borderRadius: '8px',
+    background: 'linear-gradient(135deg, #10b7ab, #0d9488)',
+    color: 'white',
+    fontSize: '12.5px',
     fontWeight: 600,
     cursor: 'pointer',
   },
